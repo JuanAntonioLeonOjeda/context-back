@@ -116,11 +116,15 @@ def upgrade() -> None:
             term_id  bigint NOT NULL REFERENCES government_terms (id) ON DELETE CASCADE,
             party_id text NOT NULL REFERENCES parties (id),
             role     text NOT NULL,
+            -- Each role has its own evidence: a vice-president's appointment for a coalition
+            -- partner, the investiture vote for external support.
+            source_url text NOT NULL,
 
             -- A party has one role per term: it governs or it supports from outside.
             PRIMARY KEY (term_id, party_id),
             CONSTRAINT government_term_parties_role_valid
-                CHECK (role IN ('governing', 'external_support'))
+                CHECK (role IN ('governing', 'external_support')),
+            CONSTRAINT government_term_parties_source_is_url CHECK (source_url ~ '^https?://')
         )
         """
     )

@@ -176,10 +176,10 @@ def test_accepts_a_coalition_with_external_support(seeded: Connection) -> None:
     term_id = _insert_term(seeded, "es", date(2020, 1, 1), None)
     seeded.execute(
         text(
-            "INSERT INTO government_term_parties (term_id, party_id, role) VALUES"
-            " (:t, 'party-a', 'governing'), (:t, 'party-b', 'external_support')"
+            "INSERT INTO government_term_parties (term_id, party_id, role, source_url) VALUES"
+            " (:t, 'party-a', 'governing', :s), (:t, 'party-b', 'external_support', :s)"
         ),
-        {"t": term_id},
+        {"t": term_id, "s": SOURCE},
     )
 
 
@@ -188,9 +188,9 @@ def test_rejects_an_unknown_role(seeded: Connection) -> None:
 
     message = _rejected(
         seeded,
-        "INSERT INTO government_term_parties (term_id, party_id, role)"
-        " VALUES (:t, 'party-a', 'opposition')",
-        {"t": term_id},
+        "INSERT INTO government_term_parties (term_id, party_id, role, source_url)"
+        " VALUES (:t, 'party-a', 'opposition', :s)",
+        {"t": term_id, "s": SOURCE},
     )
 
     assert "government_term_parties_role_valid" in message
@@ -199,14 +199,16 @@ def test_rejects_an_unknown_role(seeded: Connection) -> None:
 def test_rejects_the_same_party_twice_in_one_term(seeded: Connection) -> None:
     term_id = _insert_term(seeded, "es", date(2020, 1, 1), None)
     seeded.execute(
-        text("INSERT INTO government_term_parties VALUES (:t, 'party-a', 'governing')"),
-        {"t": term_id},
+        text("INSERT INTO government_term_parties VALUES (:t, 'party-a', 'governing', :s)"),
+        {"t": term_id, "s": SOURCE},
     )
 
     with pytest.raises(IntegrityError), seeded.begin_nested():
         seeded.execute(
-            text("INSERT INTO government_term_parties VALUES (:t, 'party-a', 'external_support')"),
-            {"t": term_id},
+            text(
+                "INSERT INTO government_term_parties VALUES (:t, 'party-a', 'external_support', :s)"
+            ),
+            {"t": term_id, "s": SOURCE},
         )
 
 
@@ -232,3 +234,16 @@ def test_rejects_invalid_parties(
     )
 
     assert constraint in message
+
+
+def test_rejects_a_party_role_without_a_url_source(seeded: Connection) -> None:
+    term_id = _insert_term(seeded, "es", date(2020, 1, 1), None)
+
+    message = _rejected(
+        seeded,
+        "INSERT INTO government_term_parties (term_id, party_id, role, source_url)"
+        " VALUES (:t, 'party-a', 'governing', 'DSCD 15')",
+        {"t": term_id},
+    )
+
+    assert "government_term_parties_source_is_url" in message
