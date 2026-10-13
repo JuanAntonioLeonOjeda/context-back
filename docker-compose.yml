@@ -37,6 +37,26 @@ services:
       retries: 12
       start_period: 30s
 
+  pgadmin:
+    # Database browser, only on demand: docker compose --profile tools up -d pgadmin
+    # Desktop mode (no pgAdmin login) and bound to localhost: local development only.
+    image: dpage/pgadmin4:9.18.0
+    profiles: [tools]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db-data:
   labelstudio-data:
+  pgadmin-data:
