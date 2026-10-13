@@ -80,6 +80,9 @@ Decided with the author on 2026-10-13.
 - **Caretaker periods are modelled**: a caretaker term starts on election day and ends
   when the next president's appointment is published. The rule is checked against each
   statute; a territory whose statute differs gets a note in the CSV.
+- **Caretaker without an election:** a government is also caretaker from the date its
+  president ceases for another reason (resignation, disqualification) until the successor
+  is appointed. Added with the author after batch 3.
 - **External support** = parties that voted yes in the investiture and do not enter the
   government, as recorded in the parliament's session diary. Withdrawals of support
   during the legislature are not modelled.
