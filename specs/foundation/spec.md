@@ -34,7 +34,8 @@ integration test applies all migrations from scratch.
 
 **AC4 — territories.**
 Given the loader, when it runs twice, then the State, the 19 communities (Ceuta and
-Melilla included) and the 50 provinces exist exactly once, keyed by a prefixed id (`es`, `ccaa-NN`, `prov-NN`) with the INE
+Melilla included) and the 52 INE provinces (50 plus Ceuta and Melilla, coded 51 and 52
+for statistics) exist exactly once, keyed by a prefixed id (`es`, `ccaa-NN`, `prov-NN`) with the INE
 code in its own column.
 
 **AC5 — governments.** [core]

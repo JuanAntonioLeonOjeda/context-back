@@ -15,8 +15,8 @@ Update the status column when a phase creates or finishes a path.
 
 | Path | Content | Status |
 |---|---|---|
-| `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ⏳ |
-| `src/datos/territories/` | CCAA, provinces and municipalities with INE codes and geometries | ⏳ |
+| `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
+| `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`) | 🚧 |
 | `src/datos/governments/` | parties, governments (coalitions, supports), terms, competence table | ⏳ |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
 | `src/datos/news/` | outlets, RSS and history ingestion, article metadata | ⏳ |
@@ -24,15 +24,16 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | official statistics ETL and derived indicators | ⏳ |
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |
-| `src/datos/api/` | FastAPI routers and response models | ⏳ |
-| `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ⏳ |
-| `migrations/` | versioned SQL migrations | ⏳ |
+| `src/datos/api/` | FastAPI routers and response models (`/health`) | 🚧 |
+| `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata) | 🚧 |
+| `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated governments and competences, with sources | ⏳ |
 | `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
-| `tests/` | `unit/`, `integration/`, `fixtures/` | ⏳ |
-| `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ⏳ |
-| `.env.example` | every environment variable, documented | ⏳ |
-| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests | ⏳ |
+| `tests/` | `unit/`, `integration/`, `fixtures/` | 🚧 |
+| `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
+| `.env.example` | every environment variable, documented | ✅ |
+| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (not run yet: no remote) | 🚧 |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/adr/` | Architecture Decision Records (`NNNN-kebab-title.md`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`) | ⏳ |
