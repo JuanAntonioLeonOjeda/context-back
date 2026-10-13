@@ -4,8 +4,13 @@ from pathlib import Path
 import pytest
 from sqlalchemy import Connection, text
 
-from datos.governments.application.load_governments import load_governments
-from datos.governments.infrastructure.csv_source import read_parties, read_terms
+from datos.governments.application.load_governments import load_competences, load_governments
+from datos.governments.infrastructure.csv_source import (
+    read_competences,
+    read_parties,
+    read_sectors,
+    read_terms,
+)
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
@@ -21,7 +26,11 @@ def _load(db: Connection) -> None:
     PgTerritoryRepository(db).upsert_all(read_territories(Path("data/territories/territories.csv")))
     parties = read_parties(DATA / "parties.csv")
     terms = read_terms(DATA / "government_terms.csv", DATA / "government_term_parties.csv")
-    load_governments(PgGovernmentRepository(db), parties, terms, since=SINCE, today=TODAY)
+    repository = PgGovernmentRepository(db)
+    load_governments(repository, parties, terms, since=SINCE, today=TODAY)
+    load_competences(
+        repository, read_sectors(DATA / "sectors.csv"), read_competences(DATA / "competences.csv")
+    )
 
 
 def _count(db: Connection, table: str) -> int:
@@ -95,3 +104,29 @@ def test_a_failed_load_leaves_the_previous_data_untouched(db: Connection) -> Non
         load_governments(PgGovernmentRepository(db), parties, terms[:-1], since=SINCE, today=TODAY)
 
     assert _count(db, "government_terms") == 93
+
+
+def test_loads_sectors_and_competences_twice_with_the_same_result(db: Connection) -> None:
+    _load(db)
+    first = (_count(db, "sectors"), _count(db, "competences"))
+
+    _load(db)
+
+    assert (_count(db, "sectors"), _count(db, "competences")) == first == (3, 31)
+
+
+def test_ceuta_has_its_own_rows_for_health_care_and_education(db: Connection) -> None:
+    _load(db)
+
+    rows = db.execute(
+        text(
+            "SELECT sector_id, activity, level FROM competences"
+            " WHERE territory_id = 'ccaa-18' ORDER BY sector_id, activity"
+        )
+    ).all()
+
+    assert [tuple(r) for r in rows] == [
+        ("education", "curriculum", "state"),
+        ("education", "schools-and-teaching-staff", "state"),
+        ("health", "healthcare-services", "state"),
+    ]

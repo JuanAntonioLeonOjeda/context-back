@@ -9,6 +9,12 @@ from pathlib import Path
 
 from pydantic import BaseModel, ValidationError, field_validator
 
+from datos.governments.domain.competence import (
+    Competence,
+    CompetenceFunction,
+    CompetenceLevel,
+    Sector,
+)
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 
@@ -44,6 +50,27 @@ class _TermPartyRow(BaseModel):
     party_id: str
     role: PartyRole
     source_url: str
+
+
+class _SectorRow(BaseModel):
+    id: str
+    name: str
+
+
+class _CompetenceRow(BaseModel):
+    sector_id: str
+    activity: str
+    description: str
+    level: CompetenceLevel
+    function: CompetenceFunction
+    territory_id: str | None
+    legal_basis: str
+    source_url: str
+
+    @field_validator("territory_id", mode="before")
+    @classmethod
+    def _empty_as_none(cls, value: object) -> object:
+        return None if value == "" else value
 
 
 def _rows(path: Path) -> list[dict[str, str]]:
@@ -104,3 +131,27 @@ def _check_unique(values: list[str], *, what: str, path: Path) -> None:
         if value in seen:
             raise InvalidGovernmentsFileError(f"{path.name}: duplicate {what} {value}")
         seen.add(value)
+
+
+def read_sectors(path: Path) -> list[Sector]:
+    parsed = [_parse(_SectorRow, r, path=path, line=i + 2) for i, r in enumerate(_rows(path))]
+    sectors = [Sector(s.id, s.name) for s in parsed]
+    _check_unique([s.id for s in sectors], what="sector id", path=path)
+    return sectors
+
+
+def read_competences(path: Path) -> list[Competence]:
+    rows = [_parse(_CompetenceRow, r, path=path, line=i + 2) for i, r in enumerate(_rows(path))]
+    return [
+        Competence(
+            sector_id=r.sector_id,
+            activity=r.activity,
+            description=r.description,
+            level=r.level,
+            function=r.function,
+            territory_id=r.territory_id,
+            legal_basis=r.legal_basis,
+            source_url=r.source_url,
+        )
+        for r in rows
+    ]

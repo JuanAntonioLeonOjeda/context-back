@@ -9,6 +9,7 @@ from datos.governments.application.load_governments import (
     dataset_problems,
     load_governments,
 )
+from datos.governments.domain.competence import Competence, Sector
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.governments.infrastructure.csv_source import (
@@ -53,6 +54,11 @@ class FakeRepository:
 
     def replace_all(self, parties: Sequence[Party], terms: Sequence[GovernmentTerm]) -> None:
         self.replaced = (list(parties), list(terms))
+
+    def replace_competences(
+        self, sectors: Sequence[Sector], competences: Sequence[Competence]
+    ) -> None:
+        self.competences = (list(sectors), list(competences))
 
 
 # --- the versioned dataset itself ------------------------------------------------------

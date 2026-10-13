@@ -7,6 +7,7 @@ from collections.abc import Collection, Sequence
 from datetime import date
 from typing import Protocol
 
+from datos.governments.domain.competence import Competence, Sector, competence_problems
 from datos.governments.domain.government_term import (
     EmptyPeriod,
     Gap,
@@ -25,6 +26,10 @@ class GovernmentRepository(Protocol):
         ...
 
     def replace_all(self, parties: Sequence[Party], terms: Sequence[GovernmentTerm]) -> None: ...
+
+    def replace_competences(
+        self, sectors: Sequence[Sector], competences: Sequence[Competence]
+    ) -> None: ...
 
 
 class InvalidGovernmentsDatasetError(Exception):
@@ -92,3 +97,15 @@ def load_governments(
     if problems:
         raise InvalidGovernmentsDatasetError(problems)
     repository.replace_all(parties, terms)
+
+
+def load_competences(
+    repository: GovernmentRepository,
+    sectors: Sequence[Sector],
+    competences: Sequence[Competence],
+) -> None:
+    communities = {t for t in repository.government_territory_ids() if t.startswith("ccaa-")}
+    problems = competence_problems(sectors, competences, communities)
+    if problems:
+        raise InvalidGovernmentsDatasetError(problems)
+    repository.replace_competences(sectors, competences)

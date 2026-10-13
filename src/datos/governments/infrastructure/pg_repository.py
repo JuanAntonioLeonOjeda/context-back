@@ -4,6 +4,7 @@ from collections.abc import Sequence
 
 from sqlalchemy import Connection, text
 
+from datos.governments.domain.competence import Competence, Sector
 from datos.governments.domain.government_term import GovernmentTerm
 from datos.governments.domain.party import Party
 
@@ -27,6 +28,19 @@ _INSERT_TERM_PARTY = text(
     """
     INSERT INTO government_term_parties (term_id, party_id, role, source_url)
     VALUES (:term_id, :party_id, :role, :source_url)
+    """
+)
+
+_UPSERT_SECTOR = text(
+    "INSERT INTO sectors (id, name) VALUES (:id, :name)"
+    " ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name"
+)
+_INSERT_COMPETENCE = text(
+    """
+    INSERT INTO competences (sector_id, activity, description, level, function, territory_id,
+                             legal_basis, source_url)
+    VALUES (:sector_id, :activity, :description, :level, :function, :territory_id,
+            :legal_basis, :source_url)
     """
 )
 
@@ -81,3 +95,25 @@ class PgGovernmentRepository:
                         "source_url": term_party.source_url,
                     },
                 )
+
+    def replace_competences(
+        self, sectors: Sequence[Sector], competences: Sequence[Competence]
+    ) -> None:
+        """Make the stored competences mirror the dataset; sectors are upserted, never deleted."""
+        for sector in sectors:
+            self._connection.execute(_UPSERT_SECTOR, {"id": sector.id, "name": sector.name})
+        self._connection.execute(text("DELETE FROM competences"))
+        for c in competences:
+            self._connection.execute(
+                _INSERT_COMPETENCE,
+                {
+                    "sector_id": c.sector_id,
+                    "activity": c.activity,
+                    "description": c.description,
+                    "level": c.level.value,
+                    "function": c.function.value,
+                    "territory_id": c.territory_id,
+                    "legal_basis": c.legal_basis,
+                    "source_url": c.source_url,
+                },
+            )
