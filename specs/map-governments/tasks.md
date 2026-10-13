@@ -37,7 +37,7 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 ## Web app (after the front's `foundation`)
 
-- [ ] 19. Party colour palette `[core]` (**author**): values, contrast and colour-blindness checks, stripe pattern for pairs that look alike
+- [x] 19. Party colour palette `[core]` (**author**): each party's standard colour from Wikidata, loaded into `parties.csv` and the database and served by `/parties`; Convocatoria por Asturias keeps the neutral grey; stripe separators and the double outline go to the map ADR (task 20). Colour-blindness checks skipped by the author
 - [ ] 20. ADR-0013 (front) `[core]`: SVG map with `d3-geo` and the colour encoding
 - [ ] 21. Map component: projection, Canary Islands inset, markers for Ceuta and Melilla, legend, selection by mouse, touch and keyboard, text alternatives
 - [ ] 22. Community card: president, governing parties, external support, caretaker note, term start, indicators with period and source links; wording without evaluation

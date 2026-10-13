@@ -94,5 +94,41 @@ of a caretaker government do not change.
 - The State term from 2019-11-10 (caretaker, PSOE) lists no external support: it came from
   the 2018 motion of no confidence, outside the dataset window.
 - Withdrawals of support during a legislature are not modelled.
-- `colour_hex` is a provisional grey for every party until the web app chooses colours
-  (contrast and neutrality checks).
+- `colour_hex` is the party's standard colour (see "Party colours" below).
+
+## Party colours
+
+Chosen with the author on 2026-10-13 (task 19 of `map-governments`): each party's standard
+colour, taken from Wikidata (property P465, "sRGB colour hex code", queried 2026-10-13,
+licence CC0). Wikidata is the source of the colours only; it is never a source of governments
+or competences. It is the only place a party's colour is written: the API serves it
+(`GET /parties`) and the web app reads it from there.
+
+| Party | Wikidata item | | Party | Wikidata item |
+|---|---|---|---|---|
+| `psoe` | Q138198 | | `par` | Q2054574 |
+| `unidas-podemos` | Q24039754 | | `cha` | Q1089640 |
+| `sumar` | Q119458764 | | `podemos` | Q16059622 |
+| `pnv` | Q43093 | | `iu` | Q623740 |
+| `mas-pais` | Q68609827 | | `mes-per-mallorca` | Q11694799 |
+| `compromis` | Q927193 | | `mes-per-menorca` | Q20101171 |
+| `nueva-canarias` | Q693300 | | `gent-per-formentera` | Q11682069 |
+| `bng` | Q885433 | | `sa-unio-de-formentera` | Q118833571 |
+| `teruel-existe` | Q6143433 | | `asg` | Q21001704 |
+| `erc` | Q150068 | | `ahi` | Q5660112 |
+| `junts` | Q97155800 | | `prc` | Q2366462 |
+| `eh-bildu` | Q1029761 | | `psc` | Q2055003 |
+| `coalicion-canaria` | Q1104327 | | `cup` | Q130761 |
+| `pp` | Q185088 | | `comuns` | Q28043093 |
+| `cs` | Q1393123 | | `geroa-bai` | Q620781 |
+| `vox` | Q15630787 | | `contigo-zurekin` | Q113138142 |
+| `coalicion-por-melilla` | Q5137945 | | | |
+
+- **`convocatoria-por-asturias`** has no colour in Wikidata (it is a recent coalition of IU,
+  Más País and IAS). It keeps the neutral grey `#9e9e9e`, decided with the author: giving it
+  IU's colour would attribute a brand that is not its own. It is the only party with this grey.
+- Some governing partners look alike (PSOE and Geroa Bai, PSOE and ASG, PSOE and Sumar). The
+  web app does not rely on telling them apart by colour: stripes are separated by a light line
+  and a legend lists every party shown.
+- Colours are not changed to improve contrast: the standard colour is the party's identity,
+  and the map keeps every region readable with a double outline (decided in the map ADR).
