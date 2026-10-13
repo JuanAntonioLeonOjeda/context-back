@@ -24,7 +24,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 
 ## Sources
 
-- [ ] 14. Candidate outlet list and selection criterion, approved by the author
+- [x] 14. Candidate outlet list and selection criterion, approved by the author (`data/news/outlets.csv`: 11 national + RTVE + 3 regional public; regional private and diversity step pending task 15)
 - [ ] 15. Sources audit (feeds, GDELT sample, INE table ids, election results, terms) → `docs/sources-audit.md`
 - [ ] 16. Skill `news-sources` with the verified facts
 - [x] 17. Pilot communities chosen by the author; brief updated (Canarias, Madrid, Cataluña)

@@ -1,0 +1,16 @@
+id,name,home_url,scope,region_id,selection
+el-espanol,El Español,https://www.elespanol.com,national,,GfK DAM top 10 (5 of 5 months)
+el-mundo,El Mundo,https://www.elmundo.es,national,,GfK DAM top 10 (5 of 5 months)
+el-pais,El País,https://elpais.com,national,,GfK DAM top 10 (5 of 5 months)
+abc,ABC,https://www.abc.es,national,,GfK DAM top 10 (5 of 5 months)
+el-periodico,El Periódico,https://www.elperiodico.com,national,,GfK DAM top 10 (5 of 5 months)
+el-confidencial,El Confidencial,https://www.elconfidencial.com,national,,GfK DAM top 10 (5 of 5 months)
+okdiario,OKdiario,https://okdiario.com,national,,GfK DAM top 10 (5 of 5 months)
+20minutos,20 Minutos,https://www.20minutos.es,national,,GfK DAM top 10 (4 of 5 months)
+la-razon,La Razón,https://www.larazon.es,national,,GfK DAM top 10 (2 of 5 months)
+la-vanguardia,La Vanguardia,https://www.lavanguardia.com,national,,GfK DAM top 10 (1 of 5 months)
+el-economista,El Economista,https://www.eleconomista.es,national,,GfK DAM top 10 (1 of 5 months)
+rtve,RTVE,https://www.rtve.es,national,,Public broadcaster
+rtvc,Radio Televisión Canaria,https://rtvc.es,regional,ccaa-05,Regional public broadcaster
+telemadrid,Telemadrid,https://www.telemadrid.es,regional,ccaa-13,Regional public broadcaster
+3cat,3Cat,https://www.3cat.cat,regional,ccaa-09,Regional public broadcaster

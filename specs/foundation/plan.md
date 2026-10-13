@@ -155,8 +155,10 @@ reproduce the list; the assistant does not label outlets by ideology.
    that third is added. If no such measure exists, steps 1 and 2 stand alone and the
    audience figures are published.
 4. **Regional, per pilot community:** the regional public broadcaster and the most-read
-   private regional outlet according to GfK DAM regional data. In Canarias, where the
-   press is split by island, the most-read private outlet of each province.
+   private regional outlet according to GfK DAM regional data, measured as audience within
+   the community. In Canarias, where the press is split by island, the most-read private
+   outlet of each province. Madrid has no private regional outlet: national outlets cover
+   it.
 5. An outlet without usable feeds (task 15) is replaced by the next one under the same rule.
 
 ## Pilot and scope (task 17, decided with the author on 2026-10-13)
