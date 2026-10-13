@@ -27,7 +27,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [ ] 14. Candidate outlet list and selection criterion, approved by the author
 - [ ] 15. Sources audit (feeds, GDELT sample, INE table ids, election results, terms) → `docs/sources-audit.md`
 - [ ] 16. Skill `news-sources` with the verified facts
-- [ ] 17. Pilot communities chosen by the author; brief updated
+- [x] 17. Pilot communities chosen by the author; brief updated (Canarias, Madrid, Cataluña)
 
 ## Blind test set
 

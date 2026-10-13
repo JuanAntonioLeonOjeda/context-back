@@ -141,6 +141,38 @@ Dev: `ruff`, `mypy`, `pytest`, `testcontainers[postgres]`.
 
 `DATABASE_URL`, `LOG_LEVEL`, `LABEL_STUDIO_PORT`. No LLM key in this phase.
 
+## Outlet selection criterion (task 14)
+
+Decided with the author on 2026-10-13. Published as is on the portal so anyone can
+reproduce the list; the assistant does not label outlets by ideology.
+
+1. **National:** general-news outlets that appear in the monthly GfK DAM top 10 in any of
+   the last six published months. Sports and entertainment outlets are excluded.
+2. **Public broadcaster:** RTVE.
+3. **Measured diversity:** using an external measure of each outlet's audience ideology
+   (CIS or Reuters Digital News Report; availability to verify in task 15), every third of
+   the spectrum must have at least three outlets; if not, the next most-read outlet of
+   that third is added. If no such measure exists, steps 1 and 2 stand alone and the
+   audience figures are published.
+4. **Regional, per pilot community:** the regional public broadcaster and the most-read
+   private regional outlet according to GfK DAM regional data. In Canarias, where the
+   press is split by island, the most-read private outlet of each province.
+5. An outlet without usable feeds (task 15) is replaced by the next one under the same rule.
+
+## Pilot and scope (task 17, decided with the author on 2026-10-13)
+
+- **Pilot communities:** Canarias (`ccaa-05`, both provinces), Comunidad de Madrid
+  (`ccaa-13`) and Cataluña (`ccaa-09`).
+- **Whole country from day one** for what is already cheap: the map, governments and
+  competences of the 19 communities, and national outlets, whose news covers every
+  community.
+- **Pilot only** for regional outlets, the thorough label validation and the per-community
+  metrics; other communities are added in batches once the validation flow and the
+  per-outlet and per-party metrics hold.
+- **Languages:** Cataluña brings Catalan-language outlets. Embeddings and the LLM are
+  multilingual; the own model of phase 2b must be multilingual too (RoBERTa-BNE is
+  Spanish only), to be reflected when ADR-0008 is reviewed.
+
 ## Sources audit method
 
 - Outlets: candidate list by criterion (national outlets of varied editorial lines, the

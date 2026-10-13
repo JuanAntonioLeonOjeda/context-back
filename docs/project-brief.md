@@ -58,9 +58,10 @@ full-text search; React + Vite + React Router v7 in the web app.
 
 ## 5. Phases
 
-See `.claude/rules/project-policies.md` ("Phases"). Pilot for phases 2–4: two or three
-communities with governments of different colours (including a coalition) and the three
-launch sectors; scale to all 19 once the method holds.
+See `.claude/rules/project-policies.md` ("Phases"). Pilot for phases 2–4 (decided 2026-10-13):
+Canarias, Comunidad de Madrid and Cataluña, with the three launch sectors. The map,
+governments, competences and national outlets cover the whole country from day one;
+regional outlets and thorough validation start with the pilot and grow in batches.
 
 ## 6. Sources to verify (phase 0)
 
