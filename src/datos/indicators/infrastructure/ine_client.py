@@ -10,6 +10,7 @@ import hashlib
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
 
 import httpx
 from pydantic import BaseModel, Field, TypeAdapter, ValidationError
@@ -58,7 +59,8 @@ class IneSeries:
 class IneDatum:
     year: int
     period_code: int
-    value: float | None  # None when the INE publishes no value or marks it secret
+    # Decimal, not float: "has the value changed?" must compare exactly what was published.
+    value: Decimal | None  # None when the INE publishes no value or marks it secret
 
 
 @dataclass(frozen=True, slots=True)
@@ -139,7 +141,7 @@ class _RawSeries(BaseModel):
 class _RawDatum(BaseModel):
     Anyo: int
     FK_Periodo: int
-    Valor: float | None = None
+    Valor: Decimal | None = None
     Secreto: bool = False
 
 
