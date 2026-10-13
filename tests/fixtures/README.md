@@ -9,3 +9,5 @@ shape of each source and must not be used as content.
   `x`): a few non-article links and the first article links, repeated as on the page.
 - `pages/`: the `<meta>` tags of one real article page per outlet (`og:title`,
   `og:description`, `og:site_name`, `article:published_time`); the body is a placeholder.
+- `geo/`: the IGN GML of the autonomous communities (2026-08-10) cut to three units:
+  Ceuta, Melilla and unit 20 (territories outside any community).
