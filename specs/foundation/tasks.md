@@ -17,7 +17,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 
 - [x] 8. [core] First migration: territories, parties, government terms, competences, outlets, articles
 - [x] 9. Territories CSV (State, 19 communities, 52 INE provinces) and idempotent loader
-- [ ] 10. [core] Domain: `GovernmentTerm`, kinds, overlap/gap detection, term in force on a date — tests first
+- [x] 10. [core] Domain: `GovernmentTerm`, kinds, overlap/gap detection, term in force on a date — tests first
 - [ ] 11. [core] `data/governments/` CSVs: parties and terms since 2020 for the State and the 19 regional territories, each with source
 - [ ] 12. Governments loader and integration test
 - [ ] 13. [core] Competence table for education, health and housing with legal bases; author approval
