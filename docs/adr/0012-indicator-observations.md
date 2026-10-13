@@ -31,10 +31,10 @@ quarters). Later phases (`context-voters`) add more indicators and need the hist
   → A must be able to come back. The loader compares with the latest stored value instead.
 
 ### Derived indicators and scale
-- **A — store exactly what the INE published, compute on read** (chosen): the share with
-  higher education is (higher education except doctorate + doctorate) / total, computed by
-  a pure function that checks the units match; the scale factor is stored with the
-  indicator and applied on read.
+- **A — store exactly what the INE published, compute on read** (chosen): a derived
+  indicator is computed by a pure function when it is read; the scale factor is stored with
+  the indicator and applied on read. None of the five indicators of this phase needs a
+  derivation: the share with higher education is published as such (see Verification).
 - **B — store computed values.** Cons: a stored number the INE never published, and a
   formula change would leave old rows inconsistent.
 
@@ -62,6 +62,12 @@ community needs a method of its own, decided in `context-voters`.
 ## Verification
 
 Verified on 2026-10-13 against the INE Tempus API: the five tables return one series per
-community (Ceuta and Melilla included) with `Unidad` and `Escala`; the education table is in
-thousands; `FK_Periodo` 28 is the year and 19–22 the quarters. Not verified: the base year of
+community (Ceuta and Melilla included) with `Unidad` and `Escala`; `FK_Periodo` 28 is the
+year and 19–22 the quarters.
+
+Correction (2026-10-13, task 15): the education table first chosen (66104) breaks the
+population down by level of education only until 2013 (old classification); only its total
+continues. Table 65289 publishes the share of people aged 16 and over with higher education
+(current classification, quarterly, to 2026 Q2), so the indicator takes it as published and
+no derivation is needed. Not verified: the base year of
 the housing price index (read from the series metadata when the loader is written).

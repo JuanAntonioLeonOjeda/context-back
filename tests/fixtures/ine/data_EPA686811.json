@@ -1,0 +1,10 @@
+{"COD":"EPA686811", "Nombre":"Total. Ambos sexos. Ceuta. Doctorado. Valor absoluto. ", "FK_Unidad":3, "FK_Escala":4, "Data":[{"Fecha":1136070000000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2006, "Valor":0.1, "Secreto":false}
+,{"Fecha":1167606000000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2007, "Valor":0.1, "Secreto":false}
+,{"Fecha":1199142000000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2008, "Valor":0.1, "Secreto":false}
+,{"Fecha":1230764400000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2009, "Valor":0.3, "Secreto":false}
+,{"Fecha":1262300400000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2010, "Valor":0.1, "Secreto":false}
+,{"Fecha":1293836400000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2011, "Valor":null, "Secreto":false}
+,{"Fecha":1325372400000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2012, "Valor":null, "Secreto":false}
+,{"Fecha":1356994800000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2013, "Valor":0.4, "Secreto":false}
+]
+}

@@ -18,7 +18,8 @@
   communities (Ceuta and Melilla included) plus the national total, and the latest values
   exist for Ceuta and Melilla. Unit and scale come with every series (`Unidad`, `Escala`):
   population in persons, AROPE in %, unemployment in %, housing index as an index, and
-  the education table in **thousands of persons**.
+  the education share in %. Some INE tables are in **thousands** (`Escala` 4), so the
+  scale is stored and checked per indicator.
 - **Periods.** INE uses `FK_Periodo`: 28 is the year, 19–22 the four quarters. The observation
   keeps the year and the period code and derives a `period_start` date.
 - **IGN boundaries.** CC BY 4.0 (Orden FOM/2807/2015). The attribution must be visible at the
@@ -60,7 +61,7 @@ GET /map/geometry                                GeoJSON FeatureCollection, WGS8
 
 GET /communities/{id}/indicators
   → [{indicator_id, name, unit, period, period_start, value, source, series: [{period_start, value}],
-       derived_from?: [...]}]
+}]
   a community without a value for an indicator returns it with `value: null`, never 0
 ```
 
@@ -75,9 +76,8 @@ Party colours are not in the payload: they come from the `parties` table through
 - Map payload: governing parties only, ordered by `party_id`; external support never.
 - Period start from `(year, period_code)`: year (28), quarters (19–22); anything else is
   rejected, not guessed.
-- Derived indicator `higher_education_share_16plus` = (higher education except doctorate +
-  doctorate) / total, with the units of the three series checked to be equal. Computed on
-  read by a pure function; the stored observations are exactly what INE published.
+- No derived indicator in this phase: the share with higher education is published by the
+  INE (table 65289). The rule "derived on read" (ADR-0012) applies when one is added.
 
 ## Schema (migration `0004`)
 
@@ -104,7 +104,7 @@ view current_observations: for each (indicator, territory, period_start), the ro
 |---|---|---|---|---|
 | `population` | 56940 | «Total. Todas las edades. {community}. Población» | persons | quarterly |
 | `poverty_or_exclusion_rate` | 60264 | AROPE, total | % of population | annual |
-| `higher_education_share_16plus` | 66104 | derived from «Educación superior, excepto doctorado», «Doctorado» and «Total», both sexes | % of people aged 16 and over | annual |
+| `higher_education_share_16plus` | 65289 | «Educación superior», both sexes, aged 16 and over (current classification). Corrected 2026-10-13: table 66104 stops in 2013 | % of people aged 16 and over | quarterly |
 | `unemployment_rate` | 14506 | «Tasa de paro de la población. Ambos sexos», total | % of the active population | quarterly |
 | `housing_price_index` | 80270 | «General. Índice» | index (base to verify) | quarterly |
 
