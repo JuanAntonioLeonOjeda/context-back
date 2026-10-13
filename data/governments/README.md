@@ -38,12 +38,41 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | 4 | Extremadura, Galicia, Comunidad de Madrid, Región de Murcia, Navarra (`ccaa-11`…`ccaa-15`) | reviewed by the author, 2026-10-13 |
 | 5 | País Vasco, La Rioja, Ceuta, Melilla (`ccaa-16`…`ccaa-19`) | reviewed by the author, 2026-10-13 |
 
+## Caretaker rule by territory
+
+Checked on 2026-10-13 against the current consolidated text of each statute or government
+law. **Convention (decided with the author):** a caretaker term starts on election day in
+every territory, so terms are comparable. Five norms word it differently; for them the
+convention is an approximation, documented here. Attribution is unaffected: the parties
+of a caretaker government do not change.
+
+| Territory | Norm (current version) | The government ceases… |
+|---|---|---|
+| es | [CE art. 101; Ley 50/1997 del Gobierno art. 21](https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229) | after the election |
+| ccaa-01 Andalucía | [Estatuto (LO 2/2007)](https://www.boe.es/buscar/act.php?id=BOE-A-2007-5825) | after the election |
+| ccaa-02 Aragón | [Ley 2/2009 del Presidente y del Gobierno](https://www.boe.es/buscar/act.php?id=BOE-A-2009-9390) | after the election |
+| ccaa-03 Asturias | [Ley 6/1984 del Presidente y del Consejo de Gobierno](https://www.boe.es/buscar/act.php?id=BOE-A-1984-19762) | renewal of the Junta as a consequence of the election (ambiguous) |
+| ccaa-04 Illes Balears | Ley 1/2019 del Gobierno, art. 5 (BOIB 83/2023 quotes it) | after the election |
+| ccaa-05 Canarias | [Estatuto (LO 1/2018)](https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138) | after the election |
+| ccaa-06 Cantabria | [Estatuto (LO 8/1981)](https://www.boe.es/buscar/act.php?id=BOE-A-1982-635) | after the election |
+| ccaa-07 Castilla y León | [Estatuto (LO 14/2007)](https://www.boe.es/buscar/act.php?id=BOE-A-2007-20635) | after the election |
+| ccaa-08 Castilla-La Mancha | [Estatuto (LO 9/1982)](https://www.boe.es/buscar/act.php?id=BOE-A-1982-20820) | after the election |
+| ccaa-09 Cataluña | [Ley 13/2008 de la presidencia y del Gobierno](https://www.boe.es/buscar/act.php?id=BOE-A-2008-19526) | change of legislature as a consequence of the election (ambiguous) |
+| ccaa-10 C. Valenciana | [Ley 5/1983 del Consell](https://www.boe.es/buscar/act.php?id=BOE-A-1984-3460) | renewal of Les Corts as a consequence of the election (ambiguous) |
+| ccaa-11 Extremadura | [Estatuto (LO 1/2011), which prevails over Ley 1/2002](https://www.boe.es/buscar/act.php?id=BOE-A-2011-1638) | after the election |
+| ccaa-12 Galicia | [Estatuto (LO 1/1981)](https://www.boe.es/buscar/act.php?id=BOE-A-1981-9564) | after the election |
+| ccaa-13 Madrid | [Estatuto (LO 3/1983)](https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317) | after the election |
+| ccaa-14 Región de Murcia | [Estatuto (LO 4/1982): end of the Assembly's period; Ley 6/2004: dissolution of the Assembly](https://www.boe.es/buscar/act.php?id=BOE-A-2005-14442) | dissolution / end of period (differs) |
+| ccaa-15 Navarra | [LORAFNA (LO 13/1982)](https://www.boe.es/buscar/act.php?id=BOE-A-1982-20824) | after the election |
+| ccaa-16 País Vasco | [Estatuto (LO 3/1979)](https://www.boe.es/buscar/act.php?id=BOE-A-1979-30177) | after the election |
+| ccaa-17 La Rioja | [Estatuto (LO 3/1982)](https://www.boe.es/buscar/act.php?id=BOE-A-1982-15030) | dissolution of the Parliament (differs) |
+| ccaa-18 Ceuta | [Estatuto (LO 1/1995)](https://www.boe.es/buscar/act.php?id=BOE-A-1995-6358) | after the election |
+| ccaa-19 Melilla | [Estatuto (LO 2/1995)](https://www.boe.es/buscar/act.php?id=BOE-A-1995-6359) | after the election |
+
 ## Known limits
 
 - **General election of 29 Nov 2026** (Real Decreto 806/2026): the State term in force
   ends that day and a caretaker term must be added after it.
-- **Caretaker rule checked** in the State (CE art. 101) and Illes Balears (Ley 1/2019,
-  art. 5); still to check in the other statutes or government laws.
 - **Caretaker without an election** (validated by the author): a government also becomes caretaker
   when its president ceases for another reason (resignation, disqualification) until the
   successor is appointed: Cataluña 2020 (Aragonès substituting Torra), Comunitat

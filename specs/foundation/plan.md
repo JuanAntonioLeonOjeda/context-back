@@ -78,8 +78,11 @@ Decided with the author on 2026-10-13.
   (BOE), or of the regional bulletin decree that changes the composition (a partner
   entering or leaving).
 - **Caretaker periods are modelled**: a caretaker term starts on election day and ends
-  when the next president's appointment is published. The rule is checked against each
-  statute; a territory whose statute differs gets a note in the CSV.
+  when the next president's appointment is published. Checked against every statute or
+  government law: 15 territories say "after the election"; Asturias, Cataluña and the
+  Comunitat Valenciana are ambiguous and Murcia and La Rioja say "dissolution". The
+  author chose one convention for all, documented per territory in
+  `data/governments/README.md`.
 - **Caretaker without an election:** a government is also caretaker from the date its
   president ceases for another reason (resignation, disqualification) until the successor
   is appointed. Added with the author after batch 3.
