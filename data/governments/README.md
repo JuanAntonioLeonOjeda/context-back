@@ -36,7 +36,7 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | 2 | Andalucía, Aragón, Asturias, Illes Balears, Canarias (`ccaa-01`…`ccaa-05`) | reviewed by the author, 2026-10-13 |
 | 3 | Cantabria, Castilla y León, Castilla-La Mancha, Cataluña, Comunitat Valenciana (`ccaa-06`…`ccaa-10`) | reviewed by the author, 2026-10-13 |
 | 4 | Extremadura, Galicia, Comunidad de Madrid, Región de Murcia, Navarra (`ccaa-11`…`ccaa-15`) | reviewed by the author, 2026-10-13 |
-| 5 | País Vasco, La Rioja, Ceuta, Melilla (`ccaa-16`…`ccaa-19`) | pending |
+| 5 | País Vasco, La Rioja, Ceuta, Melilla (`ccaa-16`…`ccaa-19`) | reviewed by the author, 2026-10-13 |
 
 ## Known limits
 
@@ -52,7 +52,10 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
   2020-09-30 and 2022-10-07, Castilla y León 2024-07-12, Comunitat Valenciana 2024-07-11,
   Extremadura and Región de Murcia 2024-07-12 (Vox leaving), Galicia election 2024-02-18.
 - **Independents in government are not modelled** (validated by the author): Región de Murcia from
-  2021-03-10 had ex-Cs (expelled) and ex-Vox ministers; only the PP is listed as governing.
+  2021-03-10 (ex-Cs and ex-Vox ministers), La Rioja from 2022-04-04 (minister expelled from
+  Podemos), Melilla from 2021-04-02 (president expelled from Cs).
+- **Ceuta and Melilla** elect as president the head of the most voted list when nobody has
+  an absolute majority, so there may be no investiture vote to derive external support from.
   Castilla y León 2021-12-21 uses the BOE date of the dissolution decree for the dismissal
   of the Cs ministers the day before.
 - Changes after 2023 have no IDP report yet: they cite the regional bulletin (BOA), the
