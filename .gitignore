@@ -1,0 +1,27 @@
+# secrets and local config
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+
+# local data (raw downloads are reproducible from the source catalogue)
+data/raw/
+data/cache/
+models/*.bin
+models/*.safetensors
+
+# editor / os
+.idea/
+.vscode/
+.DS_Store
