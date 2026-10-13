@@ -4,9 +4,6 @@
 - **Date:** 2026-10-13
 - **Phase:** foundation
 
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
-
 ## Context
 
 The original draft was a fact-checking portal with verdicts. The goal grew into an interactive map that aggregates and contrasts news, traces events over five years and adds statistical and voter context. Both can share the same data, but they need different amounts of editorial work.

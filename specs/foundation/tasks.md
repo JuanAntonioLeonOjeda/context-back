@@ -40,7 +40,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 
 ## Close
 
-- [ ] 22. ADR-0001 to ADR-0010 reviewed in the author's words → Accepted
+- [x] 22. ADR-0001 to ADR-0010 reviewed in the author's words (ADR-0002 and ADR-0008 revised); `Accepted` on merge
 - [ ] 23. `AGENTS.md` statuses updated
 - [ ] 24. Review: `py-reviewer`, `neutrality-reviewer` (governments data, outlet list, guide)
 

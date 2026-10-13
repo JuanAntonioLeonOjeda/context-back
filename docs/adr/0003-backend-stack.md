@@ -4,9 +4,6 @@
 - **Date:** 2026-10-13
 - **Phase:** foundation
 
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
-
 ## Context
 
 The backend ingests news, runs classification and embeddings, loads statistics and serves a read API.

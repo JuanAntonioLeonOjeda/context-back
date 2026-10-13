@@ -4,9 +4,6 @@
 - **Date:** 2026-10-13
 - **Phase:** foundation
 
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
-
 ## Context
 
 The author labels the blind test set and the training set of the own model (ADR-0008). The tool must support multi-label classification, entities and pairs of texts, and import proposals as pre-annotations.
@@ -30,7 +27,8 @@ A table.
 
 ## Decision
 
-Label Studio. Pre-annotations make validation fast and it needs no development.
+Label Studio. It needs no development, supports multi-label classification and exports
+JSON. Pre-annotations are not used: labels are made without proposals (ADR-0008).
 
 ## Consequences
 
@@ -40,4 +38,4 @@ Label Studio. Pre-annotations make validation fast and it needs no development.
 
 ## Verification
 
-UNVERIFIED: pre-annotation import for the exact label config; checked in `foundation`.
+The label configuration is checked against the labelling guide when the project is created (task 20).

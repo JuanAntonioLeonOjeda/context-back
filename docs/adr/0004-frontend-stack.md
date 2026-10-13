@@ -4,9 +4,6 @@
 - **Date:** 2026-10-13
 - **Phase:** foundation
 
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
-
 ## Context
 
 The web app is an interactive map plus story pages. Search inside the portal is done by the backend. What depends on the framework is indexing by search engines and link previews when a story page is shared.

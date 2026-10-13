@@ -4,9 +4,6 @@
 - **Date:** 2026-10-13
 - **Phase:** context-voters
 
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
-
 ## Context
 
 The portal should show voter profiles by community. Official results say what was voted by area, not by whom.
