@@ -17,9 +17,10 @@ from datos.governments.domain.government_term import (
 
 SINCE = date(2020, 1, 1)
 TODAY = date(2026, 10, 13)
-GOVERNING_A = TermParty("party-a", PartyRole.GOVERNING)
-GOVERNING_B = TermParty("party-b", PartyRole.GOVERNING)
-SUPPORT_C = TermParty("party-c", PartyRole.EXTERNAL_SUPPORT)
+SOURCE = "https://example.org/source"
+GOVERNING_A = TermParty("party-a", PartyRole.GOVERNING, SOURCE)
+GOVERNING_B = TermParty("party-b", PartyRole.GOVERNING, SOURCE)
+SUPPORT_C = TermParty("party-c", PartyRole.EXTERNAL_SUPPORT, SOURCE)
 
 
 def _term(

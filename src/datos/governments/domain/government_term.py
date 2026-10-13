@@ -19,6 +19,7 @@ class PartyRole(StrEnum):
 class TermParty:
     party_id: str
     role: PartyRole
+    source_url: str  # the evidence for this party's role in this term
 
 
 @dataclass(frozen=True, slots=True)
