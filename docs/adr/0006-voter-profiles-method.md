@@ -1,11 +1,8 @@
 # ADR-0006: Voter profiles from results, INE data and CIS
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** context-voters
-
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
 
 ## Context
 

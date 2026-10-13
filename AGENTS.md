@@ -15,27 +15,31 @@ Update the status column when a phase creates or finishes a path.
 
 | Path | Content | Status |
 |---|---|---|
-| `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ⏳ |
-| `src/datos/territories/` | CCAA, provinces and municipalities with INE codes and geometries | ⏳ |
-| `src/datos/governments/` | parties, governments (coalitions, supports), terms, competence table | ⏳ |
+| `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
+| `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`) | 🚧 |
+| `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`) | ✅ |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
-| `src/datos/news/` | outlets, RSS and history ingestion, article metadata | ⏳ |
-| `src/datos/classification/` | `ArticleClassifier` port, rules, LLM adapter, own-model adapter | ⏳ |
+| `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; history pending | 🚧 |
+| `src/datos/classification/` | `ArticleClassifier` port, rules, own-model adapter (ADR-0008) | ⏳ |
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | official statistics ETL and derived indicators | ⏳ |
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |
-| `src/datos/api/` | FastAPI routers and response models | ⏳ |
-| `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ⏳ |
-| `migrations/` | versioned SQL migrations | ⏳ |
-| `data/governments/` | curated governments and competences, with sources | ⏳ |
-| `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
-| `tests/` | `unit/`, `integration/`, `fixtures/` | ⏳ |
-| `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ⏳ |
-| `.env.example` | every environment variable, documented | ⏳ |
-| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests | ⏳ |
+| `src/datos/api/` | FastAPI routers and response models (`/health`) | 🚧 |
+| `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag) | 🚧 |
+| `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
+| `data/governments/` | curated parties, government terms since 2020, sectors and competences, with sources | ✅ |
+| `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
+| `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
+| `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
+| `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template | ✅ |
+| `.env.example` | every environment variable, documented | ✅ |
+| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
+| `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
+| `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
-| `docs/adr/` | Architecture Decision Records (`NNNN-kebab-title.md`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
-| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`) | ⏳ |
+| `docs/adr/` | Architecture Decision Records 0001–0010, reviewed (`Accepted` on merge), index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
+| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` also has `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 
@@ -53,6 +57,7 @@ Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 | `.claude/rules/testing-conventions.md` | pytest, Testcontainers, real fixtures, the blind test set |
 | `.claude/rules/core-zones.md` | (path-scoped) attribution, classification, stories, indicators, voters, schema: collaborative mode |
 | `.claude/rules/db-migrations.md` | (path-scoped) migrations immutable once merged; append-only observations; idempotent writes |
+| `.claude/skills/news-sources/` | verified facts on outlets, collection paths, IP limits, LLM restrictions, GDELT bias, INE tables |
 | `.claude/agents/py-reviewer.md` | project reviewer (read-only): boundaries, layers, edges, reproducibility, typing |
 | `.claude/agents/neutrality-reviewer.md` | neutrality reviewer (read-only): same path for every party and outlet, attribution rule, wording |
 | `.claude/agents/code-reviewer.md` | generic reviewer (read-only): security, correctness, performance, maintainability |

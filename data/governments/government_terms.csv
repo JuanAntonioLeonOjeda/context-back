@@ -1,0 +1,94 @@
+territory_id,valid_from,valid_to,president_name,is_caretaker,source_url,notes
+es,2019-11-10,2020-01-08,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-13558,Caretaker from the general election of 10 Nov 2019 (CE art. 101); decree of dissolution and election call
+es,2020-01-08,2023-07-23,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-231,Real Decreto 1/2020 appointing the President
+es,2023-07-23,2023-11-17,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-12663,Caretaker from the general election of 23 Jul 2023 (CE art. 101); decree of dissolution and election call
+es,2023-11-17,,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-23302,"Real Decreto 828/2023 appointing the President; reshuffles up to 27 Mar 2026 changed no party (La Moncloa); general election called for 2026-11-29 (Real Decreto 806/2026, BOE-A-2026-20742): a caretaker term starts that day"
+ccaa-01,2019-01-18,2022-06-19,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-551,Real Decreto 6/2019 appointing the President
+ccaa-01,2022-06-19,2022-07-22,Juan Manuel Moreno Bonilla,true,https://idpbarcelona.net/docs/public/iccaa/2022/andalucia_2022.pdf,Caretaker from the election of 19 Jun 2022 (date in the IDP report; the dissolution decree is published only in BOJA)
+ccaa-01,2022-07-22,2026-05-17,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-12161,Real Decreto 610/2022 appointing the President
+ccaa-01,2026-05-17,2026-07-04,Juan Manuel Moreno Bonilla,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-7322,Caretaker from the election of 17 May 2026 (date fixed in this BOE resolution)
+ccaa-01,2026-07-04,,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-14503,Real Decreto 558/2026 appointing the President
+ccaa-02,2019-08-03,2023-05-28,Francisco Javier Lambán Montañés,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-11407,Real Decreto 469/2019 appointing the President
+ccaa-02,2023-05-28,2023-08-11,Francisco Javier Lambán Montañés,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8475,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-02,2023-08-11,2024-07-12,Jorge Antonio Azcón Navarro,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-18295,Real Decreto 726/2023 appointing the President
+ccaa-02,2024-07-12,2026-02-08,Jorge Antonio Azcón Navarro,false,https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=1342830601919,Vox leaves the government: dismissal of its vice-president and minister (BOA 12 Jul 2024)
+ccaa-02,2026-02-08,2026-04-30,Jorge Antonio Azcón Navarro,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-26503,Caretaker from the election of 8 Feb 2026 (date fixed in this BOE resolution)
+ccaa-02,2026-04-30,,Jorge Antonio Azcón Navarro,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-9361,Real Decreto 367/2026 appointing the President
+ccaa-03,2019-07-17,2023-05-28,Adrián Barbón Rodríguez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-10489,Real Decreto 448/2019 appointing the President
+ccaa-03,2023-05-28,2023-07-20,Adrián Barbón Rodríguez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8465,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-03,2023-07-20,,Adrián Barbón Rodríguez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16738,Real Decreto 693/2023 appointing the President
+ccaa-04,2019-06-29,2023-05-28,Francesca Lluch Armengol i Socias,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9739,Real Decreto 410/2019 appointing the President
+ccaa-04,2023-05-28,2023-06-20,Francesca Lluch Armengol i Socias,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8488,Caretaker from the election of 28 May 2023 (Ley 1/2019 del Gobierno de las Illes Balears art. 5); decree calling it
+ccaa-04,2023-06-20,2023-07-07,María Asunción Jacoba Pía de la Concha García-Mauriño,true,https://intranet.caib.es/eboibfront/pdf/es/2023/83/1139372,Acting president after Armengol resigned to run for Congress (Consell de Govern agreement of 19 Jun 2023)
+ccaa-04,2023-07-07,,Margarita Prohens Rigo,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15738,Real Decreto 603/2023 appointing the President
+ccaa-05,2019-07-16,2023-05-28,Ángel Víctor Torres Pérez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-10440,Real Decreto 446/2019 appointing the President
+ccaa-05,2023-05-28,2023-07-14,Ángel Víctor Torres Pérez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8478,Caretaker from the election of 28 May 2023; decree dissolving Parliament and calling it
+ccaa-05,2023-07-14,,Fernando Clavijo Batlle,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16293,Real Decreto 644/2023 appointing the President
+ccaa-06,2019-06-29,2023-05-28,Miguel Ángel Revilla Roiz,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9738,Real Decreto 409/2019 appointing the President
+ccaa-06,2023-05-28,2023-07-04,Miguel Ángel Revilla Roiz,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8467,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-06,2023-07-04,,María José Sáenz de Buruaga Gómez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15471,Real Decreto 568/2023 appointing the President
+ccaa-07,2019-07-12,2021-12-21,Alfonso Fernández Mañueco,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-10292,Real Decreto 429/2019 appointing the President
+ccaa-07,2021-12-21,2022-02-13,Alfonso Fernández Mañueco,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21009,Snap election called and Cs ministers dismissed on 20 Dec 2021 (IDP 2022); date of the dissolution decree in the BOE
+ccaa-07,2022-02-13,2022-04-13,Alfonso Fernández Mañueco,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-21009,Caretaker from the election of 13 Feb 2022; decree calling it
+ccaa-07,2022-04-13,2024-07-12,Alfonso Fernández Mañueco,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-6052,Real Decreto 282/2022 appointing the President
+ccaa-07,2024-07-12,2026-03-15,Alfonso Fernández Mañueco,false,https://elespanol.com/castilla-y-leon/region/20240719/nuevo-organigrama-junta-castilla-leon-pp-cesa-altos-cargos-vox-mantiene/871662851_0.html,Vox leaves the government: its vice-president and two ministers dismissed on Fri 12 Jul 2024 (press; BOCYL decree not located)
+ccaa-07,2026-03-15,2026-06-11,Alfonso Fernández Mañueco,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-1260,Caretaker from the election of 15 Mar 2026; decree calling it
+ccaa-07,2026-06-11,,Alfonso Fernández Mañueco,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-12615,Real Decreto 476/2026 appointing the President
+ccaa-08,2019-07-05,2023-05-28,Emiliano García-Page Sánchez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9986,Real Decreto 418/2019 appointing the President
+ccaa-08,2023-05-28,2023-07-08,Emiliano García-Page Sánchez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8477,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-08,2023-07-08,,Emiliano García-Page Sánchez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15835,Real Decreto 602/2023 appointing the President
+ccaa-09,2018-05-16,2020-09-30,Joaquim Torra i Pla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2018-6512,Real Decreto 291/2018 appointing the President
+ccaa-09,2020-09-30,2021-05-22,Pere Aragonès Garcia,true,https://www.3cat.cat/3catinfo/aragones-ja-assumeix-funcions-de-president/noticia/3049887/,Vice-president acting as President after Torra's disqualification (TS 28 Sep 2020); substitution decree published in DOGC on 30 Sep 2020 (press); continues through the election of 14 Feb 2021
+ccaa-09,2021-05-22,2022-10-07,Pere Aragonès Garcia,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-8515,Real Decreto 365/2021 appointing the President
+ccaa-09,2022-10-07,2024-05-12,Pere Aragonès Garcia,false,https://idpbarcelona.net/docs/public/iccaa/2022/cataluna_2022.pdf,Junts leaves the government on 7 Oct 2022 (IDP 2022; DOGC decree not located)
+ccaa-09,2024-05-12,2024-08-10,Pere Aragonès Garcia,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2024-6403,Caretaker from the election of 12 May 2024 (date fixed in this BOE resolution)
+ccaa-09,2024-08-10,,Salvador Illa Roca,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2024-16602,Real Decreto 839/2024 appointing the President
+ccaa-10,2019-06-15,2023-05-28,Ximo Puig i Ferrer,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-8958,Real Decreto 376/2019 appointing the President
+ccaa-10,2023-05-28,2023-07-15,Ximo Puig i Ferrer,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8472,Caretaker from the election of 28 May 2023; decree dissolving Les Corts and calling it
+ccaa-10,2023-07-15,2024-07-11,Carlos Mazón Guixot,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16405,Real Decreto 646/2023 appointing the President
+ccaa-10,2024-07-11,2025-11-07,Carlos Mazón Guixot,false,https://officialpress.es/pactos-pp-vox/amp/,Vox leaves the government: its three ministers dismissed in an extraordinary DOGV on 11 Jul 2024 (EFE; DOGV not located)
+ccaa-10,2025-11-07,2025-11-29,Carlos Mazón Guixot,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-22530,Caretaker after the President's resignation; Real Decreto 1025/2025 declaring his cessation
+ccaa-10,2025-11-29,,Juan Francisco Pérez Llorca,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-24162,Real Decreto 1080/2025 appointing the President
+ccaa-11,2019-06-27,2023-05-28,Guillermo Fernández Vara,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9598,Real Decreto 408/2019 appointing the President
+ccaa-11,2023-05-28,2023-07-15,Guillermo Fernández Vara,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8486,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-11,2023-07-15,2024-07-12,María Guardiola Martín,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16406,Real Decreto 648/2023 appointing the President
+ccaa-11,2024-07-12,2025-12-21,María Guardiola Martín,false,https://www.eldebate.com/espana/20240711/vox-pierde-cuatro-vicepresidencias-once-consejerias-abandonar-gobiernos-pp_212495.html,Vox leaves the regional governments in July 2024 (press; DOE decree not located)
+ccaa-11,2025-12-21,2026-04-23,María Guardiola Martín,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-21731,Caretaker from the snap election of 21 Dec 2025; decree dissolving the Asamblea and calling it
+ccaa-11,2026-04-23,,María Guardiola Martín,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-8873,Real Decreto 361/2026 appointing the President
+ccaa-12,2016-11-12,2020-07-12,Alberto Núñez Feijóo,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2016-10462,Real Decreto 423/2016 appointing the President
+ccaa-12,2020-07-12,2020-09-04,Alberto Núñez Feijóo,true,https://idpbarcelona.net/docs/public/iccaa/2020/galicia_2020.pdf,Caretaker from the election of 12 Jul 2020 (postponed by the pandemic; date in the IDP report)
+ccaa-12,2020-09-04,2022-04-30,Alberto Núñez Feijóo,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-10196,Real Decreto 809/2020 appointing the President
+ccaa-12,2022-04-30,2022-05-13,Alfonso Rueda Valenzuela,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-6978,Caretaker after Feijóo resigned to lead the PP; first vice-president Rueda acting (Real Decreto 304/2022 declaring the cessation)
+ccaa-12,2022-05-13,2024-02-18,Alfonso Rueda Valenzuela,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-7789,Real Decreto 373/2022 appointing the President
+ccaa-12,2024-02-18,2024-04-12,Alfonso Rueda Valenzuela,true,https://www.vozpopuli.com/espana/galicia/elecciones-gallegas-celebraran-proximo-18-febrero.html,Caretaker from the election of 18 Feb 2024 (press; no IDP report yet)
+ccaa-12,2024-04-12,,Alfonso Rueda Valenzuela,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2024-7204,Real Decreto 380/2024 appointing the President
+ccaa-13,2019-08-17,2021-03-10,Isabel Natividad Díaz Ayuso,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-12165,Real Decreto 495/2019 appointing the President
+ccaa-13,2021-03-10,2021-05-04,Isabel Natividad Díaz Ayuso,false,https://idpbarcelona.net/docs/public/iccaa/2021/madrid_2021.pdf,Snap election called and Cs ministers dismissed on 10 Mar 2021 (IDP 2021)
+ccaa-13,2021-05-04,2021-06-19,Isabel Natividad Díaz Ayuso,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-3842,Caretaker from the election of 4 May 2021; decree dissolving the Asamblea and calling it
+ccaa-13,2021-06-19,2023-05-28,Isabel Natividad Díaz Ayuso,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-10230,Real Decreto 439/2021 appointing the President
+ccaa-13,2023-05-28,2023-06-23,Isabel Natividad Díaz Ayuso,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8491,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-13,2023-06-23,,Isabel Natividad Díaz Ayuso,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-14826,Real Decreto 542/2023 appointing the President
+ccaa-14,2019-07-29,2021-03-10,Fernando López Miras,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-11032,Real Decreto 467/2019 appointing the President
+ccaa-14,2021-03-10,2023-05-28,Fernando López Miras,false,https://idpbarcelona.net/docs/public/iccaa/2021/murcia_2021.pdf,Cs files a motion of no confidence; its ministers are dismissed except dissidents later expelled from Cs; independents (ex-Cs and ex-Vox) enter the government (IDP 2021)
+ccaa-14,2023-05-28,2023-09-08,Fernando López Miras,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8471,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-14,2023-09-08,2024-07-12,Fernando López Miras,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-19118,Real Decreto 752/2023 appointing the President
+ccaa-14,2024-07-12,,Fernando López Miras,false,https://www.eldebate.com/espana/20240711/vox-pierde-cuatro-vicepresidencias-once-consejerias-abandonar-gobiernos-pp_212495.html,Vox leaves the regional governments in July 2024 (press; BORM decree not located)
+ccaa-15,2019-08-06,2023-05-28,María Victoria Chivite Navascués,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-11525,Real Decreto 494/2019 appointing the President
+ccaa-15,2023-05-28,2023-08-17,María Victoria Chivite Navascués,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8485,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-15,2023-08-17,,María Victoria Chivite Navascués,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-18498,Real Decreto 727/2023 appointing the President
+ccaa-16,2016-11-26,2020-07-12,Iñigo Urkullu Renteria,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2016-11133,Real Decreto 540/2016 appointing the President
+ccaa-16,2020-07-12,2020-09-05,Iñigo Urkullu Renteria,true,https://idpbarcelona.net/docs/public/iccaa/2020/pvasco_2020.pdf,Caretaker from the election of 12 Jul 2020 (postponed by the pandemic; date in the IDP report)
+ccaa-16,2020-09-05,2024-04-21,Iñigo Urkullu Renteria,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-10256,Real Decreto 808/2020 appointing the President
+ccaa-16,2024-04-21,2024-06-22,Iñigo Urkullu Renteria,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2024-5452,Caretaker from the election of 21 Apr 2024 (date fixed in this BOE resolution)
+ccaa-16,2024-06-22,,Imanol Pradales Gil,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2024-12645,Real Decreto 586/2024 appointing the President
+ccaa-17,2019-08-29,2022-04-04,Concepción Andreu Rodríguez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-12531,Real Decreto 500/2019 appointing the President
+ccaa-17,2022-04-04,2023-05-28,Concepción Andreu Rodríguez,false,https://nuevecuatrouno.com/2022/04/04/podemos-expulsion-consejera-raquel-romero-gobierno-rioja/,Podemos expels its only minister (4 Apr 2022); she stays as an independent (press)
+ccaa-17,2023-05-28,2023-06-29,Concepción Andreu Rodríguez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8470,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-17,2023-06-29,,Gonzalo Capellán de Miguel,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15140,Real Decreto 566/2023 appointing the President
+ccaa-18,2019-06-19,2023-05-28,Juan Jesús Vivas Lara,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9182,Real Decreto 388/2019 appointing the President (head of the most voted list; no investiture majority needed)
+ccaa-18,2023-05-28,2023-06-20,Juan Jesús Vivas Lara,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8458,Caretaker from the election of 28 May 2023; Real Decreto 207/2023 calling it
+ccaa-18,2023-06-20,,Juan Jesús Vivas Lara,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-14604,Real Decreto 523/2023 appointing the President
+ccaa-19,2019-06-19,2021-04-02,Eduardo de Castro González,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9183,Real Decreto 389/2019 appointing the President
+ccaa-19,2021-04-02,2023-05-28,Eduardo de Castro González,false,https://idpbarcelona.net/docs/public/iccaa/2021/informe_2021.pdf,President expelled from Cs on 2 Apr 2021; he stays as an independent (IDP 2021)
+ccaa-19,2023-05-28,2023-07-08,Eduardo de Castro González,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8458,Caretaker from the election of 28 May 2023; Real Decreto 207/2023 calling it
+ccaa-19,2023-07-08,,Juan José Imbroda Ortiz,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15836,Real Decreto 605/2023 appointing the President

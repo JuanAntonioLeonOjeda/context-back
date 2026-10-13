@@ -1,11 +1,8 @@
 # ADR-0001: Context first, verification later
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** foundation
-
-> Draft written from the design conversation; the author reviews and rewrites the
-> reasoning before it is Accepted.
 
 ## Context
 

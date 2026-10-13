@@ -28,7 +28,8 @@ description: Naming conventions for files, types, variables, units and dates, te
 - Dates say what they are: `published_at` (outlet), `fetched_at` (us), `valid_from` /
   `valid_to` (government in force). All UTC or ISO dates; never local time without zone.
 - Durations carry the unit: `link_window_days`, `fetch_interval_min`.
-- Territories use INE codes as strings (`"13"` for Madrid CCAA); never names as keys.
+- Territories are keyed by a prefixed id (`es`, `ccaa-13`, `prov-28`); the INE code is a
+  separate column because community and province codes overlap. Never names as keys.
 - Parties: a stable `party_id` (slug) from one table; display names and colours come from
   that table only.
 

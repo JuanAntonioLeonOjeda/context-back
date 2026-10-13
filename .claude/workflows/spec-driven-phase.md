@@ -54,8 +54,9 @@ Code is not written directly from a request. Each phase of the brief
   layout, lint setup, package name): one ADR each only when it is a real trade-off. It
   also produces the hand-labelled test set (200 articles, labelled blind) and verifies
   the source catalogue (`docs/project-brief.md`, "Sources to verify").
-- **news-live**: the LLM only proposes labels behind the `ArticleClassifier` port; the
-  author validates them. Metrics are always reported per outlet and per party.
+- **news-live**: classification is the author's own model behind the `ArticleClassifier`
+  port, trained on hand labels (ADR-0008); no LLM. Metrics are always reported per outlet
+  and per party.
 - **polish**: README (description, screenshots, diagram, how to run, ADR links, known
   limitations, data attributions, Claude Code note) and a final `/defend` over the whole
   system.

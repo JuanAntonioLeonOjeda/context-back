@@ -24,10 +24,12 @@ environment, transport).
 1. Neutrality by construction: one code path for every party and outlet; rules are data.
 2. Traceability: every number has a source; every link between stories has a type, a
    confidence and an origin (rule, model or human).
-3. The LLM labels and proposes; facts come from the database; a human validates.
+3. Labels come from rules and the author's own model, trained on hand labels (ADR-0008);
+   facts come from the database.
 4. Reproducibility: stored results carry model and prompt versions; nothing is silently
    recomputed.
-5. Publish metadata and short citations with links, never article bodies.
+5. Publish headlines and links only; leads are processed internally under the
+   text-and-data-mining exception and never shown (see `docs/sources-audit.md`).
 
 ## 3. Architecture
 
@@ -48,8 +50,8 @@ full-text search; React + Vite + React Router v7 in the web app.
 |---|---|---|
 | `territory` | INE code, name, level, geometry | CCAA, provinces, municipalities |
 | `party` | id, name, colour | single source of party data |
-| `government_term` | territory, level, party ids, kind (single, coalition, minority with support), valid_from/to | who governed when |
-| `competence` | sector, activity, level (state, region, local, shared) | attribution rule input |
+| `government_term` | territory, president, governing and supporting parties, caretaker flag, valid_from/to | who governed when |
+| `sector`, `competence` | sector; activity, level (state, ccaa, local) and function (basic legislation, development legislation, execution), one row per level when shared | attribution rule input |
 | `outlet`, `article` | outlet, URL, published_at, headline, lead, territory, sector, keywords, embedding | news metadata |
 | `classification` | article, labels, confidence, model_id, prompt_version, validated_by | stored proposals and validations |
 | `story`, `story_link` | grouped articles; link type (antecedent, consequence, continuation), confidence, origin | contrast and traceability |
@@ -58,9 +60,10 @@ full-text search; React + Vite + React Router v7 in the web app.
 
 ## 5. Phases
 
-See `.claude/rules/project-policies.md` ("Phases"). Pilot for phases 2–4: two or three
-communities with governments of different colours (including a coalition) and the three
-launch sectors; scale to all 19 once the method holds.
+See `.claude/rules/project-policies.md` ("Phases"). Pilot for phases 2–4 (decided 2026-10-13):
+Canarias, Comunidad de Madrid and Cataluña, with the three launch sectors. The map,
+governments, competences and national outlets cover the whole country from day one;
+regional outlets and thorough validation start with the pilot and grow in batches.
 
 ## 6. Sources to verify (phase 0)
 
@@ -81,7 +84,7 @@ launch sectors; scale to all 19 once the method holds.
 | Perceived bias in outlet selection | published criterion, all covering outlets shown, stable order |
 | Wrong responsible party | competence table, visible confidence, error report |
 | Invented links between stories | origin and confidence on every link; threshold chosen on the test set |
-| Labeller bias inherited from the LLM | blind test set labelled by hand before any proposal is seen; sampled review |
+| Labeller bias inherited from model proposals | blind test set labelled by hand with no proposals; training labels without proposals (ADR-0008) |
 | Copyright | metadata and short quotes only |
 | Ecological fallacy in voter profiles | method note; wording about areas, not individuals |
-| LLM cost on the five-year history | cheap model for ambiguous cases, batch processing, measure on a sample first |
+| Labelling effort for the own model | training-set size measured in `news-live`; labelling in short sessions |

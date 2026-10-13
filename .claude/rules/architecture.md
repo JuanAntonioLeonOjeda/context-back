@@ -15,8 +15,10 @@ curated data/governments ─► governments ────────────
 - **Only ingestion and ETL modules talk to external sources.** Everything downstream reads
   from PostgreSQL. The API never calls an external source or an LLM while serving a
   request.
-- **The LLM is an adapter** behind the `ArticleClassifier` port (and, later, a summariser
-  port). It is called by background jobs, never by request handlers.
+- **Models are adapters.** The own classifier sits behind the `ArticleClassifier` port
+  (ADR-0008); no LLM takes part in classification. Any later LLM use (a summariser port,
+  pending ADR) is an adapter too. Models run in background jobs, never in request
+  handlers.
 - **The API is read-only** towards the web app. Writes come from jobs and from the
   validation tool.
 - **Every number has a source:** observations keep their `source` and `download` ids.
@@ -55,7 +57,7 @@ interface → application → domain ← infrastructure
 
 - Port: `Protocol` with a role name — `ArticleRepository`, `Clock`, `ArticleClassifier`.
 - Adapter: technology + role — `PgArticleRepository`, `SystemClock`,
-  `LlmArticleClassifier`, `SetFitArticleClassifier`, `RssFeedReader`.
+  `SetFitArticleClassifier`, `RssFeedReader`.
 - Use case: verb phrase — `ClassifyArticle`, `LinkStories`, `AttributeResponsibleParty`.
   Avoid `XxxService` god-classes.
 
