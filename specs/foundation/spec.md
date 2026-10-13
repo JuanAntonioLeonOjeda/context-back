@@ -33,8 +33,8 @@ territories, parties, government terms with their parties, and competences exist
 integration test applies all migrations from scratch.
 
 **AC4 — territories.**
-Given the loader, when it runs twice, then the State, the 17 communities, Ceuta and
-Melilla, and the 50 provinces exist exactly once, keyed by a prefixed id (`es`, `ccaa-NN`, `prov-NN`) with the INE
+Given the loader, when it runs twice, then the State, the 19 communities (Ceuta and
+Melilla included) and the 50 provinces exist exactly once, keyed by a prefixed id (`es`, `ccaa-NN`, `prov-NN`) with the INE
 code in its own column.
 
 **AC5 — governments.** [core]

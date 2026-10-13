@@ -32,6 +32,10 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
 - **Territory ids are prefixed text** (`es`, `ccaa-01`, `prov-28`), with the INE code in
   its own column. INE numbers communities 01–19 and provinces 01–52, so the INE code alone
   is ambiguous (01 is both Andalucía and Álava).
+- **The row `es` (level `state`) is only an anchor for the central government's terms**, so
+  national and regional governments share one table and one query (needed by ADR-0005 for
+  state-level competences). The map and the community lists never show it. Confirmed with
+  the author on 2026-10-13.
 - **A government term ends on any change** of president, of the parties in government or
   supporting it, or of kind (e.g. becoming caretaker). Attribution depends on who
   governed on the exact date.
@@ -42,7 +46,7 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
 - Migrations are SQL inside `op.execute`, so constraints read exactly as PostgreSQL sees
   them.
 
-`level` is `state | ccaa | autonomous_city | province`. `kind` is
+`level` is `state | ccaa | province` (Ceuta and Melilla are `ccaa`: INE codes 18 and 19). `kind` is
 `single_party | coalition | minority_with_support | caretaker`. `role` is
 `governing | external_support`. Enums are `text` with `CHECK` constraints (easier to
 extend than Postgres enums). The `vector` extension is created now; no vector columns yet.
