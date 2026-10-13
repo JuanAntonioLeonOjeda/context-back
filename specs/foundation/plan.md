@@ -29,7 +29,7 @@ outlets(id PK slug, name, home_url, scope, region_id FK NULL, external_llm_allow
 articles(id PK, outlet_id FK, url, published_at, fetched_at, headline, lead, UNIQUE(outlet_id, url))
 ```
 
-Decided with the author on 2026-10-13 (to be argued in ADR-0011):
+Decided with the author on 2026-10-13 (argued in ADR-0011):
 
 - **Territory ids are prefixed text** (`es`, `ccaa-01`, `prov-28`), with the INE code in
   its own column. INE numbers communities 01–19 and provinces 01–52, so the INE code alone

@@ -19,6 +19,7 @@ author on 2026-10-13 and accepted when `feature/foundation` was merged.
 | [0008](0008-classification-strategy.md) | Classification with rules, embeddings and an own model from the start; no LLM | Accepted |
 | [0009](0009-labelling-tool.md) | Label Studio for labelling | Accepted |
 | [0010](0010-migration-tool.md) | Alembic for database migrations | Accepted |
+| [0011](0011-reference-data-model.md) | Reference data model for territories, governments and competences | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

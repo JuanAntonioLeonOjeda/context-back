@@ -7,8 +7,8 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 ## Decisions and dependencies
 
-- [ ] 1. Dependencies approved by the author: back group `geo` (`pyshp`, `shapely`, build only); front `d3-geo`
-- [ ] 2. ADR-0011 `[core]`: reference data decisions of `foundation` (prefixed ids, the `es` anchor, no `kind`, half-open periods, per-territory competences)
+- [x] 1. Dependencies approved by the author: back group `geo` (`pyshp`, `shapely`, build only); front `d3-geo`
+- [x] 2. ADR-0011 `[core]`: reference data decisions of `foundation` (prefixed ids, the `es` anchor, no `kind`, half-open periods, per-territory competences)
 - [ ] 3. Indicator definitions confirmed by the author (the table in `plan.md`)
 
 ## Governments on the map (backend)
