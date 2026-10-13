@@ -29,7 +29,7 @@ Update the status column when a phase creates or finishes a path.
 | `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated parties, government terms since 2020, sectors and competences, with sources | ✅ |
-| `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
+| `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
 | `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
 | `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
 | `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template | ✅ |
@@ -38,8 +38,8 @@ Update the status column when a phase creates or finishes a path.
 | `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
 | `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
-| `docs/adr/` | Architecture Decision Records (`NNNN-kebab-title.md`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
-| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`) | ⏳ |
+| `docs/adr/` | Architecture Decision Records 0001–0010, reviewed (`Accepted` on merge), index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
+| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` also has `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 

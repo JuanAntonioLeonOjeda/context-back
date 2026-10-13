@@ -109,11 +109,11 @@ governs.
 | 5 | "The Generalitat (PSC) declares 40 new stressed areas" | ccaa-09 | housing | ccaa | regional measure |
 | 6 | "The Comunidad de Madrid (PP) opens a call for protected rental housing" | ccaa-13 | housing | ccaa | same pattern, other colour |
 | 7 | "Más Madrid accuses the Comunidad of underfunding primary care" | ccaa-13 | health | ccaa | opposition demand |
-| 8 | "Vox demands that the Región de Murcia (PP) cut waiting lists" | ccaa-14 | health | ccaa | same pattern, other party |
+| 8 | "The PP demands that the Gobierno de Navarra (PSOE–Geroa Bai–Contigo-Zurekin) cut waiting lists" | ccaa-15 | health | ccaa | same pattern, other party |
 | 9 | "The Junta de Castilla-La Mancha (PSOE) blames the ministry for the shortage of doctors" | ccaa-08 | health | ccaa, state | both act |
 | 10 | "The Xunta (PP) and the ministry clash over the funding of the MIR places" | ccaa-12 | health | ccaa, state | both act |
 | 11 | "The Supreme Court annuls a state decree on new universities" | — | education | state | court ruling |
-| 12 | "The TSJ annuls the Generalitat Valenciana's (PP) school language decree; Compromís celebrates" | ccaa-10 | education | ccaa | court ruling, regional |
+| 12 | "The TSJ annuls the Junta de Castilla-La Mancha's (PSOE) school calendar decree; the PP celebrates" | ccaa-08 | education | ccaa | court ruling, regional |
 | 13 | "Teachers strike against the Gobierno de Navarra (PSOE–Geroa Bai–Contigo-Zurekin) for smaller classes" | ccaa-15 | education | ccaa | demand implied by the strike, government named |
 | 14 | "Thousands march in Barcelona for the right to housing" | ccaa-09 | housing | — | no government named |
 | 15 | "Teachers at a private school investigated for mistreating children" | community of the school | none | — | crime, not policy |
@@ -142,7 +142,7 @@ because no government is named.
 
 The examples name parties in government and in opposition, at every level: PSOE, PSC,
 PP, Vox, Sumar, Podemos, IU, Más Madrid, ERC, Junts, PNV, EH Bildu, CC, BNG, Compromís,
-Geroa Bai, Contigo-Zurekin, CpM. Party labels in brackets match the governments in
+Geroa Bai, Contigo-Zurekin, Coalición por Melilla. Party labels in brackets match the governments in
 force in `data/governments/` on the date of this guide. Smaller parties are not listed
 one by one because no rule refers to a party: swapping the parties in any row must not
 change its labels. The neutrality reviewer checks exactly that.

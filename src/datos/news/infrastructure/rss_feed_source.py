@@ -20,6 +20,7 @@ class RssFeedSource:
         self._client = client
 
     def read(self, feed: Feed) -> list[FeedItem]:
+        # feedparser is untyped: Any stops here, and entries become typed FeedItems in _to_item.
         parsed: Any = feedparser.parse(download(self._client, feed.url, accept=_ACCEPT))
         # An HTML page (a block page, a login) parses without error but has no feed version.
         if not parsed.version:
