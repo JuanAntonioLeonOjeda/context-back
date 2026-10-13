@@ -19,6 +19,12 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 - **Coalition partner:** the decree appointing that party's leader as vice-president.
 - **External support:** the investiture vote in the parliament's session diary (roll call).
   Per-party counts are taken from press reports and checked against the official totals.
+- **Communities:** parties and supporters come from the Instituto de Derecho Público's
+  "Informe Comunidades Autónomas" of that community and year; the BOE decree still dates
+  the term. Without a published report (current year), the regional bulletin or the
+  parliament's record is cited.
+- A party that leaves a government is not its external support; abstaining is not
+  supporting; PSOE federations are `psoe`, the PSC is separate.
 - **Party membership** of presidents and ministers is not stated in official decrees; the
   cited decree proves the appointment, membership is public record.
 
@@ -27,9 +33,18 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | Batch | Territories | Status |
 |---|---|---|
 | 1 | State (`es`) | reviewed by the author, 2026-10-13 |
-| 2–5 | communities, five at a time | pending |
+| 2 | Andalucía, Aragón, Asturias, Illes Balears, Canarias (`ccaa-01`…`ccaa-05`) | in review |
+| 3–5 | the other communities, five at a time | pending |
 
 ## Known limits
+
+- **General election of 29 Nov 2026** (Real Decreto 806/2026): the State term in force
+  ends that day and a caretaker term must be added after it.
+- **Caretaker rule checked** in the State (CE art. 101) and Illes Balears (Ley 1/2019,
+  art. 5); still to check in the other statutes or government laws.
+- Changes after 2023 have no IDP report yet: they cite the regional bulletin (BOA), the
+  official government directory (Aragón) or the official portal (Andalucía 2026), not the
+  appointment decree itself.
 
 - The State term from 2019-11-10 (caretaker, PSOE) lists no external support: it came from
   the 2018 motion of no confidence, outside the dataset window.

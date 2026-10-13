@@ -2,4 +2,25 @@ territory_id,valid_from,valid_to,president_name,is_caretaker,source_url,notes
 es,2019-11-10,2020-01-08,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-13558,Caretaker from the general election of 10 Nov 2019 (CE art. 101); decree of dissolution and election call
 es,2020-01-08,2023-07-23,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-231,Real Decreto 1/2020 appointing the President
 es,2023-07-23,2023-11-17,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-12663,Caretaker from the general election of 23 Jul 2023 (CE art. 101); decree of dissolution and election call
-es,2023-11-17,,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-23302,Real Decreto 828/2023 appointing the President; reshuffles up to 27 Mar 2026 changed no party (La Moncloa)
+es,2023-11-17,,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-23302,"Real Decreto 828/2023 appointing the President; reshuffles up to 27 Mar 2026 changed no party (La Moncloa); general election called for 2026-11-29 (Real Decreto 806/2026, BOE-A-2026-20742): a caretaker term starts that day"
+ccaa-01,2019-01-18,2022-06-19,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-551,Real Decreto 6/2019 appointing the President
+ccaa-01,2022-06-19,2022-07-22,Juan Manuel Moreno Bonilla,true,https://idpbarcelona.net/docs/public/iccaa/2022/andalucia_2022.pdf,Caretaker from the election of 19 Jun 2022 (date in the IDP report; the dissolution decree is published only in BOJA)
+ccaa-01,2022-07-22,2026-05-17,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2022-12161,Real Decreto 610/2022 appointing the President
+ccaa-01,2026-05-17,2026-07-04,Juan Manuel Moreno Bonilla,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-7322,Caretaker from the election of 17 May 2026 (date fixed in this BOE resolution)
+ccaa-01,2026-07-04,,Juan Manuel Moreno Bonilla,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-14503,Real Decreto 558/2026 appointing the President
+ccaa-02,2019-08-03,2023-05-28,Francisco Javier Lambán Montañés,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-11407,Real Decreto 469/2019 appointing the President
+ccaa-02,2023-05-28,2023-08-11,Francisco Javier Lambán Montañés,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8475,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-02,2023-08-11,2024-07-12,Jorge Antonio Azcón Navarro,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-18295,Real Decreto 726/2023 appointing the President
+ccaa-02,2024-07-12,2026-02-08,Jorge Antonio Azcón Navarro,false,https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=1342830601919,Vox leaves the government: dismissal of its vice-president and minister (BOA 12 Jul 2024)
+ccaa-02,2026-02-08,2026-04-30,Jorge Antonio Azcón Navarro,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-26503,Caretaker from the election of 8 Feb 2026 (date fixed in this BOE resolution)
+ccaa-02,2026-04-30,,Jorge Antonio Azcón Navarro,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-9361,Real Decreto 367/2026 appointing the President
+ccaa-03,2019-07-17,2023-05-28,Adrián Barbón Rodríguez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-10489,Real Decreto 448/2019 appointing the President
+ccaa-03,2023-05-28,2023-07-20,Adrián Barbón Rodríguez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8465,Caretaker from the election of 28 May 2023; decree calling it
+ccaa-03,2023-07-20,,Adrián Barbón Rodríguez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16738,Real Decreto 693/2023 appointing the President
+ccaa-04,2019-06-29,2023-05-28,Francesca Lluch Armengol i Socias,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-9739,Real Decreto 410/2019 appointing the President
+ccaa-04,2023-05-28,2023-06-20,Francesca Lluch Armengol i Socias,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8488,Caretaker from the election of 28 May 2023 (Ley 1/2019 del Gobierno de las Illes Balears art. 5); decree calling it
+ccaa-04,2023-06-20,2023-07-07,María Asunción Jacoba Pía de la Concha García-Mauriño,true,https://intranet.caib.es/eboibfront/pdf/es/2023/83/1139372,Acting president after Armengol resigned to run for Congress (Consell de Govern agreement of 19 Jun 2023)
+ccaa-04,2023-07-07,,Margarita Prohens Rigo,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-15738,Real Decreto 603/2023 appointing the President
+ccaa-05,2019-07-16,2023-05-28,Ángel Víctor Torres Pérez,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-10440,Real Decreto 446/2019 appointing the President
+ccaa-05,2023-05-28,2023-07-14,Ángel Víctor Torres Pérez,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-8478,Caretaker from the election of 28 May 2023; decree dissolving Parliament and calling it
+ccaa-05,2023-07-14,,Fernando Clavijo Batlle,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-16293,Real Decreto 644/2023 appointing the President
