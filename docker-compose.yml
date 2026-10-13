@@ -1,0 +1,42 @@
+# Local development services. Versions pinned; check for newer ones when a phase starts.
+# Credentials are for local development only.
+services:
+  db:
+    # Official pgvector image (PostgreSQL 17 + pgvector 0.8.2).
+    image: pgvector/pgvector:0.8.2-pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-datos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-datos}
+      POSTGRES_DB: ${POSTGRES_DB:-datos}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  labelstudio:
+    # Used to label the blind test set and to validate model proposals (ADR-0009).
+    image: heartexlabs/label-studio:1.23.0
+    ports:
+      - "${LABEL_STUDIO_PORT:-8080}:8080"
+    volumes:
+      - labelstudio-data:/label-studio/data
+    healthcheck:
+      # The image has Python but not necessarily curl.
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+volumes:
+  db-data:
+  labelstudio-data:
