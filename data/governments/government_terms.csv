@@ -1,0 +1,5 @@
+territory_id,valid_from,valid_to,president_name,is_caretaker,source_url,notes
+es,2019-11-10,2020-01-08,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-13558,Caretaker from the general election of 10 Nov 2019 (CE art. 101); decree of dissolution and election call
+es,2020-01-08,2023-07-23,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-231,Real Decreto 1/2020 appointing the President
+es,2023-07-23,2023-11-17,Pedro Sánchez Pérez-Castejón,true,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-12663,Caretaker from the general election of 23 Jul 2023 (CE art. 101); decree of dissolution and election call
+es,2023-11-17,,Pedro Sánchez Pérez-Castejón,false,https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-23302,Real Decreto 828/2023 appointing the President; reshuffles up to 27 Mar 2026 changed no party (La Moncloa)
