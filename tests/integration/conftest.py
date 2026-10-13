@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 import pytest
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 # Same image as docker-compose.yml, so tests see the same PostgreSQL and pgvector versions.
 POSTGRES_IMAGE = "pgvector/pgvector:0.8.2-pg17"
