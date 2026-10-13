@@ -19,18 +19,18 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`) | 🚧 |
 | `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`) | ✅ |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
-| `src/datos/news/` | outlets, RSS and history ingestion, article metadata | ⏳ |
+| `src/datos/news/` | outlets, RSS collector (`python -m datos.news collect`), article cleaning; sitemaps, section pages and history pending | 🚧 |
 | `src/datos/classification/` | `ArticleClassifier` port, rules, LLM adapter, own-model adapter | ⏳ |
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | official statistics ETL and derived indicators | ⏳ |
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |
 | `src/datos/api/` | FastAPI routers and response models (`/health`) | 🚧 |
 | `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
-| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences) | 🚧 |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated parties, government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
-| `tests/` | `unit/`, `integration/`, `fixtures/` | 🚧 |
+| `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds in `fixtures/feeds/`) | 🚧 |
 | `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |

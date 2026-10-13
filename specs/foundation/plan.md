@@ -25,7 +25,7 @@ government_term_parties(term_id FK, party_id FK, role, source_url, PK(term_id, p
 sectors(id PK slug, name)
 competences(id PK, sector_id FK, activity, description, level, function, territory_id FK NULL,
             legal_basis, source_url, UNIQUE NULLS NOT DISTINCT(sector_id, activity, level, function, territory_id))
-outlets(id PK slug, name, home_url, scope, region_id FK NULL)
+outlets(id PK slug, name, home_url, scope, region_id FK NULL, external_llm_allowed default false)
 articles(id PK, outlet_id FK, url, published_at, fetched_at, headline, lead, UNIQUE(outlet_id, url))
 ```
 
