@@ -1,0 +1,73 @@
+id,ine_code,name,level,parent_id
+es,,España,state,
+ccaa-01,01,Andalucía,ccaa,es
+ccaa-02,02,Aragón,ccaa,es
+ccaa-03,03,Principado de Asturias,ccaa,es
+ccaa-04,04,Illes Balears,ccaa,es
+ccaa-05,05,Canarias,ccaa,es
+ccaa-06,06,Cantabria,ccaa,es
+ccaa-07,07,Castilla y León,ccaa,es
+ccaa-08,08,Castilla-La Mancha,ccaa,es
+ccaa-09,09,Cataluña,ccaa,es
+ccaa-10,10,Comunitat Valenciana,ccaa,es
+ccaa-11,11,Extremadura,ccaa,es
+ccaa-12,12,Galicia,ccaa,es
+ccaa-13,13,Comunidad de Madrid,ccaa,es
+ccaa-14,14,Región de Murcia,ccaa,es
+ccaa-15,15,Comunidad Foral de Navarra,ccaa,es
+ccaa-16,16,País Vasco,ccaa,es
+ccaa-17,17,La Rioja,ccaa,es
+ccaa-18,18,Ceuta,ccaa,es
+ccaa-19,19,Melilla,ccaa,es
+prov-01,01,Araba/Álava,province,ccaa-16
+prov-02,02,Albacete,province,ccaa-08
+prov-03,03,Alicante/Alacant,province,ccaa-10
+prov-04,04,Almería,province,ccaa-01
+prov-05,05,Ávila,province,ccaa-07
+prov-06,06,Badajoz,province,ccaa-11
+prov-07,07,Illes Balears,province,ccaa-04
+prov-08,08,Barcelona,province,ccaa-09
+prov-09,09,Burgos,province,ccaa-07
+prov-10,10,Cáceres,province,ccaa-11
+prov-11,11,Cádiz,province,ccaa-01
+prov-12,12,Castellón/Castelló,province,ccaa-10
+prov-13,13,Ciudad Real,province,ccaa-08
+prov-14,14,Córdoba,province,ccaa-01
+prov-15,15,A Coruña,province,ccaa-12
+prov-16,16,Cuenca,province,ccaa-08
+prov-17,17,Girona,province,ccaa-09
+prov-18,18,Granada,province,ccaa-01
+prov-19,19,Guadalajara,province,ccaa-08
+prov-20,20,Gipuzkoa,province,ccaa-16
+prov-21,21,Huelva,province,ccaa-01
+prov-22,22,Huesca,province,ccaa-02
+prov-23,23,Jaén,province,ccaa-01
+prov-24,24,León,province,ccaa-07
+prov-25,25,Lleida,province,ccaa-09
+prov-26,26,La Rioja,province,ccaa-17
+prov-27,27,Lugo,province,ccaa-12
+prov-28,28,Madrid,province,ccaa-13
+prov-29,29,Málaga,province,ccaa-01
+prov-30,30,Murcia,province,ccaa-14
+prov-31,31,Navarra,province,ccaa-15
+prov-32,32,Ourense,province,ccaa-12
+prov-33,33,Asturias,province,ccaa-03
+prov-34,34,Palencia,province,ccaa-07
+prov-35,35,Las Palmas,province,ccaa-05
+prov-36,36,Pontevedra,province,ccaa-12
+prov-37,37,Salamanca,province,ccaa-07
+prov-38,38,Santa Cruz de Tenerife,province,ccaa-05
+prov-39,39,Cantabria,province,ccaa-06
+prov-40,40,Segovia,province,ccaa-07
+prov-41,41,Sevilla,province,ccaa-01
+prov-42,42,Soria,province,ccaa-07
+prov-43,43,Tarragona,province,ccaa-09
+prov-44,44,Teruel,province,ccaa-02
+prov-45,45,Toledo,province,ccaa-08
+prov-46,46,Valencia/València,province,ccaa-10
+prov-47,47,Valladolid,province,ccaa-07
+prov-48,48,Bizkaia,province,ccaa-16
+prov-49,49,Zamora,province,ccaa-07
+prov-50,50,Zaragoza,province,ccaa-02
+prov-51,51,Ceuta,province,ccaa-18
+prov-52,52,Melilla,province,ccaa-19
