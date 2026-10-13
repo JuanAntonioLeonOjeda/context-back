@@ -35,7 +35,8 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | 1 | State (`es`) | reviewed by the author, 2026-10-13 |
 | 2 | Andalucía, Aragón, Asturias, Illes Balears, Canarias (`ccaa-01`…`ccaa-05`) | reviewed by the author, 2026-10-13 |
 | 3 | Cantabria, Castilla y León, Castilla-La Mancha, Cataluña, Comunitat Valenciana (`ccaa-06`…`ccaa-10`) | reviewed by the author, 2026-10-13 |
-| 4–5 | the other communities | pending |
+| 4 | Extremadura, Galicia, Comunidad de Madrid, Región de Murcia, Navarra (`ccaa-11`…`ccaa-15`) | reviewed by the author, 2026-10-13 |
+| 5 | País Vasco, La Rioja, Ceuta, Melilla (`ccaa-16`…`ccaa-19`) | pending |
 
 ## Known limits
 
@@ -48,7 +49,10 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
   successor is appointed: Cataluña 2020 (Aragonès substituting Torra), Comunitat
   Valenciana 2025 (after Mazón's resignation).
 - **Dates taken from the press because the bulletin decree was not located:** Cataluña
-  2020-09-30 and 2022-10-07, Castilla y León 2024-07-12, Comunitat Valenciana 2024-07-11.
+  2020-09-30 and 2022-10-07, Castilla y León 2024-07-12, Comunitat Valenciana 2024-07-11,
+  Extremadura and Región de Murcia 2024-07-12 (Vox leaving), Galicia election 2024-02-18.
+- **Independents in government are not modelled** (validated by the author): Región de Murcia from
+  2021-03-10 had ex-Cs (expelled) and ex-Vox ministers; only the PP is listed as governing.
   Castilla y León 2021-12-21 uses the BOE date of the dissolution decree for the dismissal
   of the Cs ministers the day before.
 - Changes after 2023 have no IDP report yet: they cite the regional bulletin (BOA), the
