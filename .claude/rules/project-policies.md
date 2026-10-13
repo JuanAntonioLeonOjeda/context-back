@@ -24,7 +24,7 @@ Each phase goes through `.claude/workflows/spec-driven-phase.md` and has its own
 
 | # | Phase (`specs/` folder) | Output |
 |---|---|---|
-| 0 | `foundation` | repo setup, Docker Compose with PostgreSQL, CI, ADRs 0001–0009, source audit, governments and competences dataset, 200-article blind test set |
+| 0 | `foundation` | repo setup, Docker Compose with PostgreSQL, CI, ADRs 0001–0010, source audit, governments and competences dataset, 200-article blind test set |
 | 1 | `map-governments` | territories, governments API, first INE indicators |
 | 2 | `news-live` | RSS ingestion, classification (LLM proposes, author validates), party attribution; 2b: own classifier |
 | 3 | `story-contrast` | clustering of the same story across outlets, common summary |

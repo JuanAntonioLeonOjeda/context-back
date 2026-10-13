@@ -18,6 +18,7 @@ reviews each one and rewrites the reasoning in their own words before it is `Acc
 | [0007](0007-sectors-as-data.md) | Sectors as data, three at launch | Proposed |
 | [0008](0008-classification-strategy.md) | Classification: rules and embeddings, LLM proposes, author validates, own model later | Proposed |
 | [0009](0009-labelling-tool.md) | Label Studio for labelling | Proposed |
+| [0010](0010-migration-tool.md) | Alembic for database migrations | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
