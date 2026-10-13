@@ -17,7 +17,7 @@ Update the status column when a phase creates or finishes a path.
 |---|---|---|
 | `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
 | `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`) | 🚧 |
-| `src/datos/governments/` | parties, government terms (coalitions, supports), rules, CSV loader (`python -m datos.governments load`); competence table pending | 🚧 |
+| `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`) | ✅ |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
 | `src/datos/news/` | outlets, RSS and history ingestion, article metadata | ⏳ |
 | `src/datos/classification/` | `ArticleClassifier` port, rules, LLM adapter, own-model adapter | ⏳ |
@@ -26,14 +26,14 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |
 | `src/datos/api/` | FastAPI routers and response models (`/health`) | 🚧 |
 | `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
-| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata) | 🚧 |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
-| `data/governments/` | curated parties and government terms since 2020 with sources (competences pending) | 🚧 |
+| `data/governments/` | curated parties, government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
 | `tests/` | `unit/`, `integration/`, `fixtures/` | 🚧 |
 | `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
-| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (not run yet: no remote) | 🚧 |
+| `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/adr/` | Architecture Decision Records (`NNNN-kebab-title.md`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`) | ⏳ |

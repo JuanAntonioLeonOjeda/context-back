@@ -11,7 +11,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [x] 4. `docker-compose.yml`: PostgreSQL + pgvector and Label Studio, pinned and with healthchecks
 - [ ] 5. Alembic setup; ADR-0010 reviewed by the author
 - [x] 6. FastAPI app with `/health` (database check) and its tests
-- [ ] 7. CI: ruff, mypy, unit and integration tests — workflow written; integration tests pass locally (2026-10-13); still unrun on GitHub (no remote yet)
+- [x] 7. CI: ruff, mypy, unit and integration tests — green on GitHub (PR #1, 2026-10-13)
 
 ## Reference data
 
@@ -20,7 +20,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [x] 10. [core] Domain: `GovernmentTerm`, kinds, overlap/gap detection, term in force on a date — tests first
 - [x] 11. [core] `data/governments/` CSVs: parties and terms since 2020 for the State and the 19 regional territories, each with source (93 terms, 34 parties; caretaker rule checked per statute). Pending outside the phase: add the State caretaker term on 2026-11-29
 - [x] 12. Governments loader and integration test (`uv run python -m datos.governments load`; replaces all terms in one transaction, nothing is written if any rule fails)
-- [ ] 13. [core] Competence table for education, health and housing with legal bases; author approval
+- [x] 13. [core] Competence table for education, health and housing with legal bases; author approval (31 rows, Ceuta/Melilla overrides, loaded with the governments)
 
 ## Sources
 
