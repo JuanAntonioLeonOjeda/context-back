@@ -5,9 +5,9 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 
 ## Setup
 
-- [ ] 1. `pyproject.toml` with uv, ruff, mypy strict and pytest config; empty package `src/datos`
+- [x] 1. `pyproject.toml` with uv, ruff, mypy strict and pytest config; empty package `src/datos`
 - [ ] 2. `config.py` (Pydantic settings), structlog setup, `.env.example`
-- [ ] 3. Query layer confirmed by the author (SQLAlchemy Core proposed); ADR-0011 only if needed
+- [x] 3. Query layer confirmed by the author: SQLAlchemy Core 2.0 + psycopg 3, no ORM (2026-10-13); no ADR needed
 - [ ] 4. `docker-compose.yml`: PostgreSQL + pgvector and Label Studio, pinned and with healthchecks
 - [ ] 5. Alembic setup; ADR-0010 reviewed by the author
 - [ ] 6. FastAPI app with `/health` (database check) and its tests

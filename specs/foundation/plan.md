@@ -36,12 +36,12 @@ extend than Postgres enums). The `vector` extension is created now; no vector co
 | Decision | Choice | Record |
 |---|---|---|
 | Migration tool | Alembic, operations written by hand, forward-only (no downgrades; fix forward) | ADR-0010 (Proposed) |
-| Query layer | **Proposed:** SQLAlchemy Core 2.0 (no ORM) with `psycopg` 3; repositories write explicit SQL expressions | needs the author's yes; if a real trade-off, ADR-0011 |
+| Query layer | SQLAlchemy Core 2.0 (no ORM) with `psycopg` 3; repositories write explicit SQL expressions | approved by the author on 2026-10-13 |
 | Reference data format | CSV under `data/`, one row per fact, with `source_url` column; loaders validate with Pydantic | plan only |
 | CLI | `argparse` (stdlib): `uv run python -m datos.governments load` | plan only |
 | Test set storage | ids, URLs and labels in git; headline and lead only in the local database | spec AC9 |
 
-## Dependencies (to approve)
+## Dependencies (approved 2026-10-13)
 
 Runtime: `fastapi`, `uvicorn`, `pydantic-settings`, `sqlalchemy`, `psycopg[binary]`,
 `alembic`, `structlog`, `httpx`, `feedparser`.
