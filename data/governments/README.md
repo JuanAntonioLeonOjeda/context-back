@@ -33,8 +33,9 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | Batch | Territories | Status |
 |---|---|---|
 | 1 | State (`es`) | reviewed by the author, 2026-10-13 |
-| 2 | Andalucía, Aragón, Asturias, Illes Balears, Canarias (`ccaa-01`…`ccaa-05`) | in review |
-| 3–5 | the other communities, five at a time | pending |
+| 2 | Andalucía, Aragón, Asturias, Illes Balears, Canarias (`ccaa-01`…`ccaa-05`) | reviewed by the author, 2026-10-13 |
+| 3 | Cantabria, Castilla y León, Castilla-La Mancha, Cataluña, Comunitat Valenciana (`ccaa-06`…`ccaa-10`) | reviewed by the author, 2026-10-13 |
+| 4–5 | the other communities | pending |
 
 ## Known limits
 
@@ -42,6 +43,14 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
   ends that day and a caretaker term must be added after it.
 - **Caretaker rule checked** in the State (CE art. 101) and Illes Balears (Ley 1/2019,
   art. 5); still to check in the other statutes or government laws.
+- **Caretaker without an election** (validated by the author): a government also becomes caretaker
+  when its president ceases for another reason (resignation, disqualification) until the
+  successor is appointed: Cataluña 2020 (Aragonès substituting Torra), Comunitat
+  Valenciana 2025 (after Mazón's resignation).
+- **Dates taken from the press because the bulletin decree was not located:** Cataluña
+  2020-09-30 and 2022-10-07, Castilla y León 2024-07-12, Comunitat Valenciana 2024-07-11.
+  Castilla y León 2021-12-21 uses the BOE date of the dissolution decree for the dismissal
+  of the Cs ministers the day before.
 - Changes after 2023 have no IDP report yet: they cite the regional bulletin (BOA), the
   official government directory (Aragón) or the official portal (Andalucía 2026), not the
   appointment decree itself.
