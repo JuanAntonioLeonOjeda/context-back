@@ -25,3 +25,6 @@ models/*.safetensors
 .idea/
 .vscode/
 .DS_Store
+
+# local runtime output (collector logs)
+var/
