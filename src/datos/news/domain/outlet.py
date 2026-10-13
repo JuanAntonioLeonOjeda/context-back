@@ -25,4 +25,7 @@ class Feed:
     kind: FeedKind
     url: str
     section: str
+    # True: the listing lacks the lead (or more); each new article's page is read once.
     needs_page_fetch: bool
+    # html_section only: regex an absolute link must fully match to count as an article.
+    article_url_pattern: str | None = None

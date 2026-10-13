@@ -42,6 +42,7 @@ class DropReason(StrEnum):
     NO_HEADLINE = "no_headline"
     NO_DATE = "no_date"
     NAIVE_DATE = "naive_date"
+    PAGE_UNAVAILABLE = "page_unavailable"
 
 
 def normalise_url(url: str) -> str:
@@ -106,6 +107,20 @@ def clean_lead(summary: str | None) -> str | None:
         return text
     cut = text[:LEAD_MAX_CHARS].rsplit(" ", 1)[0].rstrip(" ,;:.")
     return cut + "…"
+
+
+def complete_with_page(listed: FeedItem, page: FeedItem) -> FeedItem:
+    """The listed item with the gaps filled from its article page.
+
+    What the listing says wins (a news sitemap's title is the outlet's own record); the
+    page adds what the listing lacks, and always the lead.
+    """
+    return FeedItem(
+        title=listed.title or page.title,
+        link=listed.link,
+        published_at=listed.published_at or page.published_at,
+        summary=listed.summary or page.summary,
+    )
 
 
 def to_article(outlet_id: str, item: FeedItem) -> Article | DropReason:

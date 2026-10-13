@@ -26,6 +26,9 @@ _INSERT_ARTICLE = text(
 )
 
 
+_KNOWN_URLS = text("SELECT url FROM articles WHERE outlet_id = :outlet_id AND url = ANY(:urls)")
+
+
 class PgNewsRepository:
     """Each call is its own transaction, so one failing feed never rolls back the others."""
 
@@ -63,3 +66,11 @@ class PgNewsRepository:
                 )
                 inserted += result.rowcount
         return inserted
+
+    def known_urls(self, outlet_id: str, urls: Sequence[str]) -> set[str]:
+        if not urls:
+            return set()
+        # Served by the unique index on (outlet_id, url).
+        with self._engine.connect() as connection:
+            rows = connection.execute(_KNOWN_URLS, {"outlet_id": outlet_id, "urls": list(urls)})
+            return {row.url for row in rows}
