@@ -23,8 +23,8 @@ government_terms(id PK, territory_id FK, president_name, is_caretaker, valid_fro
                  EXCLUDE no overlapping periods per territory)
 government_term_parties(term_id FK, party_id FK, role, source_url, PK(term_id, party_id))
 sectors(id PK slug, name)
-competences(id PK, sector_id FK, activity, description, level, function, legal_basis, source_url,
-            UNIQUE(sector_id, activity, level, function))
+competences(id PK, sector_id FK, activity, description, level, function, territory_id FK NULL,
+            legal_basis, source_url, UNIQUE NULLS NOT DISTINCT(sector_id, activity, level, function, territory_id))
 outlets(id PK slug, name, home_url, scope, region_id FK NULL)
 articles(id PK, outlet_id FK, url, published_at, fetched_at, headline, lead, UNIQUE(outlet_id, url))
 ```
@@ -54,6 +54,14 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
 - **Articles keep metadata only.** `lead` is capped at 1,000 characters so an accidental
   full-text insert fails. `published_at` is required: items without a date are dropped by
   the collector. Feed URLs per outlet are decided in task 18 (collector).
+- **Competences per territory** (decided 2026-10-13, task 13): `competences.territory_id`
+  is empty for rows that apply to every community; a row for one community replaces the
+  general rows of that sector and activity there. Needed because Ceuta and Melilla do not
+  manage education or health care (their statutes give them only "sanidad e higiene" and
+  a right to propose; INGESA and the Ministry manage them).
+- **Function `legislation`** added (full legislation, e.g. regional housing under CE art.
+  148.1.3ª, or state pharmaceutical legislation), next to basic legislation, development
+  legislation and execution. State funding plans count as state `execution`.
 - **Periods are half-open** `[valid_from, valid_to)`; `valid_to IS NULL` means in force.
 - **No overlaps, enforced twice:** in the domain before loading, and in PostgreSQL with
   an exclusion constraint on `(territory_id, daterange(valid_from, valid_to, '[)'))`
