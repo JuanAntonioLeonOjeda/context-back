@@ -51,6 +51,8 @@ class FakeGovernments:
         return list(self._parties)
 
 
+GEOMETRY: dict[str, object] = {"type": "FeatureCollection", "attribution": "test", "features": []}
+
 TERRITORIES = [
     Territory("es", None, "España", Level.STATE, None),
     Territory("ccaa-05", "05", "Canarias", Level.CCAA, "es"),
@@ -120,6 +122,7 @@ def make_client() -> Callable[..., TestClient]:
                 governments=lambda: governments,
                 territories=lambda: territories,
                 clock=FixedClock(today),
+                geometry=GEOMETRY,
             )
         )
 

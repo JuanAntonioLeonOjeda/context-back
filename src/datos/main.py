@@ -3,7 +3,9 @@
 Run with: uv run uvicorn datos.main:app --factory
 """
 
+import json
 from collections.abc import Callable, Iterator
+from pathlib import Path
 
 from fastapi import FastAPI
 from sqlalchemy import Engine
@@ -16,6 +18,8 @@ from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.log_setup import configure_logging
 from datos.territories.reader import PgTerritoryReader
 
+GEOMETRY = Path("data/geo/ccaa.geojson")
+
 
 def app() -> FastAPI:
     settings = load_settings()
@@ -26,6 +30,7 @@ def app() -> FastAPI:
         governments=_governments_reader(engine),
         territories=_territory_reader(engine),
         clock=SystemClock(),
+        geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
     )
 
 

@@ -7,7 +7,7 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 ## Decisions and dependencies
 
-- [x] 1. Dependencies approved by the author: back group `geo` (`pyshp`, `shapely`, build only); front `d3-geo`
+- [x] 1. Dependencies approved by the author: back group `geo` (`shapely`, build only; `pyshp` not needed because the IGN serves GML); front `d3-geo`
 - [x] 2. ADR-0011 `[core]`: reference data decisions of `foundation` (prefixed ids, the `es` anchor, no `kind`, half-open periods, per-territory competences)
 - [x] 3. Indicator definitions confirmed by the author (the table in `plan.md`)
 
@@ -21,9 +21,9 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 ## Geometry
 
-- [ ] 9. Download the IGN boundaries; `data/geo/README.md` with product, date, licence and the exact attribution
-- [ ] 10. `python -m datos.territories build-geometry`: 19 features keyed by territory id, simplified, attribution inside the file; tests on count, ids, validity and size
-- [ ] 11. Router `/map/geometry` serving the versioned file
+- [x] 9. Download the IGN boundaries; `data/geo/README.md` with product, date, licence and the exact attribution
+- [x] 10. `python -m datos.territories build-geometry`: 19 features keyed by territory id, simplified, attribution inside the file; tests on count, ids, validity and size
+- [x] 11. Router `/map/geometry` serving the versioned file
 
 ## Indicators
 

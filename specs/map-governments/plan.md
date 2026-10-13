@@ -126,8 +126,9 @@ Wording shown to users names the measure and the period only («Tasa de paro, 2.
 
 ## Dependencies (to approve)
 
-- Back, **build-only** optional group `geo`: `pyshp` (read the shapefile) and `shapely`
-  (simplify). Not installed in the runtime image.
+- Back, **build-only** group `geo`: `shapely` (coverage simplification) and its stubs
+  `types-shapely`. The IGN serves GML, read with the standard library, so `pyshp` is not
+  needed. Installed by default for local work and CI; not needed by the running API.
 - Front (added to its own plan): `d3-geo` for the projection. Nothing else for the map.
 
 ## Configuration

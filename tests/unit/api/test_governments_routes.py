@@ -109,3 +109,12 @@ def test_the_map_on_a_date_without_data_keeps_the_community_marked(make_client: 
         "has_data": False,
     }
     assert canarias["is_caretaker"] is True
+
+
+def test_the_geometry_is_served_as_geojson_and_cacheable(make_client: Client) -> None:
+    response = make_client().get("/map/geometry")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/geo+json")
+    assert "max-age" in response.headers["cache-control"]
+    assert response.json()["type"] == "FeatureCollection"
