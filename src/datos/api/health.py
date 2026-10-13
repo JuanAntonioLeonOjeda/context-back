@@ -25,7 +25,13 @@ class HealthResponse(BaseModel):
 def build_health_router(probe: DatabaseProbe) -> APIRouter:
     router = APIRouter()
 
-    @router.get("/health", response_model=HealthResponse)
+    @router.get(
+        "/health",
+        response_model=HealthResponse,
+        # Declared so the OpenAPI contract, and the web client generated from it, know
+        # that a database that does not answer is a 503 with this same body.
+        responses={status.HTTP_503_SERVICE_UNAVAILABLE: {"model": HealthResponse}},
+    )
     def health(response: Response) -> HealthResponse:
         if probe.is_reachable():
             return HealthResponse(database=ComponentStatus.UP)
