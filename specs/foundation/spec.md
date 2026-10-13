@@ -47,8 +47,9 @@ gaps since 2020-01-01. The loader is idempotent.
 
 **AC6 — competences.** [core]
 Given the competence table for education, health and housing, when the author reviews it,
-then every row has a sector, an activity, a level (state, regional, local, shared) and a
-legal basis with a source; the author has approved it.
+then every row has a sector, an activity, a level (state, ccaa, local), a function
+(basic legislation, development legislation, execution) and a legal basis with a source;
+a shared competence is one row per level; the author has approved it.
 
 **AC7 — sources audit.**
 Given the candidate outlets and data sources, when the audit is done, then

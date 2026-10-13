@@ -49,7 +49,7 @@ full-text search; React + Vite + React Router v7 in the web app.
 | `territory` | INE code, name, level, geometry | CCAA, provinces, municipalities |
 | `party` | id, name, colour | single source of party data |
 | `government_term` | territory, president, governing and supporting parties, caretaker flag, valid_from/to | who governed when |
-| `competence` | sector, activity, level (state, region, local, shared) | attribution rule input |
+| `sector`, `competence` | sector; activity, level (state, ccaa, local) and function (basic legislation, development legislation, execution), one row per level when shared | attribution rule input |
 | `outlet`, `article` | outlet, URL, published_at, headline, lead, territory, sector, keywords, embedding | news metadata |
 | `classification` | article, labels, confidence, model_id, prompt_version, validated_by | stored proposals and validations |
 | `story`, `story_link` | grouped articles; link type (antecedent, consequence, continuation), confidence, origin | contrast and traceability |

@@ -22,7 +22,9 @@ parties(id PK slug, name, short_name, colour_hex)
 government_terms(id PK, territory_id FK, president_name, is_caretaker, valid_from, valid_to NULL, source_url,
                  EXCLUDE no overlapping periods per territory)
 government_term_parties(term_id FK, party_id FK, role, PK(term_id, party_id))
-competences(id PK, sector, activity, level, legal_basis, source_url)
+sectors(id PK slug, name)
+competences(id PK, sector_id FK, activity, description, level, function, legal_basis, source_url,
+            UNIQUE(sector_id, activity, level, function))
 outlets(id PK slug, name, home_url, scope, region_id FK NULL)
 articles(id PK, outlet_id FK, url, published_at, fetched_at, headline, lead, UNIQUE(outlet_id, url))
 ```
@@ -44,6 +46,11 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
   table. Coalition and external support are derived from `government_term_parties`;
   only `is_caretaker` is stored. Majority vs. minority needs seats and waits for election
   data (phase `context-voters`).
+- **Sectors are rows in `sectors`**, not a fixed list (ADR-0007): a new sector is data.
+- **Shared competences are several rows**, one per level, each with its `function`
+  (`basic_legislation | development_legislation | execution`). A value `shared` would
+  not tell attribution who does what. Competence levels reuse the territory vocabulary:
+  `state | ccaa | local`. Decided with the author on 2026-10-13.
 - **Periods are half-open** `[valid_from, valid_to)`; `valid_to IS NULL` means in force.
 - **No overlaps, enforced twice:** in the domain before loading, and in PostgreSQL with
   an exclusion constraint on `(territory_id, daterange(valid_from, valid_to, '[)'))`
