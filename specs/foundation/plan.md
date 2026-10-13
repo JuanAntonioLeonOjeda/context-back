@@ -51,6 +51,9 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
   (`basic_legislation | development_legislation | execution`). A value `shared` would
   not tell attribution who does what. Competence levels reuse the territory vocabulary:
   `state | ccaa | local`. Decided with the author on 2026-10-13.
+- **Articles keep metadata only.** `lead` is capped at 1,000 characters so an accidental
+  full-text insert fails. `published_at` is required: items without a date are dropped by
+  the collector. Feed URLs per outlet are decided in task 18 (collector).
 - **Periods are half-open** `[valid_from, valid_to)`; `valid_to IS NULL` means in force.
 - **No overlaps, enforced twice:** in the domain before loading, and in PostgreSQL with
   an exclusion constraint on `(territory_id, daterange(valid_from, valid_to, '[)'))`

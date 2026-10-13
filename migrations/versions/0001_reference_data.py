@@ -1,4 +1,5 @@
-"""Reference data: territories, parties, government terms, sectors and competences.
+"""Reference data (territories, parties, government terms, sectors, competences) and news
+metadata (outlets, articles).
 
 Revision ID: 0001
 Revises:
@@ -171,6 +172,55 @@ def upgrade() -> None:
         )
         """
     )
+
+    op.execute(
+        """
+        CREATE TABLE outlets (
+            id        text PRIMARY KEY,                     -- slug, e.g. 'outlet-a'
+            name      text NOT NULL,
+            home_url  text NOT NULL,
+            scope     text NOT NULL,                        -- 'national' or 'regional'
+            region_id text REFERENCES territories (id),     -- only for regional outlets
+
+            CONSTRAINT outlets_id_is_slug CHECK (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+            CONSTRAINT outlets_home_url_is_url CHECK (home_url ~ '^https?://'),
+
+            -- A regional outlet belongs to one community; a national one to none.
+            -- IS NOT NULL is needed: "NULL LIKE ..." is NULL and a NULL CHECK passes.
+            CONSTRAINT outlets_region_matches_scope
+                CHECK (
+                    (scope = 'national' AND region_id IS NULL)
+                    OR (scope = 'regional' AND region_id IS NOT NULL AND region_id LIKE 'ccaa-%')
+                )
+        )
+        """
+    )
+
+    op.execute(
+        """
+        CREATE TABLE articles (
+            id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            outlet_id    text NOT NULL REFERENCES outlets (id),
+            url          text NOT NULL,
+            published_at timestamptz NOT NULL,              -- as stated by the outlet
+            fetched_at   timestamptz NOT NULL DEFAULT now(),
+            headline     text NOT NULL,
+            lead         text,                              -- some feeds have none
+
+            CONSTRAINT articles_url_is_url CHECK (url ~ '^https?://'),
+            CONSTRAINT articles_headline_not_blank CHECK (btrim(headline) <> ''),
+
+            -- We keep metadata only, never bodies (project policies). A hard cap turns
+            -- an accidental full-text insert into an error instead of a quiet copy.
+            CONSTRAINT articles_lead_is_short CHECK (char_length(lead) <= 1000),
+
+            -- Feeds are re-read; the same item must not create a second row. The
+            -- collector normalises URLs (e.g. drops tracking parameters) before insert.
+            CONSTRAINT articles_one_row_per_url UNIQUE (outlet_id, url)
+        )
+        """
+    )
+    op.execute("CREATE INDEX articles_published_at_idx ON articles (published_at)")
 
 
 def downgrade() -> None:
