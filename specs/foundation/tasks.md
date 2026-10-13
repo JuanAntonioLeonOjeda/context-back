@@ -10,7 +10,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [x] 3. Query layer confirmed by the author: SQLAlchemy Core 2.0 + psycopg 3, no ORM (2026-10-13); no ADR needed
 - [ ] 4. `docker-compose.yml`: PostgreSQL + pgvector and Label Studio, pinned and with healthchecks
 - [ ] 5. Alembic setup; ADR-0010 reviewed by the author
-- [ ] 6. FastAPI app with `/health` (database check) and its tests
+- [x] 6. FastAPI app with `/health` (database check) and its tests
 - [ ] 7. CI: ruff, mypy, unit and integration tests
 
 ## Reference data
