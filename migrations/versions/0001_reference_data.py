@@ -1,4 +1,4 @@
-"""Reference data: territories, parties, governments and competences.
+"""Reference data: territories, parties and government terms.
 
 Revision ID: 0001
 Revises:
@@ -60,6 +60,73 @@ def upgrade() -> None:
                 CHECK (ine_code IS NULL OR id LIKE '%-' || ine_code)
         )
         """
+    )
+
+    op.execute(
+        """
+        CREATE TABLE parties (
+            id         text PRIMARY KEY,                    -- stable slug used everywhere
+            name       text NOT NULL,
+            short_name text NOT NULL,
+            colour_hex text NOT NULL,                       -- the only source of party colour
+
+            CONSTRAINT parties_id_is_slug CHECK (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+            CONSTRAINT parties_colour_is_hex CHECK (colour_hex ~ '^#[0-9a-f]{6}$')
+        )
+        """
+    )
+
+    op.execute(
+        """
+        CREATE TABLE government_terms (
+            id             bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            territory_id   text NOT NULL REFERENCES territories (id),
+            president_name text NOT NULL,
+            is_caretaker   boolean NOT NULL DEFAULT false,
+            valid_from     date NOT NULL,
+            valid_to       date,                            -- NULL: in force today
+            source_url     text NOT NULL,
+
+            -- Governments exist for the State and the communities, not for provinces.
+            -- Relies on the territories id format: 'es' or 'ccaa-NN'.
+            CONSTRAINT government_terms_territory_has_government
+                CHECK (territory_id = 'es' OR territory_id LIKE 'ccaa-%'),
+
+            -- Half-open [valid_from, valid_to): a term of zero days is a data error.
+            CONSTRAINT government_terms_period_not_empty
+                CHECK (valid_to IS NULL OR valid_to > valid_from),
+
+            CONSTRAINT government_terms_source_is_url CHECK (source_url ~ '^https?://'),
+
+            -- At most one government per territory on any day. daterange(a, NULL, '[)')
+            -- is unbounded on the right, so two terms in force at once also collide.
+            -- btree_gist provides the "=" operator on text inside a GiST index.
+            CONSTRAINT government_terms_no_overlap EXCLUDE USING gist (
+                territory_id WITH =,
+                daterange(valid_from, valid_to, '[)') WITH &&
+            )
+        )
+        """
+    )
+
+    op.execute(
+        """
+        CREATE TABLE government_term_parties (
+            term_id  bigint NOT NULL REFERENCES government_terms (id) ON DELETE CASCADE,
+            party_id text NOT NULL REFERENCES parties (id),
+            role     text NOT NULL,
+
+            -- A party has one role per term: it governs or it supports from outside.
+            PRIMARY KEY (term_id, party_id),
+            CONSTRAINT government_term_parties_role_valid
+                CHECK (role IN ('governing', 'external_support'))
+        )
+        """
+    )
+    # "Every term has at least one governing party" spans several rows, which a CHECK
+    # cannot express. It is enforced in the domain before loading (task 10).
+    op.execute(
+        "CREATE INDEX government_term_parties_party_id_idx ON government_term_parties (party_id)"
     )
 
 
