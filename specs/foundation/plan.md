@@ -21,7 +21,7 @@ territories(id PK text, ine_code NULL, name, level, parent_id FK NULL)
 parties(id PK slug, name, short_name, colour_hex)
 government_terms(id PK, territory_id FK, president_name, is_caretaker, valid_from, valid_to NULL, source_url,
                  EXCLUDE no overlapping periods per territory)
-government_term_parties(term_id FK, party_id FK, role, PK(term_id, party_id))
+government_term_parties(term_id FK, party_id FK, role, source_url, PK(term_id, party_id))
 sectors(id PK slug, name)
 competences(id PK, sector_id FK, activity, description, level, function, legal_basis, source_url,
             UNIQUE(sector_id, activity, level, function))
@@ -64,6 +64,32 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
 `level` is `state | ccaa | province` (Ceuta and Melilla are `ccaa`: INE codes 18 and 19). `role` is
 `governing | external_support`. Enums are `text` with `CHECK` constraints (easier to
 extend than Postgres enums). The `vector` extension is created now; no vector columns yet.
+
+## Governments dataset rules (task 11)
+
+Decided with the author on 2026-10-13.
+
+- **Method.** Wikidata is only the checklist of terms, so none is forgotten. Every row of
+  `data/governments/` cites an official document (BOE, regional bulletin, parliament
+  record); Wikidata is never a source.
+- **Parties are the brand in government**: PSC, Unidas Podemos, Navarra Suma… as they
+  appear, not folded into a national party.
+- **A term starts** on the publication date of the decree that appoints the president
+  (BOE), or of the regional bulletin decree that changes the composition (a partner
+  entering or leaving).
+- **Caretaker periods are modelled**: a caretaker term starts on election day and ends
+  when the next president's appointment is published. The rule is checked against each
+  statute; a territory whose statute differs gets a note in the CSV.
+- **External support** = parties that voted yes in the investiture and do not enter the
+  government, as recorded in the parliament's session diary. Withdrawals of support
+  during the legislature are not modelled.
+- **Each party role has its own source** (`government_term_parties.source_url`): the
+  vice-president's appointment for a coalition partner, the investiture vote for external
+  support. A caretaker term keeps the parties and supporters of the term it continues.
+- **Work in batches** with the author's review: the State first, then communities in
+  groups of five.
+- Party colours are provisional placeholders, reviewed in the front (contrast and
+  neutrality checks) before anything is shown.
 
 ## Decisions
 
