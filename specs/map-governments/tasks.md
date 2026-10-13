@@ -29,7 +29,7 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 - [x] 12. ADR-0012 `[core]`: observations append-only, indicator definitions, derived on read
 - [x] 13. Migration `0004` (`downloads`, `indicators`, `observations`, view `current_observations`); applies from scratch; constraints tested
-- [ ] 14. Period rules `[core]`: `(year, period_code)` → `period_start`, rejecting unknown codes; unit tests
+- [x] 14. Period rules `[core]`: `(year, period_code)` → `period_start`, rejecting unknown codes; unit tests
 - [ ] 15. INE client (infrastructure) with fixtures of real responses for the five tables, including a missing value and a different scale
 - [ ] 16. Loader: inserts a row only if the latest value differs; the second run adds nothing; a revised value adds one row; nothing is ever updated or deleted (test)
 - [ ] 17. Derived indicator `higher_education_share_16plus` `[core]`: pure function, checks equal units, hand-computed test
