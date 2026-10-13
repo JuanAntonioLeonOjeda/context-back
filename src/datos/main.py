@@ -3,16 +3,44 @@
 Run with: uv run uvicorn datos.main:app --factory
 """
 
+from collections.abc import Callable, Iterator
+
 from fastapi import FastAPI
+from sqlalchemy import Engine
 
 from datos.api.app import create_app
+from datos.clock import SystemClock
 from datos.config import load_settings
 from datos.db import SqlDatabaseProbe, build_engine
+from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.log_setup import configure_logging
+from datos.territories.reader import PgTerritoryReader
 
 
 def app() -> FastAPI:
     settings = load_settings()
     configure_logging(settings.log_level, as_json=settings.log_json)
     engine = build_engine(str(settings.database_url))
-    return create_app(database_probe=SqlDatabaseProbe(engine))
+    return create_app(
+        database_probe=SqlDatabaseProbe(engine),
+        governments=_governments_reader(engine),
+        territories=_territory_reader(engine),
+        clock=SystemClock(),
+    )
+
+
+# One read-only connection per request, closed when the response is sent.
+def _governments_reader(engine: Engine) -> Callable[[], Iterator[PgGovernmentsReader]]:
+    def dependency() -> Iterator[PgGovernmentsReader]:
+        with engine.connect() as connection:
+            yield PgGovernmentsReader(connection)
+
+    return dependency
+
+
+def _territory_reader(engine: Engine) -> Callable[[], Iterator[PgTerritoryReader]]:
+    def dependency() -> Iterator[PgTerritoryReader]:
+        with engine.connect() as connection:
+            yield PgTerritoryReader(connection)
+
+    return dependency

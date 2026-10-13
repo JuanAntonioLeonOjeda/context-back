@@ -40,6 +40,9 @@ strict = true
 python_version = "3.12"
 mypy_path = "src"
 files = ["src", "tests"]
+# Test folders have no __init__.py: module names come from their path, so two
+# conftest.py files do not collide.
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 # feedparser ships no type information. Its output is checked value by value at the

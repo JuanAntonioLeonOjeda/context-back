@@ -15,9 +15,9 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 - [x] 4. `government_in_force(terms, on_date)` `[core]`: already in `foundation` as `in_force_on`, with tests for the boundary day, before the first term and another territory
 - [x] 5. `GovernmentsReader` and `TerritoryReader` ports, Postgres readers, integration tests on the real dataset
-- [ ] 6. Routers `/territories`, `/communities/{id}/governments`, `/parties`; 404 with a reason; tests with fake readers
+- [x] 6. Routers `/territories`, `/communities/{id}/governments`, `/parties`; 404 with a reason; tests with fake readers
 - [ ] 7. Router `/map/governments` `[core]`: governing parties only, ordered by `party_id`, external support never included; a test that swaps party ids and asserts the same shape
-- [ ] 8. Date handling: omitted `date` means today from an injected clock; invalid dates answer 422; tests
+- [x] 8. Date handling: omitted `date` means today from an injected clock; invalid dates answer 422; tests
 
 ## Geometry
 
