@@ -153,7 +153,8 @@ reproduce the list; the assistant does not label outlets by ideology.
    (CIS or Reuters Digital News Report; availability to verify in task 15), every third of
    the spectrum must have at least three outlets; if not, the next most-read outlet of
    that third is added. If no such measure exists, steps 1 and 2 stand alone and the
-   audience figures are published.
+   audience figures are published. **Checked 2026-10-13: no current measure exists; the
+   fallback applies** (`docs/sources-audit.md`, section 3).
 4. **Regional, per pilot community:** the regional public broadcaster and the most-read
    private regional outlet according to GfK DAM regional data, measured as audience within
    the community. In Canarias, where the press is split by island, the most-read private
