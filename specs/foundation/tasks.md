@@ -32,7 +32,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 ## Blind test set
 
 - [x] 18. Minimal RSS collector into `outlets` / `articles` (idempotent), with real-sample tests (`uv run python -m datos.news collect`; RSS only: sitemaps and section pages are collected in `news-live`)
-- [ ] 19. `docs/labelling-guide.md`, reviewed by the author
+- [x] 19. `docs/labelling-guide.md`, reviewed by the author
 - [ ] 20. Stratified sample of 200 and Label Studio project (no proposals loaded)
 - [ ] 21. Author labels; export to `data/eval/test-set-v1.jsonl`
 
