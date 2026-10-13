@@ -1,4 +1,4 @@
-"""Reference data: territories, parties and government terms.
+"""Reference data: territories, parties, government terms, sectors and competences.
 
 Revision ID: 0001
 Revises:
@@ -127,6 +127,49 @@ def upgrade() -> None:
     # cannot express. It is enforced in the domain before loading (task 10).
     op.execute(
         "CREATE INDEX government_term_parties_party_id_idx ON government_term_parties (party_id)"
+    )
+
+    op.execute(
+        """
+        CREATE TABLE sectors (
+            id   text PRIMARY KEY,                          -- 'education', 'health', 'housing'
+            name text NOT NULL,
+
+            -- Sectors are data (ADR-0007): adding one is an INSERT, not a migration.
+            CONSTRAINT sectors_id_is_slug CHECK (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$')
+        )
+        """
+    )
+
+    op.execute(
+        """
+        CREATE TABLE competences (
+            id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            sector_id   text NOT NULL REFERENCES sectors (id),
+            activity    text NOT NULL,                      -- slug, e.g. 'teaching-staff'
+            description text NOT NULL,
+            level       text NOT NULL,
+            function    text NOT NULL,
+            legal_basis text NOT NULL,                      -- e.g. 'CE art. 149.1.30'
+            source_url  text NOT NULL,
+
+            CONSTRAINT competences_activity_is_slug
+                CHECK (activity ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+
+            -- Same vocabulary as territories; 'local' has no territories loaded yet.
+            CONSTRAINT competences_level_valid CHECK (level IN ('state', 'ccaa', 'local')),
+
+            -- A shared competence is one row per level, each saying what that level does,
+            -- so attribution can pick the level that matches what the news describes.
+            CONSTRAINT competences_function_valid
+                CHECK (function IN ('basic_legislation', 'development_legislation', 'execution')),
+
+            CONSTRAINT competences_source_is_url CHECK (source_url ~ '^https?://'),
+
+            CONSTRAINT competences_one_row_per_level_and_function
+                UNIQUE (sector_id, activity, level, function)
+        )
+        """
     )
 
 
