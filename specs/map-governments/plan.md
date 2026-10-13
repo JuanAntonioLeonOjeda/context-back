@@ -4,7 +4,7 @@
 
 - **Colours:** recognisable party colours, checked for contrast and colour-blindness, with
   stripes for coalitions and always a legend and labels. The palette values are chosen in
-  task P3 with the author.
+  task 19 with the author.
 - **Map rendering:** own SVG with `d3-geo`, keyboard accessible, no tiles and no external
   service. Recorded in a front ADR.
 - **Indicators:** the five of the spec. Income (ADRH, by province) is left out of this
