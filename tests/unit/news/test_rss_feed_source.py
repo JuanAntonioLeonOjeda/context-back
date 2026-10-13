@@ -6,13 +6,13 @@ import pytest
 
 from datos.news.domain.article import DropReason, to_article
 from datos.news.domain.outlet import Feed, FeedKind
-from datos.news.infrastructure.rss_feed_source import (
-    MAX_FEED_BYTES,
+from datos.news.infrastructure.http_client import (
+    MAX_DOWNLOAD_BYTES,
     USER_AGENT,
-    FeedUnavailableError,
-    RssFeedSource,
+    SourceUnavailableError,
     build_client,
 )
+from datos.news.infrastructure.rss_feed_source import RssFeedSource
 
 FIXTURES = Path("tests/fixtures/feeds")
 FEED = Feed("outlet-a", FeedKind.RSS, "https://example.org/rss", "home", False)
@@ -71,7 +71,7 @@ def test_the_request_identifies_the_collector() -> None:
 
 @pytest.mark.parametrize("status", [403, 404, 500])
 def test_an_http_error_makes_the_feed_unavailable(status: int) -> None:
-    with pytest.raises(FeedUnavailableError, match="HTTPStatusError"):
+    with pytest.raises(SourceUnavailableError, match="HTTPStatusError"):
         _source(status=status).read(FEED)
 
 
@@ -79,22 +79,15 @@ def test_a_network_failure_makes_the_feed_unavailable() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectTimeout("slow", request=request)
 
-    with pytest.raises(FeedUnavailableError, match="ConnectTimeout"):
+    with pytest.raises(SourceUnavailableError, match="ConnectTimeout"):
         _source(httpx.MockTransport(handler)).read(FEED)
 
 
 def test_a_page_that_is_not_a_feed_is_unavailable() -> None:
-    with pytest.raises(FeedUnavailableError, match="not a readable feed"):
+    with pytest.raises(SourceUnavailableError, match="not a readable feed"):
         _source(body=b"<html><body>Acceso denegado</body></html>").read(FEED)
 
 
 def test_an_oversized_feed_is_refused() -> None:
-    with pytest.raises(FeedUnavailableError, match="larger than"):
-        _source(body=b"x" * (MAX_FEED_BYTES + 1)).read(FEED)
-
-
-def test_only_rss_feeds_are_supported_for_now() -> None:
-    sitemap = Feed("outlet-a", FeedKind.NEWS_SITEMAP, "https://example.org/s.xml", "all", True)
-
-    with pytest.raises(FeedUnavailableError, match="not supported yet"):
-        _source().read(sitemap)
+    with pytest.raises(SourceUnavailableError, match="larger than"):
+        _source(body=b"x" * (MAX_DOWNLOAD_BYTES + 1)).read(FEED)
