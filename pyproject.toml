@@ -5,7 +5,10 @@ description = "Backend and data pipeline of the regional news context portal"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.20.0",
+    "psycopg[binary]>=3.3.6",
     "pydantic-settings>=2.15.0",
+    "sqlalchemy>=2.1.4",
     "structlog>=26.1.0",
 ]
 
