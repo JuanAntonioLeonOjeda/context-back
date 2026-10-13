@@ -11,15 +11,15 @@
 | `config.py`, `main.py` | — | settings and composition root |
 
 Domain rules worth testing as pure functions: term overlap and gap detection, government
-kind consistency (a coalition has ≥ 2 governing parties; minority with support has ≥ 1
-external-support party), resolving the term in force on a given date.
+every term has at least one governing party; coalition and external support are derived
+from the parties (≥ 2 governing; ≥ 1 external support), external-support party), resolving the term in force on a given date.
 
 ## Schema (first migration)
 
 ```
 territories(id PK text, ine_code NULL, name, level, parent_id FK NULL)
 parties(id PK slug, name, short_name, colour_hex)
-government_terms(id PK, territory_id FK, president_name, kind, valid_from, valid_to NULL, source_url,
+government_terms(id PK, territory_id FK, president_name, is_caretaker, valid_from, valid_to NULL, source_url,
                  EXCLUDE no overlapping periods per territory)
 government_term_parties(term_id FK, party_id FK, role, PK(term_id, party_id))
 competences(id PK, sector, activity, level, legal_basis, source_url)
@@ -37,8 +37,13 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
   state-level competences). The map and the community lists never show it. Confirmed with
   the author on 2026-10-13.
 - **A government term ends on any change** of president, of the parties in government or
-  supporting it, or of kind (e.g. becoming caretaker). Attribution depends on who
+  supporting it, or of caretaker status. Attribution depends on who
   governed on the exact date.
+- **No `kind` column** (decided with the author on 2026-10-13): kinds overlap (a coalition
+  can also rely on external support, or be caretaker) and would duplicate the parties
+  table. Coalition and external support are derived from `government_term_parties`;
+  only `is_caretaker` is stored. Majority vs. minority needs seats and waits for election
+  data (phase `context-voters`).
 - **Periods are half-open** `[valid_from, valid_to)`; `valid_to IS NULL` means in force.
 - **No overlaps, enforced twice:** in the domain before loading, and in PostgreSQL with
   an exclusion constraint on `(territory_id, daterange(valid_from, valid_to, '[)'))`
@@ -46,8 +51,7 @@ Decided with the author on 2026-10-13 (to be argued in ADR-0011):
 - Migrations are SQL inside `op.execute`, so constraints read exactly as PostgreSQL sees
   them.
 
-`level` is `state | ccaa | province` (Ceuta and Melilla are `ccaa`: INE codes 18 and 19). `kind` is
-`single_party | coalition | minority_with_support | caretaker`. `role` is
+`level` is `state | ccaa | province` (Ceuta and Melilla are `ccaa`: INE codes 18 and 19). `role` is
 `governing | external_support`. Enums are `text` with `CHECK` constraints (easier to
 extend than Postgres enums). The `vector` extension is created now; no vector columns yet.
 

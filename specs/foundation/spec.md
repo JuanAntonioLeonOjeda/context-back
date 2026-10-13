@@ -40,8 +40,8 @@ code in its own column.
 **AC5 — governments.** [core]
 Given `data/governments/`, when the loader runs, then every government term since
 2020-01-01 of the State and of the 19 regional territories exists with: president,
-parties and their role (governing or external support), kind (single party, coalition,
-minority with external support, caretaker), `valid_from`, `valid_to` (empty if in force)
+parties and their role (governing or external support), whether it is caretaker,
+`valid_from`, `valid_to` (empty if in force)
 and a source URL. Tests prove that terms of one territory do not overlap and leave no
 gaps since 2020-01-01. The loader is idempotent.
 
