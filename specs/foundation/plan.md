@@ -192,13 +192,25 @@ reproduce the list; the assistant does not label outlets by ideology.
 
 ## Blind test set method
 
-1. The collector fetches the approved feeds for ~2 weeks (or until enough items exist).
-2. A stratified sample of 200: by outlet, by pilot vs. non-pilot community, and including
-   articles outside the three sectors (negatives).
+1. The collector reads every approved outlet (RSS, news sitemaps and section pages) every
+   3 hours for ~3 weeks, from 2026-10-13 (`scripts/collect-news.sh`, scheduled with
+   launchd). One day of news holds few distinct stories; a frozen test set built from it
+   would measure that week, not the classifier.
+2. A stratified sample of 200, decided with the author on 2026-10-13:
+   - **Equal allocation per outlet** (~14 each): metrics are reported per outlet, and a
+     proportional sample would give small outlets two or three articles.
+   - **Half random, half enriched** within each outlet: the enriched half comes from broad
+     sector keywords, because a purely random draw holds ~5% sector articles (about 10 of
+     200). Each article records its stratum (`random` or `enriched`), so metrics can be
+     reported on the random half alone or reweighted, and a keyword classifier is not
+     flattered by the enrichment.
+   - Pilot vs. non-pilot community is not known before labelling; it is reported after
+     labelling, not used to draw the sample.
+   - Fixed seed; the sample is reproducible from the database and the seed.
 3. `docs/labelling-guide.md`: definitions and edge cases for community, sector and
    government level, with examples from every party.
 4. Label Studio project with that configuration; the author labels with no proposals
-   loaded.
+   loaded. Headline and lead are shown; the link is not opened (guide).
 5. Export → `data/eval/test-set-v1.jsonl`. The file is frozen; a new version gets a new
    name.
 
