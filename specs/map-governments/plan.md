@@ -27,8 +27,8 @@
   product name and year taken from the selector at `scne.es/productos.html` when the file
   is downloaded. Formats: shapefile (CNIG download centre), GML (WFS and ATOM). Precision
   1:25,000, ETRS89 (REGCAN95 for the Canary Islands, compatible with WGS84).
-- **Not verified:** the base year of the housing price index (expected 2015 = 100); read
-  from the series metadata when the ETL is written and shown in the unit text.
+- **Housing price index base:** 2025 = 100 (verified when writing the endpoint: the four
+  quarters of 2025 average exactly 100.0), not the 2015 base of the INE methodology pages.
 
 ## Modules
 
@@ -106,7 +106,7 @@ view current_observations: for each (indicator, territory, period_start), the ro
 | `poverty_or_exclusion_rate` | 60264 | AROPE, total | % of population | annual |
 | `higher_education_share_16plus` | 65289 | «Educación superior», both sexes, aged 16 and over (current classification). Corrected 2026-10-13: table 66104 stops in 2013 | % of people aged 16 and over | quarterly |
 | `unemployment_rate` | 14506 | «Tasa de paro de la población. Ambos sexos», total | % of the active population | quarterly |
-| `housing_price_index` | 80270 | «General. Índice» | index (base to verify) | quarterly |
+| `housing_price_index` | 80270 | «General. Índice» | index, 2025 = 100 (verified: 2025 averages 100.0) | quarterly |
 
 Wording shown to users names the measure and the period only («Tasa de paro, 2.º trimestre
 2026: 14,6 %»), with no «high», «low» or «better than».

@@ -17,6 +17,7 @@ from datos.indicators.application.load_indicators import (
 )
 from datos.indicators.domain.definitions import INDICATORS
 from datos.indicators.domain.indicator import COMMUNITY_CODES, SeriesInfo
+from datos.indicators.infrastructure.pg_reader import PgIndicatorReader
 from datos.indicators.infrastructure.pg_repository import PgIndicatorRepository
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
@@ -95,3 +96,17 @@ def test_values_keep_their_published_digits(engine: Engine) -> None:
     load_indicators([AROPE], Source("34.7"), repository)
 
     assert repository.latest_values(AROPE.id, "ccaa-01")[date(2025, 1, 1)] == Decimal("34.7")
+
+
+def test_the_reader_returns_the_current_values_with_their_download_date(engine: Engine) -> None:
+    repository = PgIndicatorRepository(engine)
+    load_indicators([AROPE], Source("30.1"), repository)
+    load_indicators([AROPE], Source("29.9"), repository)  # a revision
+
+    with engine.connect() as connection:
+        reader = PgIndicatorReader(connection)
+        [info] = reader.indicators()
+        [value] = reader.current_values("ccaa-05")
+
+    assert info.id == AROPE.id and info.scale_factor == 1
+    assert value.value == Decimal("29.9") and value.fetched_at is not None

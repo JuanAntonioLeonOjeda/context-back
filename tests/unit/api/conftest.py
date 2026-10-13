@@ -1,7 +1,8 @@
 """Fakes of the API ports and a client factory, so router tests need no database."""
 
 from collections.abc import Callable
-from datetime import date
+from datetime import UTC, date, datetime
+from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
@@ -9,9 +10,11 @@ from fastapi.testclient import TestClient
 from datos.api.app import create_app
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
+from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
 from datos.territories.territory import Level, Territory
 
 TODAY = date(2026, 10, 13)
+FETCHED = datetime(2026, 10, 13, 15, 48, tzinfo=UTC)
 SOURCE = "https://www.boe.es/example"
 
 
@@ -37,6 +40,28 @@ class FakeTerritories:
 
     def by_level(self, level: Level) -> list[Territory]:
         return [t for t in self._territories if t.level is level]
+
+
+class FakeIndicators:
+    def __init__(self, indicators: list[IndicatorInfo], values: list[StoredValue]) -> None:
+        self._indicators = indicators
+        self._values = values
+
+    def indicators(self) -> list[IndicatorInfo]:
+        return list(self._indicators)
+
+    def current_values(self, territory_id: str) -> list[StoredValue]:
+        return [v for v in self._values if territory_id == "ccaa-05"]
+
+
+INDICATORS = [
+    IndicatorInfo("unemployment_rate", "Tasa de paro", "%", Decimal(1), "quarterly", "14506"),
+    IndicatorInfo("poverty_or_exclusion_rate", "AROPE", "%", Decimal(1), "annual", "60264"),
+]
+VALUES = [
+    StoredValue("unemployment_rate", 2026, 19, Decimal("12.1"), "EPA452496", FETCHED),
+    StoredValue("unemployment_rate", 2026, 20, Decimal("11.6"), "EPA452496", FETCHED),
+]
 
 
 class FakeGovernments:
@@ -116,11 +141,13 @@ def make_client() -> Callable[..., TestClient]:
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
+        indicators = FakeIndicators(INDICATORS, VALUES)
         return TestClient(
             create_app(
                 FixedProbe(reachable=reachable),
                 governments=lambda: governments,
                 territories=lambda: territories,
+                indicators=lambda: indicators,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
             )

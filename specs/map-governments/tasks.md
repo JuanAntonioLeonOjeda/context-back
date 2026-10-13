@@ -33,7 +33,7 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 - [x] 15. INE client (infrastructure) with fixtures of real responses for the five tables, including a missing value and a different scale
 - [x] 16. Loader: inserts a row only if the latest value differs; the second run adds nothing; a revised value adds one row; nothing is ever updated or deleted (test)
 - [~] 17. ~~Derived indicator `higher_education_share_16plus`~~ dropped on 2026-10-13: the INE publishes the share (table 65289), nothing to derive
-- [ ] 18. Router `/communities/{id}/indicators`: latest value, period, unit, source and series; `null` for no data, never 0; real run against the INE for the 19 communities
+- [x] 18. Router `/communities/{id}/indicators`: latest value, period, unit, source and series; `null` for no data, never 0; real run against the INE for the 19 communities
 
 ## Web app (after the front's `foundation`)
 

@@ -15,6 +15,7 @@ from datos.clock import SystemClock
 from datos.config import load_settings
 from datos.db import SqlDatabaseProbe, build_engine
 from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
+from datos.indicators.infrastructure.pg_reader import PgIndicatorReader
 from datos.log_setup import configure_logging
 from datos.territories.reader import PgTerritoryReader
 
@@ -29,6 +30,7 @@ def app() -> FastAPI:
         database_probe=SqlDatabaseProbe(engine),
         governments=_governments_reader(engine),
         territories=_territory_reader(engine),
+        indicators=_indicator_reader(engine),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
     )
@@ -47,5 +49,13 @@ def _territory_reader(engine: Engine) -> Callable[[], Iterator[PgTerritoryReader
     def dependency() -> Iterator[PgTerritoryReader]:
         with engine.connect() as connection:
             yield PgTerritoryReader(connection)
+
+    return dependency
+
+
+def _indicator_reader(engine: Engine) -> Callable[[], Iterator[PgIndicatorReader]]:
+    def dependency() -> Iterator[PgIndicatorReader]:
+        with engine.connect() as connection:
+            yield PgIndicatorReader(connection)
 
     return dependency

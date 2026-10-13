@@ -60,10 +60,11 @@ INDICATORS: tuple[IndicatorDefinition, ...] = (
     IndicatorDefinition(
         id="housing_price_index",
         name="Índice de Precios de Vivienda",
-        unit="index",
+        # Base verified on 2026-10-13: the four quarters of 2025 average exactly 100.
+        unit="index (2025 = 100)",
         periodicity=Periodicity.QUARTERLY,
         source_table_id="80270",
-        description="Índice de Precios de Vivienda, general (new and second-hand).",
+        description="Índice de Precios de Vivienda, general (new and second-hand), base 2025.",
         selector={345: "General", 3: "Índice"},
         unit_id=133,
         scale_id=1,

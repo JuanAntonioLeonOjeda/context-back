@@ -69,5 +69,8 @@ Correction (2026-10-13, task 15): the education table first chosen (66104) break
 population down by level of education only until 2013 (old classification); only its total
 continues. Table 65289 publishes the share of people aged 16 and over with higher education
 (current classification, quarterly, to 2026 Q2), so the indicator takes it as published and
-no derivation is needed. Not verified: the base year of
-the housing price index (read from the series metadata when the loader is written).
+no derivation is needed.
+
+Housing price index (table 80270): base **2025 = 100**, verified on 2026-10-13 because the
+four quarters of 2025 average exactly 100.0. The INE methodology pages still describe the
+earlier base 2015 series; the unit shown to users states the base of the table we load.
