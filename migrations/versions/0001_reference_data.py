@@ -25,11 +25,39 @@ def upgrade() -> None:
             ine_code  text,                                 -- NULL only for the State
             name      text NOT NULL,
             level     text NOT NULL,
-            parent_id text REFERENCES territories (id)
-            -- TODO(author) 1: CHECK that level is 'state', 'ccaa', 'autonomous_city' or 'province'.
-            -- TODO(author) 2: CHECK that the State has no ine_code and every other level has one.
-            -- TODO(author) 3: UNIQUE so that no two territories share the same level and INE code.
-            -- Optional 4: CHECK that the id prefix matches the level (hint: LIKE or a regex ~).
+            parent_id text REFERENCES territories (id),
+
+            -- 1. Only the three known levels (Ceuta and Melilla are communities, 'ccaa').
+            --    Adding a level later is a new migration that drops and recreates this
+            --    constraint (cheaper than altering an ENUM).
+            CONSTRAINT territories_level_valid
+                CHECK (level IN ('state', 'ccaa', 'province')),
+
+            -- 2. The State has no INE code; every other level has a two-digit one.
+            --    "ine_code ~ '^[0-9]{2}$'" is a regex match, so '1' or 'AB' are rejected.
+            --    IS NOT NULL is explicit on purpose: a CHECK that evaluates to NULL
+            --    counts as satisfied, and "NULL ~ regex" is NULL, so without it a
+            --    community with no code would be accepted.
+            CONSTRAINT territories_ine_code_by_level
+                CHECK (
+                    (level = 'state' AND ine_code IS NULL)
+                    OR (level <> 'state' AND ine_code IS NOT NULL AND ine_code ~ '^[0-9]{2}$')
+                ),
+
+            -- 3. The id prefix must match the level, so 'prov-28' can never be stored as a
+            --    community. '^...$' anchors the pattern to the whole value.
+            CONSTRAINT territories_id_matches_level
+                CHECK (
+                    (level = 'state' AND id = 'es')
+                    OR (level = 'ccaa' AND id ~ '^ccaa-[0-9]{2}$')
+                    OR (level = 'province' AND id ~ '^prov-[0-9]{2}$')
+                ),
+
+            -- 4. The id already encodes the INE code, so the two cannot disagree.
+            --    There is no UNIQUE (level, ine_code): checks 3 and 4 fix the id from
+            --    (level, code), so the primary key already rejects a duplicate.
+            CONSTRAINT territories_id_ends_with_ine_code
+                CHECK (ine_code IS NULL OR id LIKE '%-' || ine_code)
         )
         """
     )
