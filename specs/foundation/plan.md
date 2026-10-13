@@ -17,14 +17,30 @@ external-support party), resolving the term in force on a given date.
 ## Schema (first migration)
 
 ```
-territories(code PK, name, level, parent_code FK NULL)
+territories(id PK text, ine_code NULL, name, level, parent_id FK NULL)
 parties(id PK slug, name, short_name, colour_hex)
-government_terms(id PK, territory_code FK, president_name, kind, valid_from, valid_to NULL, source_url)
+government_terms(id PK, territory_id FK, president_name, kind, valid_from, valid_to NULL, source_url,
+                 EXCLUDE no overlapping periods per territory)
 government_term_parties(term_id FK, party_id FK, role, PK(term_id, party_id))
 competences(id PK, sector, activity, level, legal_basis, source_url)
-outlets(id PK slug, name, home_url, scope, region_code NULL)
-articles(id PK, outlet_id FK, url UNIQUE per outlet, published_at, fetched_at, headline, lead)
+outlets(id PK slug, name, home_url, scope, region_id FK NULL)
+articles(id PK, outlet_id FK, url, published_at, fetched_at, headline, lead, UNIQUE(outlet_id, url))
 ```
+
+Decided with the author on 2026-10-13 (to be argued in ADR-0011):
+
+- **Territory ids are prefixed text** (`es`, `ccaa-01`, `prov-28`), with the INE code in
+  its own column. INE numbers communities 01–19 and provinces 01–52, so the INE code alone
+  is ambiguous (01 is both Andalucía and Álava).
+- **A government term ends on any change** of president, of the parties in government or
+  supporting it, or of kind (e.g. becoming caretaker). Attribution depends on who
+  governed on the exact date.
+- **Periods are half-open** `[valid_from, valid_to)`; `valid_to IS NULL` means in force.
+- **No overlaps, enforced twice:** in the domain before loading, and in PostgreSQL with
+  an exclusion constraint on `(territory_id, daterange(valid_from, valid_to, '[)'))`
+  (extension `btree_gist`).
+- Migrations are SQL inside `op.execute`, so constraints read exactly as PostgreSQL sees
+  them.
 
 `level` is `state | ccaa | autonomous_city | province`. `kind` is
 `single_party | coalition | minority_with_support | caretaker`. `role` is
