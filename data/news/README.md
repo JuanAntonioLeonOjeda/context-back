@@ -46,5 +46,11 @@ The `selection` column records why each outlet is in the list.
 - `news_sitemap`: the Google News sitemap (title and date); the lead is the page's
   `og:description`, read with one request per article (`needs_page_fetch`).
 - `html_section`: a section page listing article links (RTVE, 3Cat, which publish no
-  current feed); date and lead come from the article page's metadata.
+  current feed); title, date and lead come from the article page's metadata. Which links
+  are articles is the `article_url_pattern` column (a regex the absolute link must fully
+  match), so a new outlet is a new row, not new code.
+- Article pages are read only for URLs not stored yet, at most 30 per feed and run, one
+  request per second. Only `<head>` metadata is read (`og:title`, `og:description`,
+  `article:published_time`); bodies are never stored.
+- RTVE's `og:description` often repeats the headline, so its articles carry little lead.
 

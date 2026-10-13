@@ -7,15 +7,16 @@ from alembic.config import Config
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 
-from datos.news.application.collect_articles import collect_articles
+from datos.news.application.collect_articles import Sources, collect_articles
 from datos.news.domain.outlet import Feed, FeedKind
+from datos.news.infrastructure.article_page_source import ArticlePageSource
 from datos.news.infrastructure.csv_source import read_outlets
+from datos.news.infrastructure.feed_source_by_kind import FeedSourceByKind
+from datos.news.infrastructure.http_client import SourceUnavailableError, build_client
 from datos.news.infrastructure.pg_repository import PgNewsRepository
-from datos.news.infrastructure.rss_feed_source import (
-    FeedUnavailableError,
-    RssFeedSource,
-    build_client,
-)
+from datos.news.infrastructure.rss_feed_source import RssFeedSource
+from datos.news.infrastructure.section_page_source import SectionPageSource
+from datos.news.infrastructure.sitemap_feed_source import SitemapFeedSource
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
 
@@ -23,14 +24,29 @@ pytestmark = pytest.mark.integration
 
 DATA = Path("data/news")
 FIXTURES = Path("tests/fixtures/feeds")
+SITEMAPS = Path("tests/fixtures/sitemaps")
+PAGES = Path("tests/fixtures/pages")
 
 
-def _serve(by_host: dict[str, bytes]) -> RssFeedSource:
+def _serve(by_host: dict[str, bytes], pages: list[str] | None = None) -> Sources:
+    """Feeds by host. With `pages`, every non-XML URL is an article page, and is recorded."""
+
     def handler(request: httpx.Request) -> httpx.Response:
+        if pages is not None and not request.url.path.endswith(".xml"):
+            pages.append(str(request.url))
+            return httpx.Response(200, content=(PAGES / "rtvc.html").read_bytes())
         body = by_host.get(request.url.host)
         return httpx.Response(200, content=body) if body else httpx.Response(404)
 
-    return RssFeedSource(build_client(httpx.MockTransport(handler)))
+    client = build_client(httpx.MockTransport(handler))
+    readers = FeedSourceByKind(
+        rss=RssFeedSource(client),
+        sitemap=SitemapFeedSource(client),
+        section=SectionPageSource(client),
+    )
+    return Sources(
+        readers, ArticlePageSource(client, delay_s=0), unavailable=(SourceUnavailableError,)
+    )
 
 
 @pytest.fixture(scope="session")
@@ -85,12 +101,8 @@ def test_collects_real_shaped_feeds_and_a_second_run_stores_nothing_new(engine_u
     )
     repository = PgNewsRepository(create_engine(engine_url))
 
-    first = collect_articles(
-        feeds, outlets, source, repository, unavailable=(FeedUnavailableError,)
-    )
-    second = collect_articles(
-        feeds, outlets, source, repository, unavailable=(FeedUnavailableError,)
-    )
+    first = collect_articles(feeds, outlets, source, repository)
+    second = collect_articles(feeds, outlets, source, repository)
 
     assert [r.inserted for r in first] == [3, 3, 3]
     assert [r.inserted for r in second] == [0, 0, 0]
@@ -125,13 +137,7 @@ def test_a_feed_that_fails_does_not_stop_the_others(engine_url: str) -> None:
     ]
     source = _serve({"www.canarias7.es": (FIXTURES / "canarias7.xml").read_bytes()})
 
-    bad, ok = collect_articles(
-        feeds,
-        outlets,
-        source,
-        PgNewsRepository(create_engine(engine_url)),
-        unavailable=(FeedUnavailableError,),
-    )
+    bad, ok = collect_articles(feeds, outlets, source, PgNewsRepository(create_engine(engine_url)))
 
     assert bad.error is not None and "HTTPStatusError" in bad.error
     assert ok.inserted == 3
@@ -141,13 +147,7 @@ def test_stored_articles_are_metadata_only_and_within_the_limits(engine_url: str
     outlets = read_outlets(DATA / "outlets.csv")
     feeds = [Feed("el-espanol", FeedKind.RSS, "https://www.elespanol.com/rss/", "home", False)]
     source = _serve({"www.elespanol.com": (FIXTURES / "el-espanol.xml").read_bytes()})
-    collect_articles(
-        feeds,
-        outlets,
-        source,
-        PgNewsRepository(create_engine(engine_url)),
-        unavailable=(FeedUnavailableError,),
-    )
+    collect_articles(feeds, outlets, source, PgNewsRepository(create_engine(engine_url)))
 
     with create_engine(engine_url).connect() as connection:
         rows = connection.execute(text("SELECT url, headline, lead FROM articles")).all()
@@ -157,3 +157,36 @@ def test_stored_articles_are_metadata_only_and_within_the_limits(engine_url: str
         assert url.startswith("https://") and "utm_" not in url
         assert headline == headline.strip() and "<" not in headline
         assert lead is None or (len(lead) <= 501 and "<" not in lead)
+
+
+def test_a_news_sitemap_reads_each_new_page_once_across_runs(engine_url: str) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("rtvc", FeedKind.NEWS_SITEMAP, "https://rtvc.es/sitemap-news.xml", "all", True)]
+    pages: list[str] = []
+    sources = _serve({"rtvc.es": (SITEMAPS / "rtvc.xml").read_bytes()}, pages)
+    repository = PgNewsRepository(create_engine(engine_url))
+
+    [first] = collect_articles(feeds, outlets, sources, repository)
+    [second] = collect_articles(feeds, outlets, sources, repository)
+
+    assert (first.pages_read, first.inserted) == (3, 3)
+    assert (second.pages_read, second.inserted) == (0, 0)
+    assert len(pages) == 3
+    with create_engine(engine_url).connect() as connection:
+        leads = connection.execute(text("SELECT lead FROM articles")).scalars().all()
+    assert all(leads)
+
+
+def test_known_urls_returns_only_the_stored_ones_of_that_outlet(engine_url: str) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("rtvc", FeedKind.NEWS_SITEMAP, "https://rtvc.es/sitemap-news.xml", "all", True)]
+    repository = PgNewsRepository(create_engine(engine_url))
+    collect_articles(
+        feeds, outlets, _serve({"rtvc.es": (SITEMAPS / "rtvc.xml").read_bytes()}, []), repository
+    )
+    with create_engine(engine_url).connect() as connection:
+        stored = connection.execute(text("SELECT url FROM articles LIMIT 1")).scalar_one()
+
+    assert repository.known_urls("rtvc", [stored, "https://rtvc.es/new/"]) == {stored}
+    assert repository.known_urls("telemadrid", [stored]) == set()
+    assert repository.known_urls("rtvc", []) == set()

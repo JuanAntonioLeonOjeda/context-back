@@ -13,8 +13,11 @@ def test_the_versioned_outlets_and_feeds_are_consistent() -> None:
     feeds = read_feeds(DATA / "feeds.csv", outlets)
 
     assert len(outlets) == 14
-    assert {f.outlet_id for f in feeds} == {o.id for o in outlets} - {"3cat"} | {"3cat"}
+    assert {f.outlet_id for f in feeds} == {o.id for o in outlets}
     assert all(f.kind is FeedKind.RSS or f.needs_page_fetch for f in feeds)
+    assert all(
+        (f.kind is FeedKind.HTML_SECTION) == (f.article_url_pattern is not None) for f in feeds
+    )
 
 
 def test_outlets_that_block_ai_crawlers_never_allow_an_external_llm() -> None:
@@ -47,3 +50,24 @@ def test_an_unknown_feed_kind_is_rejected_with_its_line(tmp_path: Path) -> None:
 
     with pytest.raises(InvalidNewsFileError, match=r"feeds\.csv line 2"):
         read_feeds(path, outlets)
+
+
+HEADER = "outlet_id,kind,url,section,needs_page_fetch,article_url_pattern\n"
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        "rtve,html_section,https://www.rtve.es/x/,politics,true,\n",  # section without pattern
+        "abc,rss,https://x.example/rss,home,false,https://x\\.example/.+\n",  # pattern on rss
+        "rtve,html_section,https://www.rtve.es/x/,politics,true,https://(unclosed\n",
+    ],
+)
+def test_the_article_url_pattern_is_required_valid_and_only_for_sections(
+    tmp_path: Path, row: str
+) -> None:
+    path = tmp_path / "feeds.csv"
+    path.write_text(HEADER + row, encoding="utf-8")
+
+    with pytest.raises(InvalidNewsFileError, match=r"feeds\.csv line 2"):
+        read_feeds(path, read_outlets(DATA / "outlets.csv"))
