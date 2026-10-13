@@ -9,7 +9,7 @@
 
 ## Context
 
-The author validates LLM proposals and labels the blind test set. The tool must support multi-label classification, entities and pairs of texts, and import proposals as pre-annotations.
+The author labels the blind test set and the training set of the own model (ADR-0008). The tool must support multi-label classification, entities and pairs of texts, and import proposals as pre-annotations.
 
 ## Options considered
 

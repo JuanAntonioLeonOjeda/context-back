@@ -29,7 +29,7 @@ Not for: naming, folder tweaks, a library patch version.
 | Taxonomy of sectors and how a new sector is added | foundation |
 | How a government (coalitions, minority with support, caretaker) is modelled | map-governments |
 | Source selection criteria and the published outlet list | news-live |
-| Classifier port, LLM proposal flow and promotion criteria for the own model | news-live |
+| Classifier port, own-model choice, training-set size and acceptance criteria | news-live |
 | Similarity model, fixed version, thresholds and window for "same story" | story-contrast |
 | Link types between stories and the minimum confidence shown | history-trace |
 | Indicator definitions, deflators and how breaks in series are shown | context-voters |

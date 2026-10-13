@@ -26,7 +26,7 @@ Each phase goes through `.claude/workflows/spec-driven-phase.md` and has its own
 |---|---|---|
 | 0 | `foundation` | repo setup, Docker Compose with PostgreSQL, CI, ADRs 0001–0010, source audit, governments and competences dataset, 200-article blind test set |
 | 1 | `map-governments` | territories, governments API, first INE indicators |
-| 2 | `news-live` | RSS ingestion, classification (LLM proposes, author validates), party attribution; 2b: own classifier |
+| 2 | `news-live` | RSS ingestion, hand-labelled training set, own classifier (ADR-0008), party attribution |
 | 3 | `story-contrast` | clustering of the same story across outlets, common summary |
 | 4 | `history-trace` | five-year history, links between stories |
 | 5 | `context-voters` | sector indicators next to each story, voter profiles |
@@ -37,10 +37,11 @@ whose `specs/<phase>/tasks.md` has unchecked tasks; if none exists, it is the ne
 
 ## Architecture in one paragraph
 
-Ingestion adapters fetch articles (RSS now, GDELT and sitemaps for history) and store
-metadata only. A classification pipeline (rules and dictionaries, embeddings, and an
-`ArticleClassifier` port backed first by an LLM and later by the author's own model)
-assigns CCAA, sector and government level. Attribution applies the competence table to the
+Ingestion adapters fetch articles (RSS, news sitemaps and section pages now; outlet
+archives first and GDELT as a complement for history, ADR-0002) and store metadata only.
+A classification pipeline (rules and dictionaries, embeddings, and an `ArticleClassifier`
+port backed by the author's own model, trained on hand labels; no LLM in classification,
+ADR-0008) assigns CCAA, sector and government level. Attribution applies the competence table to the
 government in force on the article date. A linker groups articles into stories and links
 stories over time. An ETL loads official statistics and election results. PostgreSQL
 (pgvector, Spanish full-text search) holds everything; FastAPI exposes it read-only to the

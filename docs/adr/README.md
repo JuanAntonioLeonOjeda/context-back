@@ -10,13 +10,13 @@ reviews each one and rewrites the reasoning in their own words before it is `Acc
 | ADR | Title | Status |
 |---|---|---|
 | [0001](0001-context-first-approach.md) | Context first, verification later | Proposed |
-| [0002](0002-history-sources.md) | Five-year history from GDELT and sitemaps | Proposed |
+| [0002](0002-history-sources.md) | Five-year history from outlet archives first, GDELT as a complement | Proposed (reviewed) |
 | [0003](0003-backend-stack.md) | Backend stack: Python, FastAPI, PostgreSQL | Proposed |
 | [0004](0004-frontend-stack.md) | Frontend: React with React Router v7 | Proposed |
 | [0005](0005-responsible-party-attribution.md) | Responsible party from competences and government in force | Proposed |
 | [0006](0006-voter-profiles-method.md) | Voter profiles from results, INE data and CIS | Proposed |
 | [0007](0007-sectors-as-data.md) | Sectors as data, three at launch | Proposed |
-| [0008](0008-classification-strategy.md) | Classification: rules and embeddings, LLM proposes, author validates, own model later | Proposed |
+| [0008](0008-classification-strategy.md) | Classification with rules, embeddings and an own model from the start; no LLM | Proposed (reviewed) |
 | [0009](0009-labelling-tool.md) | Label Studio for labelling | Proposed |
 | [0010](0010-migration-tool.md) | Alembic for database migrations | Proposed |
 

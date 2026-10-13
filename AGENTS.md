@@ -20,7 +20,7 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`) | ✅ |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
 | `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; history pending | 🚧 |
-| `src/datos/classification/` | `ArticleClassifier` port, rules, LLM adapter, own-model adapter | ⏳ |
+| `src/datos/classification/` | `ArticleClassifier` port, rules, own-model adapter (ADR-0008) | ⏳ |
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | official statistics ETL and derived indicators | ⏳ |
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |

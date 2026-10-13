@@ -172,9 +172,8 @@ reproduce the list; the assistant does not label outlets by ideology.
 - **Pilot only** for regional outlets, the thorough label validation and the per-community
   metrics; other communities are added in batches once the validation flow and the
   per-outlet and per-party metrics hold.
-- **Languages:** Cataluña brings Catalan-language outlets. Embeddings and the LLM are
-  multilingual; the own model of phase 2b must be multilingual too (RoBERTa-BNE is
-  Spanish only), to be reflected when ADR-0008 is reviewed.
+- **Languages:** Cataluña brings Catalan-language outlets. Embeddings and the own
+  model must be multilingual (RoBERTa-BNE is Spanish only); recorded in ADR-0008.
 
 ## Sources audit method
 

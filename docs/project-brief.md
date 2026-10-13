@@ -24,7 +24,8 @@ environment, transport).
 1. Neutrality by construction: one code path for every party and outlet; rules are data.
 2. Traceability: every number has a source; every link between stories has a type, a
    confidence and an origin (rule, model or human).
-3. The LLM labels and proposes; facts come from the database; a human validates.
+3. Labels come from rules and the author's own model, trained on hand labels (ADR-0008);
+   facts come from the database.
 4. Reproducibility: stored results carry model and prompt versions; nothing is silently
    recomputed.
 5. Publish headlines and links only; leads are processed internally under the
@@ -83,7 +84,7 @@ regional outlets and thorough validation start with the pilot and grow in batche
 | Perceived bias in outlet selection | published criterion, all covering outlets shown, stable order |
 | Wrong responsible party | competence table, visible confidence, error report |
 | Invented links between stories | origin and confidence on every link; threshold chosen on the test set |
-| Labeller bias inherited from the LLM | blind test set labelled by hand before any proposal is seen; sampled review |
+| Labeller bias inherited from model proposals | blind test set labelled by hand with no proposals; training labels without proposals (ADR-0008) |
 | Copyright | metadata and short quotes only |
 | Ecological fallacy in voter profiles | method note; wording about areas, not individuals |
-| LLM cost on the five-year history | cheap model for ambiguous cases, batch processing, measure on a sample first |
+| Labelling effort for the own model | training-set size measured in `news-live`; labelling in short sessions |
