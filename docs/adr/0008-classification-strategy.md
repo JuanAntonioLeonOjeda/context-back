@@ -1,6 +1,6 @@
 # ADR-0008: Classification with rules, embeddings and an own model from the start; no LLM
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13 (revised 2026-10-13 after the sources audit)
 - **Phase:** news-live
 

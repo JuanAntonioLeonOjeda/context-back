@@ -1,6 +1,6 @@
 # ADR-0004: Frontend: React with React Router v7
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** foundation
 

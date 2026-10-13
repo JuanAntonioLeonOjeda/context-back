@@ -1,6 +1,6 @@
 # ADR-0009: Label Studio for labelling
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** foundation
 

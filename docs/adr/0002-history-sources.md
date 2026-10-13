@@ -1,6 +1,6 @@
 # ADR-0002: Five-year history from outlet archives first, GDELT as a complement
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13 (revised 2026-10-13 after the sources audit)
 - **Phase:** foundation
 

@@ -38,9 +38,13 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [ ] 20. Stratified sample of 200 (equal per outlet, half random and half enriched, stratum recorded) and Label Studio project (no proposals loaded)
 - [ ] 21. Author labels; export to `data/eval/test-set-v1.jsonl`
 
+> Tasks 20 and 21 wait for ~3 weeks of collection (until early November). The phase was merged
+> without them, by the author's decision on 2026-10-13; they continue on their own branch
+> from `develop`, together with `/defend foundation`.
+
 ## Close
 
-- [x] 22. ADR-0001 to ADR-0010 reviewed in the author's words (ADR-0002 and ADR-0008 revised); `Accepted` on merge
+- [x] 22. ADR-0001 to ADR-0010 reviewed in the author's words (ADR-0002 and ADR-0008 revised); `Accepted` on merge (done)
 - [x] 23. `AGENTS.md` statuses updated
 - [x] 24. Review: `py-reviewer`, `neutrality-reviewer` criteria applied to code, governments data, outlet list and guide → `specs/foundation/review.md`
 

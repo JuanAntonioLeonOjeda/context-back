@@ -1,6 +1,6 @@
 # ADR-0010: Alembic for database migrations
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** foundation
 
