@@ -21,9 +21,24 @@ The `selection` column records why each outlet is in the list.
   their feeds and even their `robots.txt`. Under rule 5 they are out until an access path
   exists; the bot protection is not bypassed. If the GfK DAM ranking beyond position 10
   becomes available, the next outlet is added.
+- **20 Minutos**: declares an express text-and-data-mining reservation
+  (`<meta name="tdm-reservation" content="1">`), so RDL 24/2021 art. 67 does not cover
+  processing its content. Out while the reservation stands.
+- **El Día** (Santa Cruz de Tenerife): answers 406 to automated clients; the next outlet by
+  audience within Canarias, Diario de Avisos, takes its place.
 - **Measured diversity (rule 3):** no current per-outlet measure of audience ideology
   exists (see `docs/sources-audit.md`), so the list is audience-based plus RTVE, and the
   audience figures are published. Outlets are not labelled by hand.
+
+## What is published and what is processed
+
+- **Published:** headline and link only (LPI art. 129 bis allows hyperlinks and very short
+  extracts). Leads are never shown.
+- **Processed internally:** the lead, for classification, under the text-and-data-mining
+  exception (RDL 24/2021 art. 67), only for outlets without an express reservation.
+- **`external_llm_allowed = false`:** outlets whose `robots.txt` blocks AI crawlers. Their
+  text is processed only by rules and local models (embeddings, own classifier), never sent
+  to an external LLM. Decided with the author on 2026-10-13, pending legal review.
 
 ## How each outlet is collected (`feeds.csv`)
 

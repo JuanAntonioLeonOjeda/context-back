@@ -34,6 +34,8 @@ Update the status column when a phase creates or finishes a path.
 | `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
+| `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
+| `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/adr/` | Architecture Decision Records (`NNNN-kebab-title.md`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`) | ⏳ |
@@ -54,6 +56,7 @@ Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 | `.claude/rules/testing-conventions.md` | pytest, Testcontainers, real fixtures, the blind test set |
 | `.claude/rules/core-zones.md` | (path-scoped) attribution, classification, stories, indicators, voters, schema: collaborative mode |
 | `.claude/rules/db-migrations.md` | (path-scoped) migrations immutable once merged; append-only observations; idempotent writes |
+| `.claude/skills/news-sources/` | verified facts on outlets, collection paths, IP limits, LLM restrictions, GDELT bias, INE tables |
 | `.claude/agents/py-reviewer.md` | project reviewer (read-only): boundaries, layers, edges, reproducibility, typing |
 | `.claude/agents/neutrality-reviewer.md` | neutrality reviewer (read-only): same path for every party and outlet, attribution rule, wording |
 | `.claude/agents/code-reviewer.md` | generic reviewer (read-only): security, correctness, performance, maintainability |

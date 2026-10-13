@@ -41,6 +41,87 @@ honest user agent (`datos-portfolio-audit/0.1; research`); no bot protection was
 - Closest per-outlet measure found: EsadeEcPol Insight 41 (2022), based on DNR 2022 data.
 - **Result:** no current, per-outlet measure of audience ideology was found.
 
+## 4. GDELT (checked 2026-10-13)
+
+- DOC 2.0 API: returns articles from 2021 (El Mundo, March 2021), 250 records per query,
+  and throttles hard (one request every 5 s; repeated refusals even at 15 s).
+- Raw files: the main GKG stream barely contains Spanish outlets; Spanish-language news is
+  in the **Translingual** stream (`*.translation.gkg.csv.zip`).
+- Coverage sample (12 of 96 Translingual files of one day):
+
+| Outlet | 2026-10-12 | 2021-03-10 |
+|---|---|---|
+| La Razón | 75 | 3 |
+| ABC | 51 | 5 |
+| El Confidencial | 37 | 6 |
+| 20 Minutos | 21 | 83 |
+| El País | 17 | 16 |
+| El Mundo | 2 | 16 |
+| La Vanguardia | 0 | 25 |
+| El Español, OKdiario | 0 | 0 |
+| RTVE | 2 | 0 |
+| Canarias7 | 7 | 8 |
+| 3Cat / CCMA | 8 | 7 |
+| Telemadrid, RTVC, El Día, Diario de Avisos, La Provincia | 0 | 0 |
+
+- **Result:** coverage is partial and very uneven between outlets and years. A history built
+  only from GDELT would over-represent some outlets: a coverage bias. ADR-0002 must be
+  revisited (task 22): per-outlet sitemap archives as the main source, GDELT as a
+  complement.
+
+## 5. INE (checked 2026-10-13, Tempus API `servicios.ine.es/wstempus/js/ES/`)
+
+| Indicator | Operation | Table | Notes |
+|---|---|---|---|
+| Population by community | ECP (Estadística Continua de Población) | 56940 | 56934 is national only |
+| At-risk-of-poverty rate by community | ECV | 29282 | |
+| AROPE (poverty or social exclusion) by community | ECV | 60264 | |
+| Education level attained by community | EPA | 66104 | |
+| Unemployment rate by community | EPA | 14506 | |
+| Housing price index by community (quarterly) | IPV | 80270 | live value read: Q2 2026, +12.2 % year on year (national) |
+| Rent price index by community | IPVA | 59056 | |
+| Income by municipality (voter profiles) | ADRH | one table per province ("Indicadores de renta media y mediana") | |
+
+- Mean income per person by community (ECV) not identified by table name yet; choose in
+  phase `map-governments`.
+
+## 6. Election results (checked 2026-10-13)
+
+- General, municipal and European elections by municipality: Ministerio del Interior,
+  Infoelectoral download area; open tooling exists (rOpenSpain `infoelectoral`).
+- Regional elections of the pilot (Canarias, Madrid, Cataluña) by municipality: not
+  located yet; needed only in phase `context-voters`.
+
+## 7. Intellectual property and text and data mining (checked 2026-10-13)
+
+Not legal advice; to be reviewed by a lawyer before any public launch.
+
+- **LPI art. 129 bis** (press publishers' right): exclusive right over reproduction and
+  making available online of press publications. Free uses include **hyperlinks** and
+  **"palabras sueltas o extractos muy breves o poco significativos"** that do not harm the
+  publisher's investment. A full lead is unlikely to qualify as a very short extract.
+- **LPI art. 32.2:** news aggregators need the right holders' authorisation for texts or
+  fragments of press publications.
+- **RDL 24/2021 art. 67** (text and data mining): reproductions of lawfully accessible works
+  for mining need no authorisation and may be kept as long as needed, **unless the right
+  holder reserved them expressly by machine-readable means**.
+- Reservations found:
+  - **20 Minutos:** `<meta name="tdm-reservation" content="1">` with a `tdm-policy` link:
+    an express machine-readable reservation.
+  - El Mundo, El País, ABC, El Confidencial, 20 Minutos, La Razón and La Vanguardia block
+    known AI crawlers (GPTBot, ClaudeBot, CCBot…) in `robots.txt`. Whether that counts as
+    a reservation under art. 67.3 is a legal question.
+  - No outlet publishes `/.well-known/tdmrep.json`.
+
+## 8. Most-read private regional outlets in the pilot (checked 2026-10-13)
+
+- Official GfK DAM regional figures are not public; outlets publish their own releases.
+- Canarias, audience within Canarias (Canarias7 release citing GfK DAM, April 2026):
+  Canarias7 (Las Palmas) first, El Día (Santa Cruz) second. Diario de Avisos reports
+  total audience instead, with itself first.
+- Cataluña: no within-community GfK DAM figure found; a Catalan-language ranking
+  (comunicació21, February 2026) puts ElNacional.cat first.
+
 ## Decisions taken with the author (2026-10-13)
 
 - El Periódico and El Economista are excluded (no usable access; protection not bypassed).
@@ -49,11 +130,14 @@ honest user agent (`datos-portfolio-audit/0.1; research`); no bot protection was
 - RTVC and Telemadrid: the lead is the article page's `og:description` (public metadata).
 - Measured diversity: fallback of the criterion (audience plus RTVE, figures published).
 - Collection paths per outlet: `data/news/feeds.csv`.
+- **Published:** headline and link only; the lead is processed internally under the mining
+  exception and never shown.
+- **20 Minutos excluded** (express mining reservation).
+- **Outlets blocking AI crawlers** (El Mundo, El País, ABC, El Confidencial, La Razón, La
+  Vanguardia, Canarias7) are processed only by rules and local models, never by an
+  external LLM (`external_llm_allowed = false`).
+- **Canarias:** Canarias7 (Las Palmas) and Diario de Avisos (Santa Cruz; El Día answers
+  406). Both feeds checked: Canarias7 100 items with leads, Diario de Avisos 20 items
+  (~33/day). **Cataluña:** private outlet pending a within-community audience figure.
+- **GDELT** is a complement, not the main history source (to revise in ADR-0002).
 
-## Pending in this task
-
-4. GDELT coverage of the pilot outlets.
-5. INE table ids (population, income, education level, housing prices and rents).
-6. Election results by municipality.
-7. Terms of use of each outlet.
-8. Most-read private regional outlets in the pilot (GfK DAM regional figures).

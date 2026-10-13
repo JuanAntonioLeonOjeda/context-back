@@ -1,14 +1,15 @@
-id,name,home_url,scope,region_id,selection
-el-espanol,El Español,https://www.elespanol.com,national,,GfK DAM top 10 (5 of 5 months)
-el-mundo,El Mundo,https://www.elmundo.es,national,,GfK DAM top 10 (5 of 5 months)
-el-pais,El País,https://elpais.com,national,,GfK DAM top 10 (5 of 5 months)
-abc,ABC,https://www.abc.es,national,,GfK DAM top 10 (5 of 5 months)
-el-confidencial,El Confidencial,https://www.elconfidencial.com,national,,GfK DAM top 10 (5 of 5 months)
-okdiario,OKdiario,https://okdiario.com,national,,GfK DAM top 10 (5 of 5 months)
-20minutos,20 Minutos,https://www.20minutos.es,national,,GfK DAM top 10 (4 of 5 months)
-la-razon,La Razón,https://www.larazon.es,national,,GfK DAM top 10 (2 of 5 months)
-la-vanguardia,La Vanguardia,https://www.lavanguardia.com,national,,GfK DAM top 10 (1 of 5 months)
-rtve,RTVE,https://www.rtve.es,national,,Public broadcaster
-rtvc,Radio Televisión Canaria,https://rtvc.es,regional,ccaa-05,Regional public broadcaster
-telemadrid,Telemadrid,https://www.telemadrid.es,regional,ccaa-13,Regional public broadcaster
-3cat,3Cat,https://www.3cat.cat,regional,ccaa-09,Regional public broadcaster
+id,name,home_url,scope,region_id,selection,external_llm_allowed
+el-espanol,El Español,https://www.elespanol.com,national,,GfK DAM top 10 (5 of 5 months),true
+el-mundo,El Mundo,https://www.elmundo.es,national,,GfK DAM top 10 (5 of 5 months),false
+el-pais,El País,https://elpais.com,national,,GfK DAM top 10 (5 of 5 months),false
+abc,ABC,https://www.abc.es,national,,GfK DAM top 10 (5 of 5 months),false
+el-confidencial,El Confidencial,https://www.elconfidencial.com,national,,GfK DAM top 10 (5 of 5 months),false
+okdiario,OKdiario,https://okdiario.com,national,,GfK DAM top 10 (5 of 5 months),true
+la-razon,La Razón,https://www.larazon.es,national,,GfK DAM top 10 (2 of 5 months),false
+la-vanguardia,La Vanguardia,https://www.lavanguardia.com,national,,GfK DAM top 10 (1 of 5 months),false
+rtve,RTVE,https://www.rtve.es,national,,Public broadcaster,true
+rtvc,Radio Televisión Canaria,https://rtvc.es,regional,ccaa-05,Regional public broadcaster,true
+telemadrid,Telemadrid,https://www.telemadrid.es,regional,ccaa-13,Regional public broadcaster,true
+3cat,3Cat,https://www.3cat.cat,regional,ccaa-09,Regional public broadcaster,true
+canarias7,Canarias7,https://www.canarias7.es,regional,ccaa-05,"Most read private outlet in Las Palmas (audience within Canarias, GfK DAM April 2026 as reported by Canarias7)",false
+diario-de-avisos,Diario de Avisos,https://diariodeavisos.elespanol.com,regional,ccaa-05,Most read private outlet in Santa Cruz with usable access (El Día blocks automated clients),true

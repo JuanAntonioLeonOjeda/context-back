@@ -27,7 +27,8 @@ environment, transport).
 3. The LLM labels and proposes; facts come from the database; a human validates.
 4. Reproducibility: stored results carry model and prompt versions; nothing is silently
    recomputed.
-5. Publish metadata and short citations with links, never article bodies.
+5. Publish headlines and links only; leads are processed internally under the
+   text-and-data-mining exception and never shown (see `docs/sources-audit.md`).
 
 ## 3. Architecture
 

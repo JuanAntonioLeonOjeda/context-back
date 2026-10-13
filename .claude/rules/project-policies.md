@@ -84,9 +84,13 @@ docker compose ps
 
 - Official statistics: respect each source's licence and show attribution in the API
   response and in the web app.
-- News: store and publish only headline, lead (short), date, outlet and URL. Never
-  republish article bodies. Full text, if fetched, is processed and not stored beyond what
-  the pipeline needs. Check each outlet's terms and `robots.txt` before fetching.
+- News: **publish only headline and link** (LPI art. 129 bis). The lead is stored and
+  processed internally for classification under the text-and-data-mining exception
+  (RDL 24/2021 art. 67), never shown. Never store article bodies.
+- Outlets with an express mining reservation are not processed. Outlets flagged
+  `external_llm_allowed = false` (`data/news/outlets.csv`) are never sent to an external
+  LLM. Respect `robots.txt` and never bypass bot protection. Details:
+  `docs/sources-audit.md`. Legal review before any public launch.
 
 ## Neutrality is a product requirement
 
