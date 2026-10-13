@@ -73,3 +73,39 @@ def test_parties_lists_the_party_table(make_client: Client) -> None:
 
     assert [p["id"] for p in body] == ["asg", "coalicion-canaria", "pp"]
     assert set(body[0]) == {"id", "name", "short_name", "colour_hex"}
+
+
+def test_the_map_lists_every_community_with_its_governing_parties_only(
+    make_client: Client,
+) -> None:
+    body = make_client().get("/map/governments").json()
+
+    assert body["date"] == "2026-10-13"
+    assert body["communities"] == [
+        {
+            "territory_id": "ccaa-05",
+            "governing_party_ids": ["coalicion-canaria", "pp"],
+            "is_caretaker": False,
+            "has_data": True,
+        },
+        {
+            "territory_id": "ccaa-13",
+            "governing_party_ids": ["pp"],
+            "is_caretaker": False,
+            "has_data": True,
+        },
+    ]
+
+
+def test_the_map_on_a_date_without_data_keeps_the_community_marked(make_client: Client) -> None:
+    body = make_client().get("/map/governments?date=2023-06-01").json()
+
+    madrid = next(c for c in body["communities"] if c["territory_id"] == "ccaa-13")
+    canarias = next(c for c in body["communities"] if c["territory_id"] == "ccaa-05")
+    assert madrid == {
+        "territory_id": "ccaa-13",
+        "governing_party_ids": [],
+        "is_caretaker": False,
+        "has_data": False,
+    }
+    assert canarias["is_caretaker"] is True
