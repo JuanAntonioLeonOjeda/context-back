@@ -86,6 +86,16 @@ Decided with the author on 2026-10-13.
 - **Each party role has its own source** (`government_term_parties.source_url`): the
   vice-president's appointment for a coalition partner, the investiture vote for external
   support. A caretaker term keeps the parties and supporters of the term it continues.
+- **Sources for communities** (decided 2026-10-13, after batch 1): the term date comes from
+  the BOE appointment decree; parties and supporters come from the Instituto de Derecho
+  Público's yearly "Informe Comunidades Autónomas" for that community and year, checked
+  against the press when in doubt. Where no report exists yet (current year), the regional
+  bulletin or the parliament's record is cited instead.
+- **A party that leaves a government does not become its external support**, even if it
+  voted yes in the investiture (e.g. Vox in Aragón, July 2024).
+- **PSOE federations** (PSIB, PSdeG, PSPV, PSE-EE…) are `psoe`; legally separate parties
+  (PSC) keep their own id.
+- **Abstaining is not supporting**: only yes votes count as external support.
 - **Work in batches** with the author's review: the State first, then communities in
   groups of five.
 - Party colours are provisional placeholders, reviewed in the front (contrast and
