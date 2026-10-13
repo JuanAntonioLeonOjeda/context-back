@@ -17,7 +17,7 @@ Update the status column when a phase creates or finishes a path.
 |---|---|---|
 | `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
 | `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`) | 🚧 |
-| `src/datos/governments/` | parties, governments (coalitions, supports), terms, competence table | ⏳ |
+| `src/datos/governments/` | parties, government terms (coalitions, supports), rules, CSV loader (`python -m datos.governments load`); competence table pending | 🚧 |
 | `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
 | `src/datos/news/` | outlets, RSS and history ingestion, article metadata | ⏳ |
 | `src/datos/classification/` | `ArticleClassifier` port, rules, LLM adapter, own-model adapter | ⏳ |
@@ -28,7 +28,7 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
 | `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
-| `data/governments/` | curated governments and competences, with sources | ⏳ |
+| `data/governments/` | curated parties and government terms since 2020 with sources (competences pending) | 🚧 |
 | `data/eval/` | hand-labelled blind test set (200 articles); never used for training | ⏳ |
 | `tests/` | `unit/`, `integration/`, `fixtures/` | 🚧 |
 | `docker-compose.yml` | PostgreSQL with pgvector, Label Studio | ✅ |
