@@ -10,9 +10,9 @@ from urllib.parse import urljoin
 
 import httpx
 
+from datos.http import SourceUnavailableError, download
 from datos.news.domain.article import FeedItem
 from datos.news.domain.outlet import Feed
-from datos.news.infrastructure.http_client import SourceUnavailableError, download
 
 
 class SectionPageSource:

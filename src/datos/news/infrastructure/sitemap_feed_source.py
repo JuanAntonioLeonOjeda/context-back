@@ -8,9 +8,9 @@ from datetime import datetime
 
 import httpx
 
+from datos.http import SourceUnavailableError, download
 from datos.news.domain.article import FeedItem
 from datos.news.domain.outlet import Feed
-from datos.news.infrastructure.http_client import SourceUnavailableError, download
 
 _SITEMAP = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 _NEWS = "{http://www.google.com/schemas/sitemap-news/0.9}"

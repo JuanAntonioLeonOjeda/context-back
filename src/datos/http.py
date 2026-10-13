@@ -1,4 +1,4 @@
-"""The HTTP client every collector shares: honest identification and bounded downloads.
+"""The HTTP client every collector and ETL shares: honest identification, bounded downloads.
 
 Everything downloaded is untrusted input: size-capped here, parsed by the readers, never
 executed.
@@ -24,7 +24,13 @@ def build_client(transport: httpx.BaseTransport | None = None) -> httpx.Client:
     )
 
 
-def download(client: httpx.Client, url: str, *, accept: str = "*/*") -> bytes:
+def download(
+    client: httpx.Client,
+    url: str,
+    *,
+    accept: str = "*/*",
+    max_bytes: int = MAX_DOWNLOAD_BYTES,
+) -> bytes:
     """The response body, or `SourceUnavailableError` on an HTTP error or an oversized body."""
     try:
         with client.stream("GET", url, headers={"Accept": accept}) as response:
@@ -33,8 +39,8 @@ def download(client: httpx.Client, url: str, *, accept: str = "*/*") -> bytes:
             size = 0
             for chunk in response.iter_bytes():
                 size += len(chunk)
-                if size > MAX_DOWNLOAD_BYTES:
-                    raise SourceUnavailableError(f"{url}: larger than {MAX_DOWNLOAD_BYTES} bytes")
+                if size > max_bytes:
+                    raise SourceUnavailableError(f"{url}: larger than {max_bytes} bytes")
                 chunks.append(chunk)
             return b"".join(chunks)
     except httpx.HTTPError as error:
