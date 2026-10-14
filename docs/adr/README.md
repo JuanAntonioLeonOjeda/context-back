@@ -22,6 +22,8 @@ author on 2026-10-13 and accepted when `feature/foundation` was merged.
 | [0011](0011-reference-data-model.md) | Reference data model for territories, governments and competences | Accepted |
 | [0012](0012-indicator-observations.md) | Indicators as append-only observations of what the INE published | Accepted |
 | [0013](../../../front/docs/adr/0013-svg-map.md) | The map is an SVG drawn with d3-geo, one link per community (front repo) | Accepted |
+| [0014](0014-attribution-on-read.md) | Attribution computed on read, with a three-value confidence | Proposed |
+| [0015](0015-article-classifier.md) | One classifier port, rules as data, classifications append-only | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

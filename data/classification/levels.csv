@@ -1,0 +1,54 @@
+term,level,language
+Gobierno,state,es
+Gobierno de España,state,es
+Gobierno central,state,es
+Ejecutivo central,state,es
+Moncloa,state,es
+Consejo de Ministros,state,es
+ministerio,state,es
+ministro,state,es
+ministra,state,es
+Congreso,state,es
+Congreso de los Diputados,state,es
+Senado,state,es
+INGESA,state,es
+Govern espanyol,state,ca
+Govern central,state,ca
+ministeri,state,ca
+ministre,state,ca
+Congrés,state,ca
+Junta,ccaa,es
+Generalitat,ccaa,ca
+Govern,ccaa,ca
+Consell,ccaa,ca
+Gobierno regional,ccaa,es
+Gobierno autonómico,ccaa,es
+Ejecutivo autonómico,ccaa,es
+consejero,ccaa,es
+consejera,ccaa,es
+consejería,ccaa,es
+conseller,ccaa,ca
+consellera,ccaa,ca
+conselleria,ccaa,ca
+ayuntamiento,local,es
+alcalde,local,es
+alcaldesa,local,es
+concejal,local,es
+concejala,local,es
+concejalía,local,es
+consistorio,local,es
+pleno municipal,local,es
+Gobierno municipal,local,es
+cabildo,local,es
+diputación,local,es
+Consell Insular,local,ca
+Consell de Mallorca,local,ca
+Consell de Menorca,local,ca
+Consell d'Eivissa,local,ca
+Consell de Formentera,local,ca
+Consell Comarcal,local,ca
+ajuntament,local,ca
+alcaldessa,local,ca
+regidor,local,ca
+regidora,local,ca
+consistori,local,ca

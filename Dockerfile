@@ -1,5 +1,6 @@
-# The API. Its entrypoint brings the database up to date (migrations and CSV data) and then
-# starts the server; docker-compose.yml runs it as `back-main` (profile `app`).
+# The API and the collector (same image). Its entrypoint brings the database up to date (migrations and CSV data) and then
+# starts the server; docker-compose.yml runs it as `back-main` and, with collector.sh as the
+# entrypoint, as `collector` (profile `app`).
 FROM python:3.13-slim-trixie
 
 # uv, pinned to the version the project is developed with.
@@ -23,6 +24,7 @@ COPY migrations ./migrations
 COPY src ./src
 COPY data ./data
 COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chmod=755 docker/collector.sh /usr/local/bin/collector.sh
 RUN uv sync --locked --no-default-groups
 
 # Not root: nothing in the API or the jobs needs it.

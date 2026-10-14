@@ -18,30 +18,31 @@ Update the status column when a phase creates or finishes a path.
 | `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
 | `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`); reader and `/territories`; boundaries read from the IGN GML and built into `data/geo/ccaa.geojson` (`python -m datos.territories build-geometry`, needs the `geo` group) and served at `/map/geometry` | ✅ |
 | `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`); read side: government in force on a date, the map's governing parties, routers `/communities/{id}/governments`, `/map/governments` and `/parties` | ✅ |
-| `src/datos/attribution/` | responsible party = competence × government in force on the date | ⏳ |
-| `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; history pending | 🚧 |
-| `src/datos/classification/` | `ArticleClassifier` port, rules, own-model adapter (ADR-0008) | ⏳ |
+| `src/datos/attribution/` | responsible party = competence × government in force on the date, computed on read (ADR-0014); pure rule in `domain/`, published API in `application/published.py` | ✅ |
+| `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; read side: latest news of a community and sector with their attribution, `/communities/{id}/news`; history pending | 🚧 |
+| `src/datos/classification/` | `ArticleClassifier` port, rules as data (`data/classification/`), append-only storage, `python -m datos.classification classify-new` (ADR-0015); own-model adapter pending | 🚧 |
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | the five INE indicators: client of the Tempus API, definitions, loader (`python -m datos.indicators load`), append-only observations, read side and `/communities/{id}/indicators`; see `docs/indicators.md` | ✅ |
 | `src/datos/voters/` | election results ETL and voter profiles | ⏳ |
-| `src/datos/api/` | FastAPI app factory and the per-request provider of readers; routers live in each module's `interface/` (or `routes.py`): `/health`, `/territories`, `/parties`, `/communities/{id}/governments`, `/communities/{id}/indicators`, `/map/governments`, `/map/geometry` | ✅ |
+| `src/datos/api/` | FastAPI app factory and the per-request provider of readers; routers live in each module's `interface/` (or `routes.py`): `/health`, `/territories`, `/parties`, `/communities/{id}/governments`, `/communities/{id}/indicators`, `/communities/{id}/news`, `/map/governments`, `/map/geometry` | ✅ |
 | `src/datos/http.py`, `src/datos/clock.py` | shared bounded HTTP client (honest user agent, size cap); the clock (today in Spain) | ✅ |
 | `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
-| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag; `0004`: downloads, indicators and append-only observations) | 🚧 |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag; `0004`: downloads, indicators and append-only observations; `0005`: append-only classifications) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated parties (with their standard colour, from Wikidata), government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/geo/` | `ccaa.geojson`: the 19 communities simplified for the map, from the IGN (CC BY 4.0), with its build and attribution in `README.md` | ✅ |
+| `data/classification/` | the terms of the rules classifier as CSV (`places`, `levels`, `sectors`, `exclusions`), with the matching conventions and the coverage of the last run in `README.md`; the rules' version is a hash of these files | 🚧 |
 | `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
 | `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
-| `docker-compose.yml`, `Dockerfile`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profiles `app` and `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
-| `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template | ✅ |
+| `docker-compose.yml`, `Dockerfile`, `docker/`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profiles `app` and `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data, `docker/entrypoint.sh`), `collector` (`docker/collector.sh`) (same image; every 3 hours collects the feeds and classifies the new articles, logs JSON to stdout) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
+| `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template (replaced by the `collector` service) | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
 | `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
 | `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/indicators.md` | the five indicators: INE table, unit, frequency, how a value is chosen and stored, what was verified | ✅ |
-| `docs/adr/` | Architecture Decision Records: 0001–0013 accepted (0013 lives in `../front/docs/adr/`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
+| `docs/adr/` | Architecture Decision Records: 0001–0013 accepted (0013 lives in `../front/docs/adr/`), 0014–0015 proposed, awaiting the author, index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` and `map-governments` also have `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.

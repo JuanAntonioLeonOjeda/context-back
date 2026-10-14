@@ -1,0 +1,191 @@
+term,territory_id,level,kind,language
+Andalucía,ccaa-01,,community,es
+Aragón,ccaa-02,,community,es
+Aragó,ccaa-02,,community,ca
+Principado de Asturias,ccaa-03,,community,es
+Asturias,ccaa-03,,community,es
+Asturies,ccaa-03,,community,ast
+Illes Balears,ccaa-04,,community,ca
+Islas Baleares,ccaa-04,,community,es
+Baleares,ccaa-04,,community,es
+Balears,ccaa-04,,community,ca
+Canarias,ccaa-05,,community,es
+Canàries,ccaa-05,,community,ca
+Cantabria,ccaa-06,,community,es
+Castilla y León,ccaa-07,,community,es
+Castella i Lleó,ccaa-07,,community,ca
+Castilla-La Mancha,ccaa-08,,community,es
+Castilla La Mancha,ccaa-08,,community,es
+Castella-la Manxa,ccaa-08,,community,ca
+Cataluña,ccaa-09,,community,es
+Catalunya,ccaa-09,,community,ca
+Comunitat Valenciana,ccaa-10,,community,ca
+Comunidad Valenciana,ccaa-10,,community,es
+País Valencià,ccaa-10,,community,ca
+Extremadura,ccaa-11,,community,es
+Galicia,ccaa-12,,community,es
+Galiza,ccaa-12,,community,gl
+Comunidad de Madrid,ccaa-13,,community,es
+Comunitat de Madrid,ccaa-13,,community,ca
+Región de Murcia,ccaa-14,,community,es
+Regió de Múrcia,ccaa-14,,community,ca
+Comunidad Foral de Navarra,ccaa-15,,community,es
+Navarra,ccaa-15,,community,es
+Nafarroa,ccaa-15,,community,eu
+País Vasco,ccaa-16,,community,es
+Euskadi,ccaa-16,,community,eu
+País Basc,ccaa-16,,community,ca
+La Rioja,ccaa-17,,community,es
+Ceuta,ccaa-18,,community,es
+Melilla,ccaa-19,,community,es
+Araba,ccaa-16,,province,es
+Álava,ccaa-16,,province,co-official
+Albacete,ccaa-08,,province,es
+Alicante,ccaa-10,,province,es
+Alacant,ccaa-10,,province,co-official
+Almería,ccaa-01,,province,es
+Ávila,ccaa-07,,province,es
+Badajoz,ccaa-11,,province,es
+Barcelona,ccaa-09,,province,es
+Burgos,ccaa-07,,province,es
+Cáceres,ccaa-11,,province,es
+Cádiz,ccaa-01,,province,es
+Castellón,ccaa-10,,province,es
+Castelló,ccaa-10,,province,co-official
+Ciudad Real,ccaa-08,,province,es
+Córdoba,ccaa-01,,province,es
+A Coruña,ccaa-12,,province,es
+Cuenca,ccaa-08,,province,es
+Girona,ccaa-09,,province,es
+Granada,ccaa-01,,province,es
+Guadalajara,ccaa-08,,province,es
+Gipuzkoa,ccaa-16,,province,es
+Huelva,ccaa-01,,province,es
+Huesca,ccaa-02,,province,es
+Jaén,ccaa-01,,province,es
+León,ccaa-07,,province,es
+Lleida,ccaa-09,,province,es
+Lugo,ccaa-12,,province,es
+Madrid,ccaa-13,,province,es
+Málaga,ccaa-01,,province,es
+Murcia,ccaa-14,,province,es
+Ourense,ccaa-12,,province,es
+Palencia,ccaa-07,,province,es
+Las Palmas,ccaa-05,,province,es
+Pontevedra,ccaa-12,,province,es
+Salamanca,ccaa-07,,province,es
+Santa Cruz de Tenerife,ccaa-05,,province,es
+Segovia,ccaa-07,,province,es
+Sevilla,ccaa-01,,province,es
+Soria,ccaa-07,,province,es
+Tarragona,ccaa-09,,province,es
+Teruel,ccaa-02,,province,es
+Toledo,ccaa-08,,province,es
+Valencia,ccaa-10,,province,es
+València,ccaa-10,,province,co-official
+Valladolid,ccaa-07,,province,es
+Bizkaia,ccaa-16,,province,es
+Zamora,ccaa-07,,province,es
+Zaragoza,ccaa-02,,province,es
+Oviedo,ccaa-03,,city,es
+Palma,ccaa-04,,city,es
+Las Palmas de Gran Canaria,ccaa-05,,city,es
+Santander,ccaa-06,,city,es
+Mérida,ccaa-11,,city,es
+Santiago de Compostela,ccaa-12,,city,es
+Logroño,ccaa-17,,city,es
+Pamplona,ccaa-15,,city,es
+Iruña,ccaa-15,,city,es
+Vitoria,ccaa-16,,city,es
+Vitoria-Gasteiz,ccaa-16,,city,es
+Gasteiz,ccaa-16,,city,es
+Bilbao,ccaa-16,,city,es
+San Sebastián,ccaa-16,,city,es
+Donostia,ccaa-16,,city,es
+Lérida,ccaa-09,,city,es
+Gerona,ccaa-09,,city,es
+Vigo,ccaa-12,,city,es
+Gijón,ccaa-03,,city,es
+Elche,ccaa-10,,city,es
+Cartagena,ccaa-14,,city,es
+Mallorca,ccaa-04,,island,ca
+Menorca,ccaa-04,,island,ca
+Ibiza,ccaa-04,,island,es
+Eivissa,ccaa-04,,island,ca
+Formentera,ccaa-04,,island,ca
+Tenerife,ccaa-05,,island,es
+Gran Canaria,ccaa-05,,island,es
+Lanzarote,ccaa-05,,island,es
+Fuerteventura,ccaa-05,,island,es
+La Palma,ccaa-05,,island,es
+La Gomera,ccaa-05,,island,es
+El Hierro,ccaa-05,,island,es
+La Graciosa,ccaa-05,,island,es
+Junta de Andalucía,ccaa-01,ccaa,institution,es
+Parlamento de Andalucía,ccaa-01,,parliament,es
+Servicio Andaluz de Salud,ccaa-01,ccaa,institution,es
+Gobierno de Aragón,ccaa-02,ccaa,institution,es
+Cortes de Aragón,ccaa-02,,parliament,es
+Principado,ccaa-03,ccaa,institution,es
+Junta General del Principado,ccaa-03,,parliament,es
+SESPA,ccaa-03,ccaa,institution,es
+Govern balear,ccaa-04,ccaa,institution,ca
+Govern de les Illes Balears,ccaa-04,ccaa,institution,ca
+Gobierno balear,ccaa-04,ccaa,institution,es
+Parlament balear,ccaa-04,,parliament,ca
+IB-Salut,ccaa-04,ccaa,institution,ca
+Gobierno de Canarias,ccaa-05,ccaa,institution,es
+Parlamento de Canarias,ccaa-05,,parliament,es
+Servicio Canario de la Salud,ccaa-05,ccaa,institution,es
+Gobierno de Cantabria,ccaa-06,ccaa,institution,es
+Parlamento de Cantabria,ccaa-06,,parliament,es
+Junta de Castilla y León,ccaa-07,ccaa,institution,es
+Cortes de Castilla y León,ccaa-07,,parliament,es
+Sacyl,ccaa-07,ccaa,institution,es
+Junta de Comunidades de Castilla-La Mancha,ccaa-08,ccaa,institution,es
+Gobierno de Castilla-La Mancha,ccaa-08,ccaa,institution,es
+SESCAM,ccaa-08,ccaa,institution,es
+Generalitat de Catalunya,ccaa-09,ccaa,institution,ca
+Generalitat de Cataluña,ccaa-09,ccaa,institution,es
+Parlament de Catalunya,ccaa-09,,parliament,ca
+Parlamento de Cataluña,ccaa-09,,parliament,es
+Generalitat Valenciana,ccaa-10,ccaa,institution,ca
+Corts Valencianes,ccaa-10,ccaa,institution,ca
+Junta de Extremadura,ccaa-11,ccaa,institution,es
+Asamblea de Extremadura,ccaa-11,,parliament,es
+Xunta,ccaa-12,ccaa,institution,gl
+Xunta de Galicia,ccaa-12,ccaa,institution,gl
+Parlamento de Galicia,ccaa-12,,parliament,es
+Sergas,ccaa-12,ccaa,institution,gl
+Asamblea de Madrid,ccaa-13,,parliament,es
+SERMAS,ccaa-13,ccaa,institution,es
+Asamblea Regional de Murcia,ccaa-14,,parliament,es
+Servicio Murciano de Salud,ccaa-14,ccaa,institution,es
+Gobierno de Navarra,ccaa-15,ccaa,institution,es
+Parlamento de Navarra,ccaa-15,,parliament,es
+Osasunbidea,ccaa-15,ccaa,institution,eu
+Gobierno Vasco,ccaa-16,ccaa,institution,es
+Eusko Jaurlaritza,ccaa-16,ccaa,institution,eu
+Parlamento Vasco,ccaa-16,,parliament,es
+Osakidetza,ccaa-16,ccaa,institution,eu
+Gobierno de La Rioja,ccaa-17,ccaa,institution,es
+Parlamento de La Rioja,ccaa-17,,parliament,es
+Gobierno de Ceuta,ccaa-18,ccaa,institution,es
+Asamblea de Ceuta,ccaa-18,,parliament,es
+Gobierno de Melilla,ccaa-19,ccaa,institution,es
+Asamblea de Melilla,ccaa-19,,parliament,es
+Gobierno andaluz,ccaa-01,ccaa,institution,es
+Gobierno aragonés,ccaa-02,ccaa,institution,es
+Gobierno asturiano,ccaa-03,ccaa,institution,es
+Gobierno canario,ccaa-05,ccaa,institution,es
+Gobierno cántabro,ccaa-06,ccaa,institution,es
+Gobierno gallego,ccaa-12,ccaa,institution,es
+Gobierno murciano,ccaa-14,ccaa,institution,es
+Gobierno navarro,ccaa-15,ccaa,institution,es
+Gobierno vasco,ccaa-16,ccaa,institution,es
+Gobierno riojano,ccaa-17,ccaa,institution,es
+Gobierno extremeño,ccaa-11,ccaa,institution,es
+Gobierno valenciano,ccaa-10,ccaa,institution,es
+Gobierno catalán,ccaa-09,ccaa,institution,es
+Govern català,ccaa-09,ccaa,institution,ca
+Govern valencià,ccaa-10,ccaa,institution,ca
