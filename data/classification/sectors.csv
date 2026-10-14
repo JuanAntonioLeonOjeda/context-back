@@ -1,0 +1,146 @@
+term,sector_id,language
+educación,education,es
+educativo,education,es
+educativa,education,es
+educativos,education,es
+educativas,education,es
+colegio,education,es
+colegios,education,es
+escuela,education,es
+escuelas,education,es
+escuela infantil,education,es
+escuelas infantiles,education,es
+guardería,education,es
+guarderías,education,es
+institutos,education,es
+IES,education,es
+universidad,education,es
+universidades,education,es
+universitario,education,es
+universitaria,education,es
+universitarios,education,es
+alumnos,education,es
+alumnas,education,es
+alumnado,education,es
+estudiantes,education,es
+profesorado,education,es
+profesores,education,es
+docente,education,es
+docentes,education,es
+maestros,education,es
+maestras,education,es
+enseñanza,education,es
+formación profesional,education,es
+FP,education,es
+beca,education,es
+becas,education,es
+selectividad,education,es
+PAU,education,es
+EBAU,education,es
+ratio,education,es
+ratios,education,es
+aulas,education,es
+currículo,education,es
+LOMLOE,education,es
+curso escolar,education,es
+comedor escolar,education,es
+comedores escolares,education,es
+escolarización,education,es
+educació,education,ca
+escola,education,ca
+escoles,education,ca
+instituts,education,ca
+universitat,education,ca
+universitats,education,ca
+alumnes,education,ca
+alumnat,education,ca
+estudiants,education,ca
+professorat,education,ca
+docents,education,ca
+mestres,education,ca
+ensenyament,education,ca
+beques,education,ca
+curs escolar,education,ca
+sanidad,health,es
+sanitario,health,es
+sanitaria,health,es
+sanitarios,health,es
+sanitarias,health,es
+hospital,health,es
+hospitales,health,es
+centro de salud,health,es
+centros de salud,health,es
+atención primaria,health,es
+urgencias,health,es
+lista de espera,health,es
+listas de espera,health,es
+médicos,health,es
+médicas,health,es
+médico de familia,health,es
+médicos de familia,health,es
+enfermería,health,es
+enfermeras,health,es
+enfermeros,health,es
+pacientes,health,es
+quirófano,health,es
+quirófanos,health,es
+salud pública,health,es
+salud mental,health,es
+vacunación,health,es
+consultorio,health,es
+consultorios,health,es
+MIR,health,es
+farmacia,health,es
+farmacias,health,es
+medicamentos,health,es
+ambulancias,health,es
+sistema sanitario,health,es
+sanitat,health,ca
+sanitari,health,ca
+sanitària,health,ca
+sanitaris,health,ca
+hospitals,health,ca
+CAP,health,ca
+centre de salut,health,ca
+atenció primària,health,ca
+urgències,health,ca
+llista d'espera,health,ca
+llistes d'espera,health,ca
+metges,health,ca
+infermeres,health,ca
+infermers,health,ca
+pacients,health,ca
+salut pública,health,ca
+salut mental,health,ca
+vacunació,health,ca
+vivienda,housing,es
+viviendas,housing,es
+alquiler,housing,es
+alquileres,housing,es
+inquilino,housing,es
+inquilinos,housing,es
+desahucio,housing,es
+desahucios,housing,es
+vivienda protegida,housing,es
+VPO,housing,es
+vivienda pública,housing,es
+viviendas públicas,housing,es
+zona tensionada,housing,es
+zonas tensionadas,housing,es
+ley de vivienda,housing,es
+bono alquiler,housing,es
+okupación,housing,es
+pisos turísticos,housing,es
+vivienda turística,housing,es
+emancipación,housing,es
+habitatge,housing,ca
+habitatges,housing,ca
+lloguer,housing,ca
+lloguers,housing,ca
+llogaters,housing,ca
+desnonament,housing,ca
+desnonaments,housing,ca
+zones tensionades,housing,ca
+pisos turístics,housing,ca
+habitatge protegit,housing,ca
+habitatge públic,housing,ca
