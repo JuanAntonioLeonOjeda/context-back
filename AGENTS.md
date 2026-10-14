@@ -42,7 +42,7 @@ Update the status column when a phase creates or finishes a path.
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/indicators.md` | the five indicators: INE table, unit, frequency, how a value is chosen and stored, what was verified | ✅ |
 | `docs/adr/` | Architecture Decision Records: 0001–0010 accepted; 0011–0013 proposed (accepted on merge of `map-governments`; 0013 lives in `../front/docs/adr/`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | 🚧 |
-| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` also has `review.md` | 🚧 |
+| `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` and `map-governments` also have `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 
