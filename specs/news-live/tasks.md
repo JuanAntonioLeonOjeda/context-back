@@ -29,8 +29,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## Web (front)
 
-- [ ] 11. Client regenerated; zod schema and hook for the news of a community and sector
-- [ ] 12. Sector selector and news list in the community card: outlet, date, headline linking out, who is responsible, why and the confidence in words; empty state; Testing Library and axe in both themes
+- [x] 11. Client regenerated; zod schema and hook for the news of a community and sector
+- [x] 12. Sector selector and news list in the community card: outlet, date, headline linking out, who is responsible, why and the confidence in words; empty state; Testing Library and axe in both themes
 
 ## Collection in Docker
 
