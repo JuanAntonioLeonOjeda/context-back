@@ -1,6 +1,6 @@
 # ADR-0012: Indicators as append-only observations of what the INE published
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** map-governments
 

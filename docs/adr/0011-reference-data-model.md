@@ -1,6 +1,6 @@
 # ADR-0011: Reference data model for territories, governments and competences
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-13
 - **Phase:** map-governments (decisions taken in `foundation`)
 

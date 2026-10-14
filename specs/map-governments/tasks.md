@@ -47,7 +47,7 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 - [x] 24. `data/` READMEs checked (geometry and party colours documented), `docs/indicators.md` written, `AGENTS.md` statuses of both repos updated, OpenAPI client regenerated (contract unchanged, types in sync)
 - [x] 25. Reviews: `py-reviewer`, `neutrality-reviewer`; in the front `ts-reviewer` and `accessibility-reviewer` criteria → `specs/map-governments/review.md` (two fixes; target size on phones left to the author)
-- [ ] 26. PR into `develop` with `/create-pr` (`/defend map-governments` optional)
+- [x] 26. PR into `develop` with `/create-pr` in both repos; ADR-0011 to ADR-0013 accepted (`/defend map-governments` optional)
 
 ## Defend
 

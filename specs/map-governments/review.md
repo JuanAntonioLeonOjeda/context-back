@@ -52,7 +52,7 @@ the phase added. The accessibility part is static plus axe in jsdom: it cannot s
 | Ceuta and Melilla: HTML markers of a real 32 px whatever the width | pass |
 | Colour never the only cue: stripes plus link names and legend | pass |
 | Focus after a navigation inside the app stayed on the link used, so a screen reader did not know the page had changed (deferred from the `foundation` review) | **fixed**: the focus moves to `main` on every route change, not on the first page; mutation-checked |
-| **Target size on phones (WCAG 2.5.8).** At 360 px the smallest side of La Rioja, Asturias and Cantabria is about 19–20 px; a map needs about 450 px of width for 24 px. Adjacent communities touch, so the spacing exception does not apply | **warning**: the standard remedy is an equivalent control on the same page, for example a list of the 19 communities as links under the map. The author's decision |
+| **Target size on phones (WCAG 2.5.8).** At 360 px the smallest side of La Rioja, Asturias and Cantabria is about 19–20 px; a map needs about 450 px of width for 24 px. Adjacent communities touch, so the spacing exception does not apply | **fixed** (decided by the author): a list of the 19 communities as links under the map, 44 px high each, the equivalent control of WCAG 2.5.8 |
 | Focus ring of an SVG community: the outer line turns the focus colour and thickens; on a blue-filled community the thin light inner line is what separates it from the fill | note: check in a real browser |
 | Legend: short names (CxA, GBai) carry the full name only in `<abbr title>`, which touch and many screen readers do not expose | note: WCAG 3.1.4 is AAA; a visually hidden full name would fix it |
 
