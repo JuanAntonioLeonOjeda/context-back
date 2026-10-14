@@ -40,6 +40,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 ## Own model (after the blind test set)
 
 - [ ] 14. Training sample of 400 (disjoint from the test set, with a test), Label Studio project with no proposals
+  - Prepared 2026-10-14: the sampler (`python -m datos.classification sample`, `data/sampling/README.md`), the enrichment terms, the Label Studio interface (`data/labelling/label-studio.xml`) and the test that the sets share no article. A dry run on 2026-10-14 found five outlets short of enriched articles (3Cat, RTVE, Telemadrid, El Confidencial, Diario de Avisos): check again before drawing on 2026-10-21.
 - [ ] 15. Author labels in sessions of 100; export to `data/train/train-set-v1.jsonl`
 - [ ] 16. ADR-0016 `[core]`: encoder (licence and Catalan verified), what the model labels, promotion criteria set by the **author** before training
   - Drafted 2026-10-14 with the author's decisions (encoder mpnet-base with MiniLM as fallback, sectors and levels, training sample on 2026-10-21, promotion criteria, `ml` group approved): `docs/adr/0016-own-classifier-model.md`, proposed until the author accepts the text.
