@@ -7,7 +7,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 ## Decisions
 
 - [x] 1. ADR-0014 `[core]`: attribution computed on read, the confidence scale, D6 = A
-- [ ] 2. ADR-0015: the `ArticleClassifier` port, rules as data, classifications append-only
+- [x] 2. ADR-0015: the `ArticleClassifier` port, rules as data, classifications append-only
 
 ## Attribution (back)
 
@@ -17,7 +17,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 ## Classification (back)
 
 - [x] 5. `data/classification/`: `gazetteer.csv`, `institutions.csv`, `sectors.csv` in Spanish and Catalan, with their sources in `README.md`
-- [ ] 6. Rules classifier `[core]` behind the `ArticleClassifier` port; contract tests; cases from the labelling guide and real feed items
+- [x] 6. Rules classifier `[core]` behind the `ArticleClassifier` port; contract tests; cases from the labelling guide and real feed items
 - [ ] 7. Migration `0005` (`classifications`, append-only trigger) and its repository; integration tests
 - [ ] 8. `python -m datos.classification classify-new`: classifies only what the active model has not; idempotent
 - [ ] 9. Real run on the stored articles; counts per outlet and sector recorded (not an evaluation: the test set does not exist yet)
