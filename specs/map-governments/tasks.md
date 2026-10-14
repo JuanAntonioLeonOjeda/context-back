@@ -39,13 +39,13 @@ own `foundation` tasks (`front/specs/foundation/tasks.md`) are done.
 
 - [x] 19. Party colour palette `[core]` (**author**): each party's standard colour from Wikidata, loaded into `parties.csv` and the database and served by `/parties`; Convocatoria por Asturias keeps the neutral grey; stripe separators and the double outline go to the map ADR (task 20). Colour-blindness checks skipped by the author
 - [x] 20. ADR-0013 (front, `front/docs/adr/0013-svg-map.md`) `[core]`: SVG map with `d3-geo`, one link per community, stripes with separators, double outline
-- [ ] 21. Map component: projection, Canary Islands inset, markers for Ceuta and Melilla, legend, selection by mouse, touch and keyboard, text alternatives
-- [ ] 22. Community card: president, governing parties, external support, caretaker note, term start, indicators with period and source links; wording without evaluation
-- [ ] 23. Tests with Testing Library and axe in both themes; empty and error states
+- [x] 21. Map component: projection, Canary Islands inset, markers for Ceuta and Melilla, legend, selection by mouse, touch and keyboard, text alternatives
+- [x] 22. Community card: president, governing parties, external support, caretaker note, term start, indicators with period and source links; wording without evaluation
+- [x] 23. Tests with Testing Library and axe in both themes; empty and error states
 
 ## Close
 
-- [ ] 24. `data/` READMEs, `AGENTS.md` statuses (both repos) and OpenAPI client regenerated
+- [x] 24. `data/` READMEs checked (geometry and party colours documented), `docs/indicators.md` written, `AGENTS.md` statuses of both repos updated, OpenAPI client regenerated (contract unchanged, types in sync)
 - [ ] 25. Reviews: `py-reviewer`, `neutrality-reviewer`; in the front `ts-reviewer` and `accessibility-reviewer`
 - [ ] 26. PR into `develop` with `/create-pr` (`/defend map-governments` optional)
 
