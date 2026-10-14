@@ -6,7 +6,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## Decisions
 
-- [ ] 1. ADR-0014 `[core]`: attribution computed on read, the confidence scale, D6 = A
+- [x] 1. ADR-0014 `[core]`: attribution computed on read, the confidence scale, D6 = A
 - [ ] 2. ADR-0015: the `ArticleClassifier` port, rules as data, classifications append-only
 
 ## Attribution (back)
