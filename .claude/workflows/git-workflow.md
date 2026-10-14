@@ -53,7 +53,7 @@ If the new work depends on an unmerged branch, wait for the merge or ask the aut
 
 - `feature/`, `fix/`, `chore/`, `docs/` → PR into `develop` with green CI.
 - `develop` → `main` when a phase is closed (tests green, `docker compose up` works on a
-  clean checkout, `/defend` done). Prefer merge commits or rebase-merge over squash, so
+  clean checkout). `/defend` is optional and never a merge condition. Prefer merge commits or rebase-merge over squash, so
   the small-commit history stays visible.
 
 ## What NOT to do

@@ -4,9 +4,9 @@ from pathlib import Path
 import httpx
 import pytest
 
+from datos.http import SourceUnavailableError, build_client
 from datos.news.domain.article import DropReason, to_article
 from datos.news.domain.outlet import Feed, FeedKind
-from datos.news.infrastructure.http_client import SourceUnavailableError, build_client
 from datos.news.infrastructure.sitemap_feed_source import SitemapFeedSource
 
 FIXTURES = Path("tests/fixtures")

@@ -8,9 +8,9 @@ from typing import Any
 import feedparser
 import httpx
 
+from datos.http import SourceUnavailableError, download
 from datos.news.domain.article import FeedItem
 from datos.news.domain.outlet import Feed
-from datos.news.infrastructure.http_client import SourceUnavailableError, download
 
 _ACCEPT = "application/rss+xml, application/atom+xml, application/xml"
 

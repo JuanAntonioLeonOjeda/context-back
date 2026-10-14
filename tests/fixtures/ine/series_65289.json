@@ -1,0 +1,178 @@
+[
+ {
+  "Id": 433187,
+  "COD": "EPA433187",
+  "FK_Operacion": 293,
+  "Nombre": "Total. Ambos sexos. Ceuta. Total. Porcentaje. ",
+  "Decimales": 1,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 101,
+  "MetaData": [
+   {
+    "Id": 10559,
+    "FK_Variable": 357,
+    "Nombre": "Total",
+    "Codigo": "Y-GE16"
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 21331,
+    "FK_Variable": 137,
+    "Nombre": "Total",
+    "Codigo": ""
+   },
+   {
+    "Id": 284300,
+    "FK_Variable": 3,
+    "Nombre": "Porcentaje",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 433194,
+  "COD": "EPA433194",
+  "FK_Operacion": 293,
+  "Nombre": "Total. Ambos sexos. Ceuta. Educación superior. Porcentaje. ",
+  "Decimales": 1,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 101,
+  "MetaData": [
+   {
+    "Id": 10559,
+    "FK_Variable": 357,
+    "Nombre": "Total",
+    "Codigo": "Y-GE16"
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 291104,
+    "FK_Variable": 137,
+    "Nombre": "Educación superior",
+    "Codigo": "C"
+   },
+   {
+    "Id": 284300,
+    "FK_Variable": 3,
+    "Nombre": "Porcentaje",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 433507,
+  "COD": "EPA433507",
+  "FK_Operacion": 293,
+  "Nombre": "Total. Mujeres. Ceuta. Total. Porcentaje. ",
+  "Decimales": 1,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 101,
+  "MetaData": [
+   {
+    "Id": 10559,
+    "FK_Variable": 357,
+    "Nombre": "Total",
+    "Codigo": "Y-GE16"
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 21331,
+    "FK_Variable": 137,
+    "Nombre": "Total",
+    "Codigo": ""
+   },
+   {
+    "Id": 284300,
+    "FK_Variable": 3,
+    "Nombre": "Porcentaje",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 433514,
+  "COD": "EPA433514",
+  "FK_Operacion": 293,
+  "Nombre": "Total. Mujeres. Ceuta. Educación superior. Porcentaje. ",
+  "Decimales": 1,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 101,
+  "MetaData": [
+   {
+    "Id": 10559,
+    "FK_Variable": 357,
+    "Nombre": "Total",
+    "Codigo": "Y-GE16"
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 291104,
+    "FK_Variable": 137,
+    "Nombre": "Educación superior",
+    "Codigo": "C"
+   },
+   {
+    "Id": 284300,
+    "FK_Variable": 3,
+    "Nombre": "Porcentaje",
+    "Codigo": ""
+   }
+  ]
+ }
+]

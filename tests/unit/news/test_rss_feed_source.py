@@ -4,14 +4,14 @@ from pathlib import Path
 import httpx
 import pytest
 
-from datos.news.domain.article import DropReason, to_article
-from datos.news.domain.outlet import Feed, FeedKind
-from datos.news.infrastructure.http_client import (
+from datos.http import (
     MAX_DOWNLOAD_BYTES,
     USER_AGENT,
     SourceUnavailableError,
     build_client,
 )
+from datos.news.domain.article import DropReason, to_article
+from datos.news.domain.outlet import Feed, FeedKind
 from datos.news.infrastructure.rss_feed_source import RssFeedSource
 
 FIXTURES = Path("tests/fixtures/feeds")

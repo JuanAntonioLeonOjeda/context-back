@@ -40,7 +40,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 
 > Tasks 20 and 21 wait for ~3 weeks of collection (until early November). The phase was merged
 > without them, by the author's decision on 2026-10-13; they continue on their own branch
-> from `develop`, together with `/defend foundation`.
+> from `develop`. `/defend foundation` is optional.
 
 ## Close
 

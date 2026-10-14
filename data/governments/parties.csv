@@ -1,35 +1,35 @@
 id,name,short_name,colour_hex
-psoe,Partido Socialista Obrero Español,PSOE,#9e9e9e
-unidas-podemos,Unidas Podemos,UP,#9e9e9e
-sumar,Sumar,Sumar,#9e9e9e
-pnv,Euzko Alderdi Jeltzalea-Partido Nacionalista Vasco,EAJ-PNV,#9e9e9e
-mas-pais,Más País,Más País,#9e9e9e
-compromis,Compromís,Compromís,#9e9e9e
-nueva-canarias,Nueva Canarias,NC,#9e9e9e
-bng,Bloque Nacionalista Galego,BNG,#9e9e9e
-teruel-existe,Teruel Existe,TE,#9e9e9e
-erc,Esquerra Republicana de Catalunya,ERC,#9e9e9e
-junts,Junts per Catalunya,Junts,#9e9e9e
-eh-bildu,Euskal Herria Bildu,EH Bildu,#9e9e9e
-coalicion-canaria,Coalición Canaria,CC,#9e9e9e
-pp,Partido Popular,PP,#9e9e9e
-cs,Ciudadanos-Partido de la Ciudadanía,Cs,#9e9e9e
-vox,Vox,Vox,#9e9e9e
-par,Partido Aragonés,PAR,#9e9e9e
-cha,Chunta Aragonesista,CHA,#9e9e9e
-podemos,Podemos,Podemos,#9e9e9e
-iu,Izquierda Unida,IU,#9e9e9e
+psoe,Partido Socialista Obrero Español,PSOE,#ef1c27
+unidas-podemos,Unidas Podemos,UP,#7f00ff
+sumar,Sumar,Sumar,#e61455
+pnv,Euzko Alderdi Jeltzalea-Partido Nacionalista Vasco,EAJ-PNV,#4aae4a
+mas-pais,Más País,Más País,#0fdec4
+compromis,Compromís,Compromís,#ec8953
+nueva-canarias,Nueva Canarias,NC,#639e42
+bng,Bloque Nacionalista Galego,BNG,#a2c7e4
+teruel-existe,Teruel Existe,TE,#037252
+erc,Esquerra Republicana de Catalunya,ERC,#ffb232
+junts,Junts per Catalunya,Junts,#00c4b2
+eh-bildu,Euskal Herria Bildu,EH Bildu,#00ac8e
+coalicion-canaria,Coalición Canaria,CC,#ffd700
+pp,Partido Popular,PP,#1d84ce
+cs,Ciudadanos-Partido de la Ciudadanía,Cs,#eb6109
+vox,Vox,Vox,#63be21
+par,Partido Aragonés,PAR,#ffcc66
+cha,Chunta Aragonesista,CHA,#ad0017
+podemos,Podemos,Podemos,#9269f5
+iu,Izquierda Unida,IU,#732021
 convocatoria-por-asturias,Convocatoria por Asturias (IU-Más País-IAS),CxA,#9e9e9e
-mes-per-mallorca,Més per Mallorca,Més,#9e9e9e
-mes-per-menorca,Més per Menorca,MxMe,#9e9e9e
-gent-per-formentera,Gent per Formentera,GxF,#9e9e9e
-sa-unio-de-formentera,Sa Unió de Formentera,Sa Unió,#9e9e9e
-asg,Agrupación Socialista Gomera,ASG,#9e9e9e
-ahi,Agrupación Herreña Independiente,AHI,#9e9e9e
-prc,Partido Regionalista de Cantabria,PRC,#9e9e9e
-psc,Partit dels Socialistes de Catalunya,PSC,#9e9e9e
-cup,Candidatura d'Unitat Popular,CUP,#9e9e9e
-comuns,Comuns Sumar,Comuns,#9e9e9e
-geroa-bai,Geroa Bai,GBai,#9e9e9e
-contigo-zurekin,Contigo Navarra-Zurekin Nafarroa,Contigo-Zurekin,#9e9e9e
-coalicion-por-melilla,Coalición por Melilla,CpM,#9e9e9e
+mes-per-mallorca,Més per Mallorca,Més,#d8de40
+mes-per-menorca,Més per Menorca,MxMe,#005151
+gent-per-formentera,Gent per Formentera,GxF,#d5006e
+sa-unio-de-formentera,Sa Unió de Formentera,Sa Unió,#008d8a
+asg,Agrupación Socialista Gomera,ASG,#d21111
+ahi,Agrupación Herreña Independiente,AHI,#019e4c
+prc,Partido Regionalista de Cantabria,PRC,#b7bf10
+psc,Partit dels Socialistes de Catalunya,PSC,#e73b39
+cup,Candidatura d'Unitat Popular,CUP,#ffed00
+comuns,Comuns Sumar,Comuns,#a6214b
+geroa-bai,Geroa Bai,GBai,#f75e42
+contigo-zurekin,Contigo Navarra-Zurekin Nafarroa,Contigo-Zurekin,#65bc7b
+coalicion-por-melilla,Coalición por Melilla,CpM,#298642

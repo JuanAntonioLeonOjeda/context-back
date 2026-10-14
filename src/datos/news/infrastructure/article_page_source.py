@@ -11,8 +11,8 @@ from html.parser import HTMLParser
 
 import httpx
 
+from datos.http import download
 from datos.news.domain.article import FeedItem
-from datos.news.infrastructure.http_client import download
 
 # One request per second per collector: polite with outlets that never asked for us.
 PAGE_DELAY_S = 1.0

@@ -1,0 +1,686 @@
+[
+ {
+  "Id": 452434,
+  "COD": "EPA452434",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Total Nacional. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452436,
+  "COD": "EPA452436",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Total Nacional. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452440,
+  "COD": "EPA452440",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Andalucía. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452442,
+  "COD": "EPA452442",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Andalucía. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452576,
+  "COD": "EPA452576",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Ceuta. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452578,
+  "COD": "EPA452578",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Ambos sexos. Ceuta. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 454,
+    "FK_Variable": 18,
+    "Nombre": "Ambos sexos",
+    "Codigo": ""
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452592,
+  "COD": "EPA452592",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Total Nacional. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452593,
+  "COD": "EPA452593",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Total Nacional. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452597,
+  "COD": "EPA452597",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Andalucía. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452598,
+  "COD": "EPA452598",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Andalucía. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452716,
+  "COD": "EPA452716",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Ceuta. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452717,
+  "COD": "EPA452717",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Hombres. Ceuta. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 452,
+    "FK_Variable": 18,
+    "Nombre": "Hombres",
+    "Codigo": "1"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452730,
+  "COD": "EPA452730",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Total Nacional. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452731,
+  "COD": "EPA452731",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Total Nacional. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 16473,
+    "FK_Variable": 349,
+    "Nombre": "Total Nacional",
+    "Codigo": "00"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452735,
+  "COD": "EPA452735",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Andalucía. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452736,
+  "COD": "EPA452736",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Andalucía. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 8997,
+    "FK_Variable": 70,
+    "Nombre": "Andalucía",
+    "Codigo": "01"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ },
+ {
+  "Id": 452854,
+  "COD": "EPA452854",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Ceuta. Total. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 15668,
+    "FK_Variable": 356,
+    "Nombre": "Total",
+    "Codigo": ""
+   }
+  ]
+ },
+ {
+  "Id": 452855,
+  "COD": "EPA452855",
+  "FK_Operacion": 293,
+  "Nombre": "Tasa de paro de la población. Mujeres. Ceuta. Menores de 25 años. ",
+  "Decimales": 2,
+  "FK_Periodicidad": 3,
+  "FK_Publicacion": 330,
+  "FK_Clasificacion": 88,
+  "FK_Escala": 1,
+  "FK_Unidad": 135,
+  "MetaData": [
+   {
+    "Id": 283910,
+    "FK_Variable": 3,
+    "Nombre": "Tasa de paro de la población",
+    "Codigo": ""
+   },
+   {
+    "Id": 453,
+    "FK_Variable": 18,
+    "Nombre": "Mujeres",
+    "Codigo": "6"
+   },
+   {
+    "Id": 9015,
+    "FK_Variable": 70,
+    "Nombre": "Ceuta",
+    "Codigo": "18"
+   },
+   {
+    "Id": 10568,
+    "FK_Variable": 357,
+    "Nombre": "Menores de 25 años",
+    "Codigo": "Y-LT25"
+   }
+  ]
+ }
+]

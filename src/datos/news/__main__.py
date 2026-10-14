@@ -12,12 +12,12 @@ import structlog
 
 from datos.config import load_settings
 from datos.db import build_engine
+from datos.http import SourceUnavailableError, build_client
 from datos.log_setup import configure_logging
 from datos.news.application.collect_articles import Sources, collect_articles
 from datos.news.infrastructure.article_page_source import ArticlePageSource
 from datos.news.infrastructure.csv_source import InvalidNewsFileError, read_feeds, read_outlets
 from datos.news.infrastructure.feed_source_by_kind import FeedSourceByKind
-from datos.news.infrastructure.http_client import SourceUnavailableError, build_client
 from datos.news.infrastructure.pg_repository import PgNewsRepository
 from datos.news.infrastructure.rss_feed_source import RssFeedSource
 from datos.news.infrastructure.section_page_source import SectionPageSource

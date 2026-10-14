@@ -4,9 +4,9 @@ from pathlib import Path
 import httpx
 import pytest
 
+from datos.http import build_client
 from datos.news.domain.article import DropReason, to_article
 from datos.news.infrastructure.article_page_source import ArticlePageSource, page_item
-from datos.news.infrastructure.http_client import build_client
 
 PAGES = Path("tests/fixtures/pages")
 

@@ -3,8 +3,8 @@ from pathlib import Path
 import httpx
 import pytest
 
+from datos.http import SourceUnavailableError, build_client
 from datos.news.domain.outlet import Feed, FeedKind
-from datos.news.infrastructure.http_client import SourceUnavailableError, build_client
 from datos.news.infrastructure.section_page_source import SectionPageSource, article_links
 
 SECTIONS = Path("tests/fixtures/sections")

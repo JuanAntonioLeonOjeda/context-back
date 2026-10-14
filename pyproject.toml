@@ -40,6 +40,9 @@ strict = true
 python_version = "3.12"
 mypy_path = "src"
 files = ["src", "tests"]
+# Test folders have no __init__.py: module names come from their path, so two
+# conftest.py files do not collide.
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 # feedparser ships no type information. Its output is checked value by value at the
@@ -52,10 +55,18 @@ testpaths = ["tests"]
 addopts = "-m 'not integration' --strict-markers"
 markers = ["integration: needs Docker (Testcontainers)"]
 
+[tool.uv]
+# `geo` (shapely) only builds data/geo/; installed by default for local work and CI.
+default-groups = ["dev", "geo"]
+
 [dependency-groups]
 dev = [
     "mypy>=2.4.0",
     "pytest>=9.1.1",
     "ruff>=0.17.0",
     "testcontainers[postgres]>=4.15.0",
+]
+geo = [
+    "shapely>=2.1",
+    "types-shapely>=2.1.0.20260728",
 ]
