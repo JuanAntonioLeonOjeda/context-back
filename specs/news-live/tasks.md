@@ -24,7 +24,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## News API (back)
 
-- [ ] 10. `GET /communities/{id}/news?sector=`: last 30 days, at most 5 per outlet, newest first with ties by outlet id, attribution on read, never the lead; tests and a real run
+- [x] 10. `GET /communities/{id}/news?sector=`: last 30 days, at most 5 per outlet, newest first with ties by outlet id, attribution on read, never the lead; tests and a real run
+  - Real run, 2026-10-14 (rules `216d8cbc0b67`): Canarias, Madrid and Cataluña give 0 to 16 items per sector, at most 5 per outlet; most entries are not determined because the article names no government (ADR-0014, D6 = A).
 
 ## Web (front)
 
