@@ -54,7 +54,8 @@ determined.
 - **Port** `ArticleClassifier` (application): `classify(text) -> Labels` (communities, sectors,
   levels, each with a score); adapters `RulesClassifier` now, `SetFitClassifier` in the model
   tasks. Same contract for both, one contract test suite (testing conventions).
-- **Rules as data, not code** (open/closed): `data/classification/`
+- **Rules as data, not code** (open/closed): `data/classification/` (built as `places.csv`, `levels.csv`,
+  `sectors.csv` and `exclusions.csv`; the files below are the first sketch, see its `README.md`)
   - `gazetteer.csv`: term → territory (communities, provinces and capitals from the INE names;
     regional institutions: "Xunta de Galicia", "Generalitat de Catalunya", "Junta de
     Andalucía"…). A term that names more than one community ("Junta", "Generalitat") gives the

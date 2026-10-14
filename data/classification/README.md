@@ -60,19 +60,22 @@ measured on the blind test set when it exists. Until then nothing here is a meas
 
 ## Coverage on 2026-10-14 (not an evaluation)
 
-Run on the 2,313 articles collected by then (`python -m datos.classification classify-new`,
-version `216d8cbc0b67`, 3 seconds):
+Run on the 2,648 articles collected by then (`python -m datos.classification classify-new`,
+version `d74a59205b94`, the one after parliaments stopped giving a government level):
 
-- A **community** is found in 35 %, a **government level** in 15 % and **any sector** in 291
-  articles (13 %): housing, education and health in that order of frequency.
-- **129 articles have a sector and a community** and **68 a sector and a level**. Those are the
+- A **community** is found in 36 % of the articles (964), a **government level** in 17 % (447)
+  and **any sector** in 13 % (340): housing 148, education 106 and health 100.
+- **153 articles have a sector and a community** and **76 a sector and a level**. Those are the
   articles the news page could place, and the attribution (ADR-0014) can be "high" only for the
-  68 that name a level: the rest will read "not determined".
-- Communities most named: Madrid (175), Ceuta (149), Canarias (145), Cataluña (134).
-- Per outlet, the shares are alike (community 20 to 65 %, sector 3 to 10 %) except where an
-  outlet is regional: RTVC, Diario de Avisos and Telemadrid name a community far more often.
+  76 that name a level: the rest will read "not determined".
+- Communities most named: Comunidad de Madrid (197), Canarias (173), Ceuta (163), Cataluña (155).
+- Per outlet, a community is found in 22 % to 67 % of its articles and a sector in 6 % to 27 %.
+  The community share is highest in the regional outlets (RTVC, Diario de Avisos, Telemadrid),
+  as expected. The sector share varies for other reasons we have not looked into: the highest,
+  27 %, is of an outlet with 44 articles, so it may be noise. Counts per outlet go from 44 to 569
+  articles.
 
 These numbers say how much the rules fire, not how often they are right: a sample of the sector
 matches showed clear policy news next to clear noise (an illness at a wedding, news from
 Hungary), the expected weakness of keywords. Precision and recall are measured on the blind test
-set when it exists.
+set when it exists, overall, per outlet and per party.

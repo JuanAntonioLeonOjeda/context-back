@@ -16,7 +16,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## Classification (back)
 
-- [x] 5. `data/classification/`: `gazetteer.csv`, `institutions.csv`, `sectors.csv` in Spanish and Catalan, with their sources in `README.md`
+- [x] 5. `data/classification/`: `places.csv`, `levels.csv`, `sectors.csv` and `exclusions.csv`, in Spanish and Catalan, with their sources and conventions in `README.md`
 - [x] 6. Rules classifier `[core]` behind the `ArticleClassifier` port; contract tests; cases from the labelling guide and real feed items
 - [x] 7. Migration `0005` (`classifications`, append-only trigger) and its repository; integration tests
 - [x] 8. `python -m datos.classification classify-new`: classifies only what the active model has not; idempotent
@@ -47,7 +47,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## Close
 
-- [ ] 19. Data READMEs, `AGENTS.md` statuses (both repos), OpenAPI client regenerated
+- [x] 19. Data READMEs, `AGENTS.md` statuses (both repos), OpenAPI client regenerated
+  - Done 2026-10-14: coverage of `data/classification/README.md` recomputed for rules `d74a59205b94`; code maps of both repos completed; the OpenAPI client regenerated and found in sync. ADR-0014 and ADR-0015 stay `Proposed` until the author accepts them.
 - [ ] 20. Reviews: `py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`
 - [ ] 21. PRs into `develop` (`/defend news-live` optional)
 

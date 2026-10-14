@@ -31,9 +31,10 @@ Update the status column when a phase creates or finishes a path.
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated parties (with their standard colour, from Wikidata), government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/geo/` | `ccaa.geojson`: the 19 communities simplified for the map, from the IGN (CC BY 4.0), with its build and attribution in `README.md` | ✅ |
+| `data/classification/` | the terms of the rules classifier as CSV (`places`, `levels`, `sectors`, `exclusions`), with the matching conventions and the coverage of the last run in `README.md`; the rules' version is a hash of these files | 🚧 |
 | `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
 | `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
-| `docker-compose.yml`, `Dockerfile`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profiles `app` and `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data), `collector` (same image; every 3 hours collects the feeds and classifies the new articles, logs JSON to stdout) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
+| `docker-compose.yml`, `Dockerfile`, `docker/`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profiles `app` and `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data, `docker/entrypoint.sh`), `collector` (`docker/collector.sh`) (same image; every 3 hours collects the feeds and classifies the new articles, logs JSON to stdout) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
 | `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template (replaced by the `collector` service) | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
@@ -41,7 +42,7 @@ Update the status column when a phase creates or finishes a path.
 | `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/indicators.md` | the five indicators: INE table, unit, frequency, how a value is chosen and stored, what was verified | ✅ |
-| `docs/adr/` | Architecture Decision Records: 0001–0013 accepted (0013 lives in `../front/docs/adr/`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
+| `docs/adr/` | Architecture Decision Records: 0001–0013 accepted (0013 lives in `../front/docs/adr/`), 0014–0015 proposed, awaiting the author, index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` and `map-governments` also have `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.
