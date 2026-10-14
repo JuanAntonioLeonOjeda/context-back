@@ -95,6 +95,23 @@ services:
       retries: 12
       start_period: 40s
 
+  collector:
+    # The same image as the API, running collector.sh instead of the entrypoint: every
+    # COLLECT_INTERVAL_MIN minutes it collects the feeds and classifies the new articles.
+    # It waits for back-main, which brings the database up to date (migrations, CSV data).
+    profiles: [app]
+    build: .
+    image: datos-back-main:local
+    entrypoint: ["collector.sh"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
+      LOG_JSON: "true"
+      COLLECT_INTERVAL_MIN: ${COLLECT_INTERVAL_MIN:-180}
+    depends_on:
+      back-main:
+        condition: service_healthy
+
   front:
     profiles: [app]
     build: ../front
