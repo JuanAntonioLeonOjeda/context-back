@@ -4,13 +4,12 @@ Run with: uv run uvicorn datos.main:app --factory
 """
 
 import json
-from collections.abc import Callable, Iterator
 from pathlib import Path
 
 from fastapi import FastAPI
-from sqlalchemy import Engine
 
 from datos.api.app import create_app
+from datos.api.provider import built_on, per_request
 from datos.clock import SystemClock
 from datos.config import load_settings
 from datos.db import SqlDatabaseProbe, build_engine
@@ -27,55 +26,17 @@ def app() -> FastAPI:
     settings = load_settings()
     configure_logging(settings.log_level, as_json=settings.log_json)
     engine = build_engine(str(settings.database_url))
+    # One read-only connection per request, shared by every reader the request needs and closed
+    # when the response is sent: a community page used to open about ten at once.
+    connection = per_request(engine.connect)
     return create_app(
         database_probe=SqlDatabaseProbe(engine),
-        governments=_governments_reader(engine),
-        territories=_territory_reader(engine),
-        indicators=_indicator_reader(engine),
-        competences=_competences_reader(engine),
-        news=_news_reader(engine),
+        governments=built_on(connection, PgGovernmentsReader),
+        territories=built_on(connection, PgTerritoryReader),
+        indicators=built_on(connection, PgIndicatorReader),
+        competences=built_on(connection, PgCompetencesReader),
+        news=built_on(connection, PgCommunityNewsReader),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
         classifier_id=settings.active_classifier_id,
     )
-
-
-# One read-only connection per request, closed when the response is sent.
-def _governments_reader(engine: Engine) -> Callable[[], Iterator[PgGovernmentsReader]]:
-    def dependency() -> Iterator[PgGovernmentsReader]:
-        with engine.connect() as connection:
-            yield PgGovernmentsReader(connection)
-
-    return dependency
-
-
-def _territory_reader(engine: Engine) -> Callable[[], Iterator[PgTerritoryReader]]:
-    def dependency() -> Iterator[PgTerritoryReader]:
-        with engine.connect() as connection:
-            yield PgTerritoryReader(connection)
-
-    return dependency
-
-
-def _indicator_reader(engine: Engine) -> Callable[[], Iterator[PgIndicatorReader]]:
-    def dependency() -> Iterator[PgIndicatorReader]:
-        with engine.connect() as connection:
-            yield PgIndicatorReader(connection)
-
-    return dependency
-
-
-def _competences_reader(engine: Engine) -> Callable[[], Iterator[PgCompetencesReader]]:
-    def dependency() -> Iterator[PgCompetencesReader]:
-        with engine.connect() as connection:
-            yield PgCompetencesReader(connection)
-
-    return dependency
-
-
-def _news_reader(engine: Engine) -> Callable[[], Iterator[PgCommunityNewsReader]]:
-    def dependency() -> Iterator[PgCommunityNewsReader]:
-        with engine.connect() as connection:
-            yield PgCommunityNewsReader(connection)
-
-    return dependency

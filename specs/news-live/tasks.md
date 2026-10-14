@@ -49,7 +49,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 - [x] 19. Data READMEs, `AGENTS.md` statuses (both repos), OpenAPI client regenerated
   - Done 2026-10-14: coverage of `data/classification/README.md` recomputed for rules `d74a59205b94`; code maps of both repos completed; the OpenAPI client regenerated and found in sync. ADR-0014 and ADR-0015 were accepted by the author on 2026-10-14.
-- [ ] 20. Reviews: `py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`
+- [x] 20. Reviews: `py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`
+  - Done 2026-10-14: `specs/news-live/review.md`. No critical finding; four warnings fixed (one connection per request, the news query by window, focus under the sticky header, a hand-typed number of outlets).
 - [ ] 21. PRs into `develop` (`/defend news-live` optional)
 
 ## Defend (optional)
