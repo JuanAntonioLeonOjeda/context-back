@@ -11,7 +11,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 
 ## Attribution (back)
 
-- [ ] 3. Attribution rule `[core]`: pure function with a test for each case: named and competent (high), named without competence, local, no level named (D6-A), no government on the date, a government change on the exact date, a coalition, a caretaker term, the per-territory rows of Ceuta and Melilla, external support never responsible
+- [x] 3. Attribution rule `[core]`: pure function with a test for each case: named and competent (high), named without competence, local, no level named (D6-A), no government on the date, a government change on the exact date, a coalition, a caretaker term, the per-territory rows of Ceuta and Melilla, external support never responsible
 - [ ] 4. Reader of the competences for the read side; the governments reader is reused
 
 ## Classification (back)
