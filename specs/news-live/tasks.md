@@ -42,6 +42,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 - [ ] 14. Training sample of 400 (disjoint from the test set, with a test), Label Studio project with no proposals
 - [ ] 15. Author labels in sessions of 100; export to `data/train/train-set-v1.jsonl`
 - [ ] 16. ADR-0016 `[core]`: encoder (licence and Catalan verified), what the model labels, promotion criteria set by the **author** before training
+  - Drafted 2026-10-14 with the author's decisions (encoder mpnet-base with MiniLM as fallback, sectors and levels, training sample on 2026-10-21, promotion criteria, `ml` group approved): `docs/adr/0016-own-classifier-model.md`, proposed until the author accepts the text.
 - [ ] 17. `ml` dependency group approved; `SetFitClassifier` adapter and training job with fixed seeds; weights in `models/`
 - [ ] 18. Evaluation of rules and model on the test set, overall, per outlet and per party; promotion per label
 
