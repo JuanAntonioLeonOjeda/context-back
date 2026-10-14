@@ -42,7 +42,7 @@ Update the status column when a phase creates or finishes a path.
 | `data/news/` | approved outlets and how each is collected | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/indicators.md` | the five indicators: INE table, unit, frequency, how a value is chosen and stored, what was verified | ✅ |
-| `docs/adr/` | Architecture Decision Records: 0001–0013 accepted (0013 lives in `../front/docs/adr/`), 0014–0015 proposed, awaiting the author, index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
+| `docs/adr/` | Architecture Decision Records: 0001–0015 accepted (0013 lives in `../front/docs/adr/`), index in `docs/adr/README.md`, template in `docs/adr/template.md` | ✅ |
 | `specs/<phase>/` | `spec.md`, `plan.md`, `tasks.md` for each phase (workflow `spec-driven-phase`); `foundation` and `map-governments` also have `review.md` | 🚧 |
 
 Dependency rule between layers and modules: `.claude/rules/architecture.md`.
