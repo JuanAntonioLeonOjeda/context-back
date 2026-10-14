@@ -12,7 +12,7 @@ measured on the blind test set when it exists. Until then nothing here is a meas
 
 | File | Row | Gives |
 |---|---|---|
-| `places.csv` | `term, territory_id, level, kind, language` | a community; institutions (`kind = institution`) also give the level `ccaa` |
+| `places.csv` | `term, territory_id, level, kind, language` | a community; institutions (`kind = institution`) also give the level `ccaa`, parliaments (`kind = parliament`) do not |
 | `levels.csv` | `term, level, language` | a government level only: `state`, `ccaa` or `local` |
 | `sectors.csv` | `term, sector_id, language` | a sector: `education`, `health` or `housing` |
 | `exclusions.csv` | `phrase, reason` | text removed before matching |
@@ -37,6 +37,10 @@ measured on the blind test set when it exists. Until then nothing here is a meas
   their longer forms in `places.csv` ("Junta de Andalucía", "Generalitat de Catalunya").
 - **"Gobierno" alone is the State**, as Spanish press uses it; the regional governments appear
   with their name ("Gobierno de Canarias", "Gobierno vasco") and win as longer terms.
+- **A parliament is not its government** (decided by the author, 2026-10-14). A regional
+  parliament gives its community but no level, and the Cortes Generales give nothing: "el
+  Parlamento rechaza la ley del PSOE" is the chamber's vote, and attributing it to the governing
+  parties would be wrong. Seen in a real RTVC headline during task 10.
 - **A community's name is a place, not its government.** "Comunidad de Madrid" gives the
   community but no level: "la Comunidad de Madrid aprueba" (the government) and "vivir en la
   Comunidad de Madrid" (the place) cannot be told apart by a term.

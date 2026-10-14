@@ -94,6 +94,19 @@ def test_an_ambiguous_institution_gives_the_level_but_not_a_community() -> None:
     assert (labels.communities, labels.levels) == (frozenset(), frozenset({CCAA}))
 
 
+def test_a_parliament_gives_its_community_but_no_government_level() -> None:
+    # A parliament's vote is not its government's act (real case, RTVC, 2026-10-14).
+    for headline in (
+        "El Parlamento de Canarias rechaza tramitar la ley de vivienda vacacional",
+        "Las Cortes Generales aprueban la ley de vivienda",
+    ):
+        labels = CLASSIFIER.classify(headline, None)
+        assert labels.levels == frozenset(), headline
+    assert CLASSIFIER.classify(
+        "El Parlamento de Canarias debate la vivienda", None
+    ).communities == frozenset({"ccaa-05"})
+
+
 def test_the_pope_is_not_the_province_of_leon() -> None:
     assert (
         CLASSIFIER.classify("El Papa León XIV ingresa en el hospital", None).communities

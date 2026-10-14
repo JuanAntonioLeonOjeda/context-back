@@ -122,58 +122,58 @@ La Gomera,ccaa-05,,island,es
 El Hierro,ccaa-05,,island,es
 La Graciosa,ccaa-05,,island,es
 Junta de Andalucía,ccaa-01,ccaa,institution,es
-Parlamento de Andalucía,ccaa-01,ccaa,institution,es
+Parlamento de Andalucía,ccaa-01,,parliament,es
 Servicio Andaluz de Salud,ccaa-01,ccaa,institution,es
 Gobierno de Aragón,ccaa-02,ccaa,institution,es
-Cortes de Aragón,ccaa-02,ccaa,institution,es
+Cortes de Aragón,ccaa-02,,parliament,es
 Principado,ccaa-03,ccaa,institution,es
-Junta General del Principado,ccaa-03,ccaa,institution,es
+Junta General del Principado,ccaa-03,,parliament,es
 SESPA,ccaa-03,ccaa,institution,es
 Govern balear,ccaa-04,ccaa,institution,ca
 Govern de les Illes Balears,ccaa-04,ccaa,institution,ca
 Gobierno balear,ccaa-04,ccaa,institution,es
-Parlament balear,ccaa-04,ccaa,institution,ca
+Parlament balear,ccaa-04,,parliament,ca
 IB-Salut,ccaa-04,ccaa,institution,ca
 Gobierno de Canarias,ccaa-05,ccaa,institution,es
-Parlamento de Canarias,ccaa-05,ccaa,institution,es
+Parlamento de Canarias,ccaa-05,,parliament,es
 Servicio Canario de la Salud,ccaa-05,ccaa,institution,es
 Gobierno de Cantabria,ccaa-06,ccaa,institution,es
-Parlamento de Cantabria,ccaa-06,ccaa,institution,es
+Parlamento de Cantabria,ccaa-06,,parliament,es
 Junta de Castilla y León,ccaa-07,ccaa,institution,es
-Cortes de Castilla y León,ccaa-07,ccaa,institution,es
+Cortes de Castilla y León,ccaa-07,,parliament,es
 Sacyl,ccaa-07,ccaa,institution,es
 Junta de Comunidades de Castilla-La Mancha,ccaa-08,ccaa,institution,es
 Gobierno de Castilla-La Mancha,ccaa-08,ccaa,institution,es
 SESCAM,ccaa-08,ccaa,institution,es
 Generalitat de Catalunya,ccaa-09,ccaa,institution,ca
 Generalitat de Cataluña,ccaa-09,ccaa,institution,es
-Parlament de Catalunya,ccaa-09,ccaa,institution,ca
-Parlamento de Cataluña,ccaa-09,ccaa,institution,es
+Parlament de Catalunya,ccaa-09,,parliament,ca
+Parlamento de Cataluña,ccaa-09,,parliament,es
 Generalitat Valenciana,ccaa-10,ccaa,institution,ca
 Corts Valencianes,ccaa-10,ccaa,institution,ca
 Junta de Extremadura,ccaa-11,ccaa,institution,es
-Asamblea de Extremadura,ccaa-11,ccaa,institution,es
+Asamblea de Extremadura,ccaa-11,,parliament,es
 Xunta,ccaa-12,ccaa,institution,gl
 Xunta de Galicia,ccaa-12,ccaa,institution,gl
-Parlamento de Galicia,ccaa-12,ccaa,institution,es
+Parlamento de Galicia,ccaa-12,,parliament,es
 Sergas,ccaa-12,ccaa,institution,gl
-Asamblea de Madrid,ccaa-13,ccaa,institution,es
+Asamblea de Madrid,ccaa-13,,parliament,es
 SERMAS,ccaa-13,ccaa,institution,es
-Asamblea Regional de Murcia,ccaa-14,ccaa,institution,es
+Asamblea Regional de Murcia,ccaa-14,,parliament,es
 Servicio Murciano de Salud,ccaa-14,ccaa,institution,es
 Gobierno de Navarra,ccaa-15,ccaa,institution,es
-Parlamento de Navarra,ccaa-15,ccaa,institution,es
+Parlamento de Navarra,ccaa-15,,parliament,es
 Osasunbidea,ccaa-15,ccaa,institution,eu
 Gobierno Vasco,ccaa-16,ccaa,institution,es
 Eusko Jaurlaritza,ccaa-16,ccaa,institution,eu
-Parlamento Vasco,ccaa-16,ccaa,institution,es
+Parlamento Vasco,ccaa-16,,parliament,es
 Osakidetza,ccaa-16,ccaa,institution,eu
 Gobierno de La Rioja,ccaa-17,ccaa,institution,es
-Parlamento de La Rioja,ccaa-17,ccaa,institution,es
+Parlamento de La Rioja,ccaa-17,,parliament,es
 Gobierno de Ceuta,ccaa-18,ccaa,institution,es
-Asamblea de Ceuta,ccaa-18,ccaa,institution,es
+Asamblea de Ceuta,ccaa-18,,parliament,es
 Gobierno de Melilla,ccaa-19,ccaa,institution,es
-Asamblea de Melilla,ccaa-19,ccaa,institution,es
+Asamblea de Melilla,ccaa-19,,parliament,es
 Gobierno andaluz,ccaa-01,ccaa,institution,es
 Gobierno aragonés,ccaa-02,ccaa,institution,es
 Gobierno asturiano,ccaa-03,ccaa,institution,es
