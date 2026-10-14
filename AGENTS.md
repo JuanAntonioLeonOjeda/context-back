@@ -31,7 +31,7 @@ Update the status column when a phase creates or finishes a path.
 | `data/governments/` | curated parties, government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
 | `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
-| `docker-compose.yml`, `Dockerfile`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profile `tools`); profile `app`: migrations and data loading, API, INE indicators job and the web app built from `../front` | ✅ |
+| `docker-compose.yml`, `Dockerfile`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profile `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
 | `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
