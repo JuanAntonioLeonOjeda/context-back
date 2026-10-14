@@ -35,6 +35,7 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 ## Collection in Docker
 
 - [ ] 13. `collector` service (collect, then classify-new, every 3 hours); verified; then the launchd agent retired (**author**'s yes)
+  - Service done and verified on 2026-10-14 (`docker/collector.sh`): one real cycle read 23 feeds, stored 335 articles with 0 failures and classified them with rules `d74a59205b94`. The launchd agent is still loaded: retiring it needs the author's yes.
 
 ## Own model (after the blind test set)
 
