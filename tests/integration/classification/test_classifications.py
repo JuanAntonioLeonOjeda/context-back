@@ -165,3 +165,17 @@ def test_labels_outside_the_vocabulary_are_rejected(
             ),
             labels,
         )
+
+
+def test_the_repository_gives_the_sector_ids_the_rules_are_validated_against(
+    engine: Engine,
+) -> None:
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO sectors (id, name)"
+                " VALUES ('housing', 'Vivienda'), ('health', 'Sanidad')"
+            )
+        )
+
+    assert PgClassificationRepository(engine).sector_ids() == {"health", "housing"}

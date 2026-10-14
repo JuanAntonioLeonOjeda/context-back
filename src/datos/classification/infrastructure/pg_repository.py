@@ -31,11 +31,19 @@ _INSERT = text(
 )
 
 
+_SECTOR_IDS = text("SELECT id FROM sectors ORDER BY id")
+
+
 class PgClassificationRepository:
     """Each call is its own transaction: a batch is stored whole or not at all."""
 
     def __init__(self, engine: Engine) -> None:
         self._engine = engine
+
+    def sector_ids(self) -> frozenset[str]:
+        """The sectors of the database, to validate the rules' sector terms against."""
+        with self._engine.connect() as connection:
+            return frozenset(connection.execute(_SECTOR_IDS).scalars())
 
     def unclassified(self, model_id: str, model_version: str, *, limit: int) -> list[ArticleText]:
         with self._engine.connect() as connection:

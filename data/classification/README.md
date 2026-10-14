@@ -56,7 +56,19 @@ measured on the blind test set when it exists. Until then nothing here is a meas
 
 ## Coverage on 2026-10-14 (not an evaluation)
 
-On the 1,969 articles collected by then, a provisional matcher found a community in 36 %, a
-government level in 17 % and a sector in 12 % (housing 105, education 77, health 67). A sample
-of the sector matches showed clear policy news next to clear noise (an illness at a wedding,
-news from Hungary): the expected weakness of keywords.
+Run on the 2,313 articles collected by then (`python -m datos.classification classify-new`,
+version `216d8cbc0b67`, 3 seconds):
+
+- A **community** is found in 35 %, a **government level** in 15 % and **any sector** in 291
+  articles (13 %): housing, education and health in that order of frequency.
+- **129 articles have a sector and a community** and **68 a sector and a level**. Those are the
+  articles the news page could place, and the attribution (ADR-0014) can be "high" only for the
+  68 that name a level: the rest will read "not determined".
+- Communities most named: Madrid (175), Ceuta (149), Canarias (145), Cataluña (134).
+- Per outlet, the shares are alike (community 20 to 65 %, sector 3 to 10 %) except where an
+  outlet is regional: RTVC, Diario de Avisos and Telemadrid name a community far more often.
+
+These numbers say how much the rules fire, not how often they are right: a sample of the sector
+matches showed clear policy news next to clear noise (an illness at a wedding, news from
+Hungary), the expected weakness of keywords. Precision and recall are measured on the blind test
+set when it exists.
