@@ -2,6 +2,7 @@
 
 from sqlalchemy import Connection, Row, text
 
+from datos.governments.domain.competence import Competence, CompetenceFunction, CompetenceLevel
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 
@@ -16,6 +17,14 @@ _TERMS = text(
     JOIN government_term_parties p ON p.term_id = t.id
     WHERE CAST(:territory_id AS text) IS NULL OR t.territory_id = :territory_id
     ORDER BY t.territory_id, t.valid_from, p.party_id
+    """
+)
+_COMPETENCES = text(
+    """
+    SELECT sector_id, activity, description, level, function, territory_id, legal_basis,
+           source_url
+    FROM competences
+    ORDER BY sector_id, activity, level, function, territory_id NULLS FIRST
     """
 )
 _PARTIES = text("SELECT id, name, short_name, colour_hex FROM parties ORDER BY id")
@@ -35,6 +44,26 @@ class PgGovernmentsReader:
     def parties(self) -> list[Party]:
         rows = self._connection.execute(_PARTIES)
         return [Party(row.id, row.name, row.short_name, row.colour_hex) for row in rows]
+
+
+class PgCompetencesReader:
+    def __init__(self, connection: Connection) -> None:
+        self._connection = connection
+
+    def competences(self) -> list[Competence]:
+        return [
+            Competence(
+                sector_id=row.sector_id,
+                activity=row.activity,
+                description=row.description,
+                level=CompetenceLevel(row.level),
+                function=CompetenceFunction(row.function),
+                territory_id=row.territory_id,
+                legal_basis=row.legal_basis,
+                source_url=row.source_url,
+            )
+            for row in self._connection.execute(_COMPETENCES)
+        ]
 
 
 def _term(rows: list[Row[tuple[object, ...]]]) -> GovernmentTerm:

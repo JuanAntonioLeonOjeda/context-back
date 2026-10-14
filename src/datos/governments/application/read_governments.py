@@ -8,6 +8,7 @@ small (about a hundred terms), so loading a territory's terms costs nothing.
 from datetime import date
 from typing import Protocol
 
+from datos.governments.domain.competence import Competence
 from datos.governments.domain.government_term import GovernmentTerm, in_force_on
 from datos.governments.domain.party import Party
 
@@ -18,6 +19,13 @@ class GovernmentsReader(Protocol):
         ...
 
     def parties(self) -> list[Party]: ...
+
+
+class CompetencesReader(Protocol):
+    """Read-only port for the competence table; a separate port, so a use case that needs only
+    competences does not receive the terms too."""
+
+    def competences(self) -> list[Competence]: ...
 
 
 def government_on(reader: GovernmentsReader, territory_id: str, day: date) -> GovernmentTerm | None:
