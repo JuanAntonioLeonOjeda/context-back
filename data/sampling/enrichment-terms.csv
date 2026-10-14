@@ -1,0 +1,57 @@
+stem,sector_id,match,language
+educ,education,prefix,es
+escol,education,prefix,es
+colegi,education,prefix,es
+instituto,education,prefix,es
+universi,education,prefix,es
+profes,education,prefix,es
+docent,education,prefix,es
+maestr,education,prefix,es
+alumn,education,prefix,es
+estudiant,education,prefix,es
+beca,education,prefix,es
+aula,education,prefix,es
+curricul,education,prefix,es
+matricul,education,prefix,es
+infantil,education,prefix,es
+formacion profesional,education,prefix,es
+fp,education,word,es
+ebau,education,word,es
+evau,education,word,es
+pau,education,word,es
+lomloe,education,word,es
+ensenyament,education,prefix,ca
+escola,education,prefix,ca
+mestre,education,prefix,ca
+sanid,health,prefix,es
+sanitari,health,prefix,es
+hospital,health,prefix,es
+salud,health,prefix,es
+salut,health,prefix,ca
+medic,health,prefix,es
+enfermer,health,prefix,es
+infermer,health,prefix,ca
+pacient,health,prefix,es
+urgencia,health,prefix,es
+quirofan,health,prefix,es
+ambulatori,health,prefix,es
+farmac,health,prefix,es
+vacun,health,prefix,es
+lista de espera,health,prefix,es
+llista d'espera,health,prefix,ca
+atencion primaria,health,prefix,es
+mir,health,word,es
+vivienda,housing,prefix,es
+habitatge,housing,prefix,ca
+alquiler,housing,prefix,es
+lloguer,housing,prefix,ca
+hipotec,housing,prefix,es
+desahuci,housing,prefix,es
+desnona,housing,prefix,ca
+okupa,housing,prefix,es
+inquilin,housing,prefix,es
+llogater,housing,prefix,ca
+tensionad,housing,prefix,es
+piso,housing,prefix,es
+vpo,housing,word,es
+vpp,housing,word,es
