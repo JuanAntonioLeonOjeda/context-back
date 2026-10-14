@@ -1,0 +1,19 @@
+.git
+.github
+.venv
+.mypy_cache
+.ruff_cache
+.pytest_cache
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+var
+tests
+docs
+specs
+.claude
+# Raw downloads are reproducible from their source; the versioned data (data/geo, CSVs) is needed.
+data/raw
+data/cache

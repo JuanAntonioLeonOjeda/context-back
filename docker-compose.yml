@@ -1,5 +1,21 @@
 # Local development services. Versions pinned; check for newer ones when a phase starts.
 # Credentials are for local development only.
+#
+# Everything (database, API, web app):   docker compose --profile app up -d --build
+#   web app: http://localhost:3000   API docs: http://localhost:8000/docs
+# Only the database for local development: docker compose up -d db
+#
+# The `app` profile builds the web app from ../front, so both repositories must sit side by
+# side (as in the author's `datos/back` and `datos/front` folders).
+
+# Shared by every service that runs the API image.
+x-api: &api
+  build: .
+  image: datos-api:local
+  environment:
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
+    LOG_JSON: "true"
+
 services:
   db:
     # Official pgvector image (PostgreSQL 17 + pgvector 0.8.2).
@@ -55,6 +71,62 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  # --- profile `app`: the API, its one-shot jobs and the web app --------------------------
+
+  migrate:
+    <<: *api
+    profiles: [app]
+    # Idempotent: migrations apply once, the CSV data is loaded as many times as needed.
+    command:
+      - sh
+      - -c
+      - alembic upgrade head && python -m datos.territories load && python -m datos.governments load
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *api
+    profiles: [app]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    healthcheck:
+      # The image has Python but not curl.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  indicators:
+    <<: *api
+    profiles: [app]
+    # Reads the INE (about a minute) and fills the community card. It needs internet, and the
+    # map works without it: nothing depends on this job.
+    command: ["python", "-m", "datos.indicators", "load"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  web:
+    profiles: [app]
+    build: ../front
+    image: datos-web:local
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-3000}:8080"
 
 volumes:
   db-data:
