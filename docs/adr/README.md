@@ -5,7 +5,9 @@ here: the context, the options considered, what was chosen and why. Template:
 [`template.md`](template.md). Process: `.claude/workflows/architecture-decision.md`.
 
 All entries below were drafted from the 2026-10-13 design conversation, reviewed by the
-author on 2026-10-13 and accepted when `feature/foundation` was merged.
+author on 2026-10-13 and accepted when `feature/foundation` was merged. ADR-0014 and ADR-0015
+were drafted in the `news-live` phase and accepted by the author on 2026-10-14, after the phase's
+web and API were merged.
 
 | ADR | Title | Status |
 |---|---|---|
@@ -22,8 +24,8 @@ author on 2026-10-13 and accepted when `feature/foundation` was merged.
 | [0011](0011-reference-data-model.md) | Reference data model for territories, governments and competences | Accepted |
 | [0012](0012-indicator-observations.md) | Indicators as append-only observations of what the INE published | Accepted |
 | [0013](../../../front/docs/adr/0013-svg-map.md) | The map is an SVG drawn with d3-geo, one link per community (front repo) | Accepted |
-| [0014](0014-attribution-on-read.md) | Attribution computed on read, with a three-value confidence | Proposed |
-| [0015](0015-article-classifier.md) | One classifier port, rules as data, classifications append-only | Proposed |
+| [0014](0014-attribution-on-read.md) | Attribution computed on read, with a three-value confidence | Accepted |
+| [0015](0015-article-classifier.md) | One classifier port, rules as data, classifications append-only | Accepted |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

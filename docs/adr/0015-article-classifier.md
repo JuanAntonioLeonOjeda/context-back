@@ -1,6 +1,6 @@
 # ADR-0015: One classifier port, rules as data, classifications append-only
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-14
 - **Phase:** news-live
 
