@@ -49,10 +49,11 @@ services:
       start_period: 30s
 
   pgadmin:
-    # Database browser, only on demand: docker compose --profile tools up -d pgadmin
+    # Database browser. It starts with the rest of the system (profile app) and can also be started
+    # alone: docker compose --profile tools up -d pgadmin
     # Desktop mode (no pgAdmin login) and bound to localhost: local development only.
     image: dpage/pgadmin4:9.18.0
-    profiles: [tools]
+    profiles: [app, tools]
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
