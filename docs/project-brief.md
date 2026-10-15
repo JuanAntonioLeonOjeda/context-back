@@ -75,6 +75,21 @@ shown per group, with any mapping to parties curated and dated like the governme
 official title of the initiative and the kind of vote (amendment, final text, motion) are shown
 as published, without wording about what the measure is "for".
 
+How a news item meets a law (decided with the author on 2026-10-15, D16):
+
+- **MVP, by topic.** Next to a news item, the most recent laws approved on the item's topic
+  (its sector, now aligned with the 12 topics of D15), each with its final vote per group. It is
+  presented as what it is, "latest laws on housing", never as "related to this news item": a
+  shared topic is not a link between the two. Which topics a law has is a curated, sourced fact,
+  not taken from third-party sites.
+- **Later, links with a basis.** "Mentions the law" (its number, official title or a curated
+  common name; high confidence, by rules) and "similar" (embeddings of the item against the
+  law's title and preamble; medium, with a threshold measured on hand-labelled pairs), shown with
+  their basis like the responsible party.
+- The vote shown is the final vote of the law's file (`votación de conjunto`), not amendments,
+  with its date and a link to the Congreso's data. State laws only until the regional
+  parliaments are covered.
+
 ## 6. Sources to verify (phase 0)
 
 | Source | Assumption | Status |
