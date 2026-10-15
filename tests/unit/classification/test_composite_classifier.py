@@ -9,7 +9,7 @@ from datos.classification.application.composite_classifier import (
     CompositeClassifier,
     Family,
 )
-from datos.classification.domain.labels import Evidence, Labels
+from datos.classification.domain.labels import Evidence, Labels, Score
 from datos.classification.infrastructure.rules_classifier import load_rules_classifier
 from datos.governments.application.published import CompetenceLevel
 
@@ -115,3 +115,28 @@ def test_made_only_of_the_rules_it_says_exactly_what_the_rules_say() -> None:
         ("Netflix emitirá los partidos del Mundial", ""),
     ]:
         assert composite.classify(headline, lead) == rules.classify(headline, lead)
+
+
+def test_keeps_only_the_scores_of_the_families_each_source_supplies() -> None:
+    model = Fixed(
+        "setfit",
+        Labels(
+            communities=frozenset(),
+            sectors=frozenset({"health"}),
+            levels=frozenset({STATE}),
+            scores=(Score("sector:health", 0.83), Score("level:state", 0.61)),
+        ),
+    )
+    composite = CompositeClassifier(
+        {Family.COMMUNITIES: RULES, Family.SECTORS: model, Family.LEVELS: RULES}
+    )
+
+    # The model's level score is dropped: the levels came from the rules.
+    assert composite.classify("titular", None).scores == (Score("sector:health", 0.83),)
+
+
+def test_the_rules_give_no_scores_and_the_composite_of_the_rules_neither() -> None:
+    composite = CompositeClassifier(dict.fromkeys(Family, RULES))
+
+    assert RULES.classify("titular", None).scores == ()
+    assert composite.classify("titular", None).scores == ()

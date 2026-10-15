@@ -65,12 +65,19 @@ class CompositeClassifier:
             communities=taken(Family.COMMUNITIES).communities,
             sectors=taken(Family.SECTORS).sectors,
             levels=taken(Family.LEVELS).levels,
-            # Only the evidence of the families each source supplies (the rules' sector terms say
-            # nothing once the sectors come from the model), in the order each source gave it.
+            # Only the evidence and the scores of the families each source supplies (the rules'
+            # sector terms say nothing once the sectors come from the model), in the order each
+            # source gave them.
             evidence=tuple(
                 evidence
                 for source in sources
                 for evidence in results[id(source)].evidence
                 if evidence.gives.startswith(prefixes[id(source)])
+            ),
+            scores=tuple(
+                score
+                for source in sources
+                for score in results[id(source)].scores
+                if score.label.startswith(prefixes[id(source)])
             ),
         )

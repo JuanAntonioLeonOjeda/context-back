@@ -68,3 +68,14 @@ def test_every_evidence_term_is_in_the_text(classifier: ArticleClassifier) -> No
         text = f"{headline} {lead or ''}".lower()
         for evidence in classifier.classify(headline, lead).evidence:
             assert evidence.term.lower() in text
+
+
+def test_every_score_is_for_a_label_the_classifier_gave(classifier: ArticleClassifier) -> None:
+    for headline, lead in TEXTS:
+        labels = classifier.classify(headline, lead)
+        given = (
+            {f"community:{c}" for c in labels.communities}
+            | {f"sector:{s}" for s in labels.sectors}
+            | {f"level:{level.value}" for level in labels.levels}
+        )
+        assert {score.label for score in labels.scores} <= given
