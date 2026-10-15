@@ -23,9 +23,9 @@ _UNCLASSIFIED = text(
 _INSERT = text(
     """
     INSERT INTO classifications
-        (article_id, model_id, model_version, communities, sectors, levels, evidence)
+        (article_id, model_id, model_version, communities, sectors, levels, evidence, scores)
     VALUES (:article_id, :model_id, :model_version, :communities, :sectors, :levels,
-            CAST(:evidence AS jsonb))
+            CAST(:evidence AS jsonb), CAST(:scores AS jsonb))
     ON CONFLICT (article_id, model_id, model_version) DO NOTHING
     """
 )
@@ -69,6 +69,12 @@ class PgClassificationRepository:
                         "evidence": json.dumps(
                             [{"term": e.term, "gives": e.gives} for e in labels.evidence],
                             ensure_ascii=False,
+                        ),
+                        "scores": json.dumps(
+                            [
+                                {"label": s.label, "probability": s.probability}
+                                for s in labels.scores
+                            ]
                         ),
                     },
                 )
