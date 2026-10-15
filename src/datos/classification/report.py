@@ -2,6 +2,7 @@
 
 from collections.abc import Sequence
 
+from datos.classification.domain.bootstrap import Interval
 from datos.classification.domain.learning_curve import (
     MIN_RISE,
     RISE_FROM_SIZE,
@@ -12,6 +13,7 @@ from datos.classification.domain.learning_curve import (
     summarise,
 )
 from datos.classification.domain.metrics import FamilyScore
+from datos.classification.domain.promotion import MAX_OUTLET_LOSS, MIN_GAIN, FamilyVerdict
 
 
 def duration(seconds: float) -> str:
@@ -77,3 +79,37 @@ def format_summary(points: Sequence[ScoredPoint]) -> str:
         )
     )
     return "\n".join(lines)
+
+
+def format_verdicts(family_verdicts: Sequence[FamilyVerdict]) -> str:
+    """Per family: the decision, criterion 1 with its interval, and every outlet left behind."""
+    lines: list[str] = []
+    for v in family_verdicts:
+        gain = v.gain
+        lines.append(
+            f"\n{v.family}: "
+            + ("PROMOTED, the model takes it" if v.promoted else "stays with the rules")
+        )
+        interval = "" if gain.interval is None else f" (95 % interval {_points(gain.interval)})"
+        change = "cannot be computed" if gain.gain is None else f"{gain.gain * 100:+.1f} points"
+        lines.append(
+            f"  1. Overall, random half ({gain.articles} articles):"
+            f" rules {_f1(gain.rules_macro_f1)}, model {_f1(gain.candidate_macro_f1)},"
+            f" {change}{interval}:"
+            f" {'passes' if gain.passes else 'fails'} (needs +{MIN_GAIN * 100:.0f})"
+        )
+        behind = [o for o in v.outlets.outlets if o.difference < -MAX_OUTLET_LOSS]
+        lines.append(
+            f"  2. Outlets ({len(v.outlets.outlets)}): "
+            + ("passes" if v.outlets.passes else "fails")
+            + f" (none more than {MAX_OUTLET_LOSS} articles worse)"
+        )
+        lines.extend(
+            f"     {o.outlet_id}: {o.candidate_right} vs {o.rules_right} of {o.articles} right"
+            for o in behind
+        )
+    return "\n".join(lines)
+
+
+def _points(interval: Interval) -> str:
+    return f"{interval.low * 100:+.1f} to {interval.high * 100:+.1f}"
