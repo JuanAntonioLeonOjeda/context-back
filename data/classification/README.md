@@ -75,6 +75,13 @@ version `d74a59205b94`, the one after parliaments stopped giving a government le
   27 %, is of an outlet with 44 articles, so it may be noise. Counts per outlet go from 44 to 569
   articles.
 
+**Known limitation (noticed in use, 2026-10-15).** A community is assigned when the text *names* it, not
+when the article is *about* it, while the labelling guide defines the community as the one affected.
+An article that names a place only in passing (a comparison, a club called "Las Palmas" playing
+elsewhere) gets that community as well. It is measured per community on the blind test set; if it
+proves frequent, ADR-0016 already provides for the model taking communities over. Do not fix it by
+adding terms after looking at test-set errors.
+
 These numbers say how much the rules fire, not how often they are right: a sample of the sector
 matches showed clear policy news next to clear noise (an illness at a wedding, news from
 Hungary), the expected weakness of keywords. Precision and recall are measured on the blind test
