@@ -149,6 +149,11 @@ Decided by the author before writing the model's code (task 17):
   trains in 18 s with the encoder cached; the first run also downloads the encoder (about 1.2 GB).
   The real figure with 400 examples is measured by the training job (unit 4), and decides whether
   MiniLM is needed.
+- **Contrastive pairs, measured 2026-10-15**: SetFit 1.2.0 oversamples by default, so 400 examples
+  give 89,168 pairs; at the measured 1.9 pairs/s (40 examples, 400 pairs, 227 s on MPS) that is
+  about 13 hours. The training job fixes `num_iterations=20`: 16,000 pairs for 400 examples, about
+  2.4 hours. The count is printed before training (`train --dry-run`) and stored in the model
+  card. This corrects an earlier note that gave 20 iterations as SetFit's own default.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
