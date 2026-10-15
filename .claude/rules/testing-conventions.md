@@ -17,16 +17,14 @@ description: Testing conventions — pytest unit tests, Testcontainers integrati
 
 - `tests/unit/<module>/test_<file>.py`, `tests/integration/<module>/test_<file>.py`.
 - Test names state the behaviour in plain English:
-  `test_attributes_housing_news_to_the_regional_government_when_competence_is_regional`,
-  not `test_attribution`.
+  `test_a_parliament_names_the_community_but_not_a_level_of_government`,
+  not `test_rules`.
 - Fixtures: real feed items, statistics files and LLM answers captured from the sources
   and stored under `tests/fixtures/`, never invented shapes.
 
 ## What must be tested
 
 **Always:**
-- Attribution: every case of the competence table, a government change on the exact
-  article date, a coalition, an article about the central government.
 - Feed parsing with real samples, including broken ones (must be dropped, not thrown).
 - Classifier contract against every adapter (the same suite runs on the stub, the LLM
   adapter with recorded answers and the own model).

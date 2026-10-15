@@ -36,7 +36,7 @@ environment, transport).
 See `.claude/rules/architecture.md` for the layout and dependency rules.
 
 ```
-RSS / GDELT / sitemaps ─► news ─► classification ─► attribution ─► stories ─► PostgreSQL ─► API ─► web
+RSS / GDELT / sitemaps ─► news ─► classification ─► stories ─► PostgreSQL ─► API ─► web
 INE / ministries / CIS / elections ─► indicators, voters (ETL) ──────────────────────────┘
 curated governments + competences ──────────────────────────────────────────────────────┘
 ```
@@ -51,7 +51,7 @@ full-text search; React + Vite + React Router v7 in the web app.
 | `territory` | INE code, name, level, geometry | CCAA, provinces, municipalities |
 | `party` | id, name, colour | single source of party data |
 | `government_term` | territory, president, governing and supporting parties, caretaker flag, valid_from/to | who governed when |
-| `sector`, `competence` | sector; activity, level (state, ccaa, local) and function (basic legislation, development legislation, execution), one row per level when shared | attribution rule input |
+| `sector`, `competence` | sector; activity, level (state, ccaa, local) and function (basic legislation, development legislation, execution), one row per level when shared | curated data; not shown by the site since ADR-0018 |
 | `outlet`, `article` | outlet, URL, published_at, headline, lead, territory, sector, keywords, embedding | news metadata |
 | `classification` | article, labels, confidence, model_id, prompt_version, validated_by | stored proposals and validations |
 | `story`, `story_link` | grouped articles; link type (antecedent, consequence, continuation), confidence, origin | contrast and traceability |
@@ -87,7 +87,7 @@ How a news item meets a law (decided with the author on 2026-10-15, D16):
 - **Later, links with a basis.** "Mentions the law" (its number, official title or a curated
   common name; high confidence, by rules) and "similar" (embeddings of the item against the
   law's title and preamble; medium, with a threshold measured on hand-labelled pairs), shown with
-  their basis like the responsible party.
+  their basis and confidence.
 - The vote shown is the final vote of the law's file (`votación de conjunto`), not amendments,
   with its date and a link to the Congreso's data. State laws only until the regional
   parliaments are covered.
@@ -111,7 +111,6 @@ How a news item meets a law (decided with the author on 2026-10-15, D16):
 | Risk | Mitigation |
 |---|---|
 | Perceived bias in outlet selection | published criterion, all covering outlets shown, stable order |
-| Wrong responsible party | competence table, visible confidence, error report |
 | Invented links between stories | origin and confidence on every link; threshold chosen on the test set |
 | Labeller bias inherited from model proposals | blind test set labelled by hand with no proposals; training labels without proposals (ADR-0008) |
 | Copyright | metadata and short quotes only |

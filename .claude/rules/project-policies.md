@@ -26,7 +26,7 @@ Each phase goes through `.claude/workflows/spec-driven-phase.md` and has its own
 |---|---|---|
 | 0 | `foundation` | repo setup, Docker Compose with PostgreSQL, CI, ADRs 0001–0010, source audit, governments and competences dataset, 200-article blind test set |
 | 1 | `map-governments` | territories, governments API, first INE indicators |
-| 2 | `news-live` | RSS ingestion, hand-labelled training set, own classifier (ADR-0008), party attribution |
+| 2 | `news-live` | RSS ingestion, hand-labelled training set, own classifier (ADR-0008); party attribution removed by ADR-0018 |
 | 3 | `story-contrast` | clustering of the same story across outlets, common summary |
 | 4 | `history-trace` | five-year history, links between stories |
 | 5 | `context-voters` | sector indicators next to each story, voter profiles |
@@ -42,9 +42,8 @@ Ingestion adapters fetch articles (RSS, news sitemaps and section pages now; out
 archives first and GDELT as a complement for history, ADR-0002) and store metadata only.
 A classification pipeline (rules and dictionaries, embeddings, and an `ArticleClassifier`
 port backed by the author's own model, trained on hand labels; no LLM in classification,
-ADR-0008) assigns CCAA, sector and government level. Attribution applies the competence table to the
-government in force on the article date. A linker groups articles into stories and links
-stories over time. An ETL loads official statistics and election results. PostgreSQL
+ADR-0008) assigns CCAA, sector and government level. No news item is attributed to a
+party (ADR-0018). A linker groups articles into stories and links stories over time. An ETL loads official statistics and election results. PostgreSQL
 (pgvector, Spanish full-text search) holds everything; FastAPI exposes it read-only to the
 web app. Details: `.claude/rules/architecture.md`.
 
@@ -98,8 +97,8 @@ docker compose ps
 
 - Every party is treated by the same code path. No party-specific branches, colours or
   wording in code; party data comes from one table.
-- The responsible party is always derived by the rule in ADR-0005, never typed by hand
-  into an article, and is shown with its confidence.
+- No news item is attributed to a party (ADR-0018). Parties appear only through official
+  facts shown as published: who governs (BOE) and, in phase 7, how each group voted.
 - All outlets that cover a story are shown, in a stable order that does not depend on
   engagement or ranking.
 - Evaluation metrics of classifiers are reported per outlet and per party.

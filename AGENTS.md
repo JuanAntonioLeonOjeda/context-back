@@ -18,8 +18,7 @@ Update the status column when a phase creates or finishes a path.
 | `pyproject.toml`, `uv.lock` | project, dependencies and tool config (ruff, mypy, pytest) | ✅ |
 | `src/datos/territories/` | State anchor, communities and provinces with INE codes; CSV loader (`python -m datos.territories load`); reader and `/territories`; boundaries read from the IGN GML and built into `data/geo/ccaa.geojson` (`python -m datos.territories build-geometry`, needs the `geo` group) and served at `/map/geometry` | ✅ |
 | `src/datos/governments/` | parties, government terms, sectors and competences (with per-territory rows), rules, CSV loader (`python -m datos.governments load`); read side: government in force on a date, the map's governing parties, routers `/communities/{id}/governments`, `/map/governments` and `/parties` | ✅ |
-| `src/datos/attribution/` | responsible party = competence × government in force on the date, computed on read (ADR-0014); pure rule in `domain/`, published API in `application/published.py` | ✅ |
-| `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; read side: latest news of a community and sector with their attribution, `/communities/{id}/news`; history pending | 🚧 |
+| `src/datos/news/` | outlets, collector for RSS, news sitemaps and section pages (`python -m datos.news collect`), article cleaning; read side: latest news of a community and sector (no party, ADR-0018), `/communities/{id}/news`; history pending | 🚧 |
 | `src/datos/classification/` | `ArticleClassifier` port, rules as data (`data/classification/`), append-only storage, `python -m datos.classification classify-new` (ADR-0015); the sampler for hand labelling (`sample`); the own model of ADR-0016: `SetFitClassifier`, `train` and `learning-curve` (the `ml` group, never in the API image); weights wait for the labels | 🚧 |
 | `src/datos/stories/` | same-story grouping across outlets, links between stories | ⏳ |
 | `src/datos/indicators/` | the five INE indicators: client of the Tempus API, definitions, loader (`python -m datos.indicators load`), append-only observations, read side and `/communities/{id}/indicators`; see `docs/indicators.md` | ✅ |
@@ -60,11 +59,11 @@ Dependency rule between layers and modules: `.claude/rules/architecture.md`.
 | `.claude/rules/naming-conventions.md` | files, types, units and dates, INE codes, parties, database, API |
 | `.claude/rules/atomic-functions-solid.md` | atomic functions and the SOLID that applies here |
 | `.claude/rules/testing-conventions.md` | pytest, Testcontainers, real fixtures, the blind test set |
-| `.claude/rules/core-zones.md` | (path-scoped) attribution, classification, stories, indicators, voters, schema: collaborative mode |
+| `.claude/rules/core-zones.md` | (path-scoped) classification, stories, indicators, voters, schema: collaborative mode |
 | `.claude/rules/db-migrations.md` | (path-scoped) migrations immutable once merged; append-only observations; idempotent writes |
 | `.claude/skills/news-sources/` | verified facts on outlets, collection paths, IP limits, LLM restrictions, GDELT bias, INE tables |
 | `.claude/agents/py-reviewer.md` | project reviewer (read-only): boundaries, layers, edges, reproducibility, typing |
-| `.claude/agents/neutrality-reviewer.md` | neutrality reviewer (read-only): same path for every party and outlet, attribution rule, wording |
+| `.claude/agents/neutrality-reviewer.md` | neutrality reviewer (read-only): same path for every party and outlet, parties only through official facts, wording |
 | `.claude/agents/code-reviewer.md` | generic reviewer (read-only): security, correctness, performance, maintainability |
 | `.claude/commands/create-pr.md` | `/create-pr`: PR with `gh`, conventional commit, generated description |
 | `.claude/commands/new-adr.md` | `/new-adr <title>`: ADR skeleton that the author fills in |

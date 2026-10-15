@@ -48,6 +48,11 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
   - Done 2026-10-15 (code): the `ml` group, `SetFitClassifier` and the composite classifier, scores stored with each classification (migration 0006), `train` (plan, `--dry-run`, frozen model directory, model card) and `learning-curve` (D11, D12: 4 folds, 2 run, subsets of 100, 200 and 300, resumable), with `scripts/train-model.sh` and `scripts/learning-curve.sh`. The real weights in `models/` and the real curve wait for the labels of task 15 (sample drawn on 2026-10-21); the model is promoted or not by task 18.
 - [ ] 18. Evaluation of rules and model on the test set, overall, per outlet and per party; promotion per label
 
+## Change of course (2026-10-15)
+
+- [x] 22. ADR-0018: no responsible party per news item (supersedes ADR-0005 and ADR-0014); the attribution leaves the API, the web and the code; levels stay for phase 7; competences stay as data
+  - Back: the news API names no party, the `attribution` module and the competences reader removed. Front: the news card shows outlet, time, headline and link; the texts no longer describe a responsible party. Tasks 1, 3 and 10 above describe what was built before.
+
 ## Close
 
 - [x] 19. Data READMEs, `AGENTS.md` statuses (both repos), OpenAPI client regenerated
