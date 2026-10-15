@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 from sqlalchemy import Connection, text
 
-from datos.governments.domain.competence import CompetenceLevel
 from datos.news.infrastructure.pg_news_reader import PgCommunityNewsReader
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
@@ -152,7 +151,7 @@ def test_leaves_out_what_was_published_before_the_window(connection: Connection)
     assert recent(connection) == [inside]
 
 
-def test_maps_the_row_with_outlet_name_levels_and_classifier(connection: Connection) -> None:
+def test_maps_the_row_with_outlet_name_and_classifier(connection: Connection) -> None:
     article_id = add_article(connection, "outlet-a", DAY, lead="Never shown")
     classify(
         connection, article_id, communities=[CANARIAS], sectors=["health"], levels=["ccaa", "state"]
@@ -163,7 +162,6 @@ def test_maps_the_row_with_outlet_name_levels_and_classifier(connection: Connect
     )
 
     assert article.outlet_name == "Outlet A"
-    assert article.levels == {CompetenceLevel.CCAA, CompetenceLevel.STATE}
     assert (article.model_id, article.model_version) == ("rules", "v1")
     assert article.published_at == DAY
     assert "Never shown" not in repr(article)
