@@ -65,6 +65,33 @@ Canarias, Comunidad de Madrid and Cataluña, with the three launch sectors. The 
 governments, competences and national outlets cover the whole country from day one;
 regional outlets and thorough validation start with the pilot and grow in batches.
 
+Phase 7, `parliament-votes` (decided with the author on 2026-10-15): next to a measure, how each
+parliamentary group voted. It starts with the Congreso, whose open data gives every deputy's vote
+and group per vote (`docs/sources-audit.md`, section 9), and then tries the regional parliaments,
+where most education, health and housing measures are voted, using only what each publishes
+officially. Data comes from the parliaments, never from third-party sites or their summaries. A
+parliamentary group is not a party (the Grupo Mixto and some groups hold several), so votes are
+shown per group, with any mapping to parties curated and dated like the governments dataset. The
+official title of the initiative and the kind of vote (amendment, final text, motion) are shown
+as published, without wording about what the measure is "for".
+
+How a news item meets a law (decided with the author on 2026-10-15, D16):
+
+- **MVP, by topic.** Next to a news item, the most recent laws approved on the item's topic
+  (its sector, now aligned with the 12 topics of D15), each with its final vote per group. It is
+  presented as what it is, "latest laws on housing", never as "related to this news item": a
+  shared topic is not a link between the two. Which topics a law has is curated by hand (D17): a
+  CSV of law → topics, each row citing the law in the BOE, reviewed by the author in batches like
+  the competence table (about 90 laws in Legislature XV). Not taken from third-party sites, and
+  not from the news classifier, which is trained on news, not on legal texts.
+- **Later, links with a basis.** "Mentions the law" (its number, official title or a curated
+  common name; high confidence, by rules) and "similar" (embeddings of the item against the
+  law's title and preamble; medium, with a threshold measured on hand-labelled pairs), shown with
+  their basis like the responsible party.
+- The vote shown is the final vote of the law's file (`votación de conjunto`), not amendments,
+  with its date and a link to the Congreso's data. State laws only until the regional
+  parliaments are covered.
+
 ## 6. Sources to verify (phase 0)
 
 | Source | Assumption | Status |
@@ -76,6 +103,8 @@ regional outlets and thorough validation start with the pilot and grow in batche
 | Election results by municipality | Interior publishes general and European; regional ones vary by CCAA | unverified |
 | CIS microdata licence | reusable with attribution | unverified |
 | CCAA geometries | IGN/CNIG open licence | unverified |
+| Congreso votes | per-deputy votes with group, open data | verified 2026-10-15 (`docs/sources-audit.md`, 9) |
+| Regional parliaments' votes | each publishes official per-group or per-deputy votes | unverified, one by one in phase 7 |
 
 ## 7. Risks
 

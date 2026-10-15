@@ -31,6 +31,7 @@ Each phase goes through `.claude/workflows/spec-driven-phase.md` and has its own
 | 4 | `history-trace` | five-year history, links between stories |
 | 5 | `context-voters` | sector indicators next to each story, voter profiles |
 | 6 | `verification` | claim extraction, verdicts, review panel (from the original draft) |
+| 7 | `parliament-votes` | how each parliamentary group voted on a measure: the Congreso first, from its open data; then the regional parliaments that publish official votes (decided 2026-10-15) |
 
 **Do not start a phase without the previous one closed.** The current phase is the one
 whose `specs/<phase>/tasks.md` has unchecked tasks; if none exists, it is the next one.

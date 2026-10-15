@@ -122,6 +122,24 @@ Not legal advice; to be reviewed by a lawyer before any public launch.
 - Cataluña: no within-community GfK DAM figure found; a Catalan-language ranking
   (comunicació21, February 2026) puts ElNacional.cat first.
 
+## 9. Congreso votes (checked 2026-10-15, for phase `parliament-votes`)
+
+- Source: `https://www.congreso.es/es/opendata/votaciones`, one page per plenary session with a
+  ZIP of the session and, per vote, PDF, XML and JSON. Legislatures X to XV listed.
+- Path: `/webpublica/opendata/votaciones/Leg15/Sesion{n}/{yyyymmdd}/Votacion{nnn}/VOT_{timestamp}.json`.
+  The timestamp differs per file, so the file names are read from the session page, not built.
+- Contents, checked on session 202, vote 1 (2026-09-30): `informacion` (session, number, date,
+  title, the initiative's text), `totales` (present, yes, no, abstentions, not voting) and
+  `votaciones`, one row per deputy with seat, name, group code (`GP`, `GS`, `GVOX`, `GMx`…) and
+  vote (`Sí`, `No`, `Abstención`, `No vota`). 350 rows; the Grupo Mixto split 6 / 2 / 1.
+- Reuse conditions (Congreso legal notice, "Reutilización de información"): the content is not
+  altered, its meaning is not distorted, the source is cited and the date of the last update is
+  stated.
+- elcongresoentumano.es (independent, donation-funded) republishes these votes with its own API;
+  its summaries and "popular names" are its own, under CC BY 4.0, and it states they are
+  unchecked automatic interpretation. Not used as a source: the project reads the Congreso.
+- Regional parliaments: not checked yet.
+
 ## Decisions taken with the author (2026-10-13)
 
 - El Periódico and El Economista are excluded (no usable access; protection not bypassed).
