@@ -80,8 +80,10 @@ How a news item meets a law (decided with the author on 2026-10-15, D16):
 - **MVP, by topic.** Next to a news item, the most recent laws approved on the item's topic
   (its sector, now aligned with the 12 topics of D15), each with its final vote per group. It is
   presented as what it is, "latest laws on housing", never as "related to this news item": a
-  shared topic is not a link between the two. Which topics a law has is a curated, sourced fact,
-  not taken from third-party sites.
+  shared topic is not a link between the two. Which topics a law has is curated by hand (D17): a
+  CSV of law → topics, each row citing the law in the BOE, reviewed by the author in batches like
+  the competence table (about 90 laws in Legislature XV). Not taken from third-party sites, and
+  not from the news classifier, which is trained on news, not on legal texts.
 - **Later, links with a basis.** "Mentions the law" (its number, official title or a curated
   common name; high confidence, by rules) and "similar" (embeddings of the item against the
   law's title and preamble; medium, with a threshold measured on hand-labelled pairs), shown with
