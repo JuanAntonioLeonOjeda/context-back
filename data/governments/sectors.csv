@@ -1,0 +1,13 @@
+id,name,is_active
+economy,Economía,false
+education,Educación,true
+environment,Medio ambiente,false
+health,Sanidad,true
+housing,Vivienda,true
+institutional,Institucional,false
+justice,Justicia,false
+migration,Migración,false
+pensions,Pensiones,false
+rights,Derechos,false
+taxes,Impuestos,false
+work,Trabajo,false

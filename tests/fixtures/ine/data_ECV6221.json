@@ -1,0 +1,5 @@
+{"COD":"ECV6221", "Nombre":"Ceuta. Total. Tasa de riesgo de pobreza o exclusión social (indicador AROPE). Base 2013. ", "FK_Unidad":101, "FK_Escala":1, "Data":[{"Fecha":1672527600000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2023, "Valor":41.8, "Secreto":false}
+,{"Fecha":1704063600000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2024, "Valor":42.2, "Secreto":false}
+,{"Fecha":1735686000000, "FK_TipoDato":1, "FK_Periodo":28, "Anyo":2025, "Valor":40.8, "Secreto":false}
+]
+}

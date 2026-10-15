@@ -1,0 +1,128 @@
+# Local development services. Versions pinned; check for newer ones when a phase starts.
+# Credentials are for local development only.
+#
+# Everything (database, back end, front end):   docker compose --profile app up -d --build
+#   front end: http://localhost:3000   back end docs: http://localhost:8000/docs
+# Only the database for local development:       docker compose up -d db
+#
+# The `app` profile builds the front end from ../front, so both repositories must sit side by
+# side (as in the author's `datos/back` and `datos/front` folders).
+
+# The project is the whole system (back end, front end, database), not the back end alone.
+name: datos
+
+services:
+  db:
+    # Official pgvector image (PostgreSQL 17 + pgvector 0.8.2).
+    image: pgvector/pgvector:0.8.2-pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-datos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-datos}
+      POSTGRES_DB: ${POSTGRES_DB:-datos}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  labelstudio:
+    # Used to label the blind test set and to validate model proposals (ADR-0009).
+    image: heartexlabs/label-studio:1.23.0
+    ports:
+      - "${LABEL_STUDIO_PORT:-8080}:8080"
+    volumes:
+      - labelstudio-data:/label-studio/data
+    healthcheck:
+      # The image has Python but not necessarily curl.
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  pgadmin:
+    # Database browser. It starts with the rest of the system (profile app) and can also be started
+    # alone: docker compose --profile tools up -d pgadmin
+    # Desktop mode (no pgAdmin login) and bound to localhost: local development only.
+    image: dpage/pgadmin4:9.18.0
+    profiles: [app, tools]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # --- profile `app`: the back end and the front end -------------------------------------
+
+  back-main:
+    profiles: [app]
+    build: .
+    image: datos-back-main:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
+      LOG_JSON: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    healthcheck:
+      # The image has Python but not curl. The first start applies the migrations and loads the
+      # CSV data before the server listens, so it gets a longer start period.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  collector:
+    # The same image as the API, running collector.sh instead of the entrypoint: every
+    # COLLECT_INTERVAL_MIN minutes it collects the feeds and classifies the new articles.
+    # It waits for back-main, which brings the database up to date (migrations, CSV data).
+    profiles: [app]
+    build: .
+    image: datos-back-main:local
+    entrypoint: ["collector.sh"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
+      LOG_JSON: "true"
+      COLLECT_INTERVAL_MIN: ${COLLECT_INTERVAL_MIN:-180}
+    depends_on:
+      back-main:
+        condition: service_healthy
+
+  front:
+    profiles: [app]
+    build: ../front
+    image: datos-front:local
+    depends_on:
+      back-main:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-3000}:8080"
+
+volumes:
+  db-data:
+  labelstudio-data:
+  pgadmin-data:

@@ -1,0 +1,5 @@
+{"COD":"EPA432730", "Nombre":"Total. Ambos sexos. Ceuta. Educación superior. Valor absoluto. ", "FK_Unidad":3, "FK_Escala":4, "Data":[{"Fecha":1759269600000, "FK_TipoDato":1, "FK_Periodo":22, "Anyo":2025, "Valor":18.6, "Secreto":false}
+,{"Fecha":1767222000000, "FK_TipoDato":1, "FK_Periodo":19, "Anyo":2026, "Valor":17.8, "Secreto":false}
+,{"Fecha":1774994400000, "FK_TipoDato":1, "FK_Periodo":20, "Anyo":2026, "Valor":19.3, "Secreto":false}
+]
+}

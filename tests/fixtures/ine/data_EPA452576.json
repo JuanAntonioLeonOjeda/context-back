@@ -1,0 +1,6 @@
+{"COD":"EPA452576", "Nombre":"Tasa de paro de la población. Ambos sexos. Ceuta. Total. ", "FK_Unidad":135, "FK_Escala":1, "Data":[{"Fecha":1751320800000, "FK_TipoDato":1, "FK_Periodo":21, "Anyo":2025, "Valor":25.47, "Secreto":false}
+,{"Fecha":1759269600000, "FK_TipoDato":1, "FK_Periodo":22, "Anyo":2025, "Valor":22.21, "Secreto":false}
+,{"Fecha":1767222000000, "FK_TipoDato":1, "FK_Periodo":19, "Anyo":2026, "Valor":26.1, "Secreto":false}
+,{"Fecha":1774994400000, "FK_TipoDato":1, "FK_Periodo":20, "Anyo":2026, "Valor":22.41, "Secreto":false}
+]
+}
