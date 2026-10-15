@@ -46,7 +46,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
   - Drafted 2026-10-14 with the author's decisions (encoder mpnet-base with MiniLM as fallback, sectors and levels, training sample on 2026-10-21, promotion criteria, `ml` group approved): `docs/adr/0016-own-classifier-model.md`, accepted by the author on 2026-10-15.
 - [x] 17. `ml` dependency group approved; `SetFitClassifier` adapter and training job with fixed seeds; weights in `models/`
   - Done 2026-10-15 (code): the `ml` group, `SetFitClassifier` and the composite classifier, scores stored with each classification (migration 0006), `train` (plan, `--dry-run`, frozen model directory, model card) and `learning-curve` (D11, D12: 4 folds, 2 run, subsets of 100, 200 and 300, resumable), with `scripts/train-model.sh` and `scripts/learning-curve.sh`. The real weights in `models/` and the real curve wait for the labels of task 15 (sample drawn on 2026-10-21); the model is promoted or not by task 18.
-- [ ] 18. Evaluation of rules and model on the test set, overall, per outlet and per party; promotion per label
+- [x] 18. Evaluation of rules and model on the test set, overall and per outlet; promotion per label
+  - Done 2026-10-15 (code): `evaluate --model DIR` (bootstrap intervals, the two criteria of ADR-0016 per family, a new report per run in `data/eval/reports/`; the per-party criterion was dropped with the attribution, ADR-0018). The real evaluation waits for the trained model and the labelled blind test set (early November).
 
 ## Change of course (2026-10-15)
 

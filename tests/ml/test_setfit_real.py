@@ -223,3 +223,77 @@ def test_the_learning_curve_trains_and_scores_with_the_real_trainer() -> None:
     assert [(p.fold, p.size) for p in points] == [(0, 6), (1, 6)]
     assert all({s.family for s in p.scores} == {"sector", "level"} for p in points)
     assert all(p.training_seconds > 0 for p in points)
+
+
+def test_the_evaluation_runs_with_a_real_trained_model(tmp_path: Path) -> None:
+    """Train a tiny model, wrap it as the classifier production uses, and evaluate it."""
+    from datetime import UTC, datetime
+
+    from datos.classification.application.evaluate_model import evaluate_model
+    from datos.classification.application.store_classifications import ArticleText
+    from datos.classification.application.train_model import (
+        TrainingConfig,
+        TrainingSetInfo,
+        train_model,
+    )
+    from datos.classification.domain.labels import Labels
+    from datos.classification.domain.training_set import LabelledExample
+    from datos.classification.infrastructure.local_model_store import LocalModelStore
+    from datos.classification.infrastructure.setfit_trainer import SetFitModelTrainer
+    from datos.governments.application.published import CompetenceLevel
+
+    sector_of = {0: "education", 1: "health", 2: "housing"}
+    level_of = {1: CompetenceLevel.CCAA, 3: CompetenceLevel.STATE}
+    examples = [
+        LabelledExample(i, frozenset({sector_of[s]}), frozenset({level_of[lv]}), "random", False)
+        for i, (_, s, lv) in enumerate(EXAMPLES, start=1)
+    ]
+    articles = {i: ArticleText(i, text, None) for i, (text, _, _) in enumerate(EXAMPLES, start=1)}
+
+    class Texts:
+        def texts(self, article_ids: Collection[int]) -> dict[int, ArticleText]:
+            return {i: articles[i] for i in article_ids}
+
+    class Outlets:
+        def outlets(self, article_ids: Collection[int]) -> dict[int, str]:
+            return {i: f"outlet-{i % 3}" for i in article_ids}
+
+    class NoRules:
+        model_id = "rules"
+        model_version = "none"
+
+        def classify(self, headline: str, lead: str | None) -> Labels:
+            return Labels(frozenset(), frozenset(), frozenset())
+
+    card = train_model(
+        examples=examples,
+        training_set=TrainingSetInfo("toy-set", "0123456789ab"),
+        sector_ids=SECTORS,
+        test_ids=set(),
+        texts=Texts(),
+        trainer=SetFitModelTrainer(),
+        store=LocalModelStore(tmp_path),
+        config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),
+        threshold=0.5,
+        now=lambda: datetime(2026, 10, 15, tzinfo=UTC),
+        timer=time.perf_counter,
+    )
+    model = SetFitClassifier(
+        SetFitPredictor.load(tmp_path / card.name),
+        model_version=card.model_version,
+        sector_ids=SECTORS,
+    )
+
+    sector, level = evaluate_model(
+        examples,  # the training set itself: only the wiring is tested, not the model
+        sector_ids=SECTORS,
+        texts=Texts(),
+        outlets=Outlets(),
+        rules=NoRules(),
+        candidate=model,
+        seed=1,
+    )
+
+    assert (sector.family, level.family) == ("sector", "level")
+    assert sector.gain.candidate_macro_f1 is not None
+    assert len(sector.outlets.outlets) == 3
