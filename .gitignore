@@ -20,6 +20,8 @@ data/raw/
 data/cache/
 models/*.bin
 models/*.safetensors
+# SetFit writes training checkpoints here unless told otherwise
+checkpoints/
 
 # editor / os
 .idea/

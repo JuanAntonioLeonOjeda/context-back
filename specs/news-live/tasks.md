@@ -44,7 +44,8 @@ marked **author** are the author's. The model tasks (14–18) wait for the blind
 - [ ] 15. Author labels in sessions of 100; export to `data/train/train-set-v1.jsonl`
 - [x] 16. ADR-0016 `[core]`: encoder (licence and Catalan verified), what the model labels, promotion criteria set by the **author** before training
   - Drafted 2026-10-14 with the author's decisions (encoder mpnet-base with MiniLM as fallback, sectors and levels, training sample on 2026-10-21, promotion criteria, `ml` group approved): `docs/adr/0016-own-classifier-model.md`, accepted by the author on 2026-10-15.
-- [ ] 17. `ml` dependency group approved; `SetFitClassifier` adapter and training job with fixed seeds; weights in `models/`
+- [x] 17. `ml` dependency group approved; `SetFitClassifier` adapter and training job with fixed seeds; weights in `models/`
+  - Done 2026-10-15 (code): the `ml` group, `SetFitClassifier` and the composite classifier, scores stored with each classification (migration 0006), `train` (plan, `--dry-run`, frozen model directory, model card) and `learning-curve` (D11, D12: 4 folds, 2 run, subsets of 100, 200 and 300, resumable), with `scripts/train-model.sh` and `scripts/learning-curve.sh`. The real weights in `models/` and the real curve wait for the labels of task 15 (sample drawn on 2026-10-21); the model is promoted or not by task 18.
 - [ ] 18. Evaluation of rules and model on the test set, overall, per outlet and per party; promotion per label
 
 ## Close

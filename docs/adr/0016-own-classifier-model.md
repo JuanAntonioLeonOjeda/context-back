@@ -118,6 +118,64 @@ after.
   before deciding); intervals wider than the 5-point margin (a larger test set, v2); a test set that
   shows the rules wrong on communities (then the model takes them too, by a new decision).
 
+## Implementation decisions (2026-10-15)
+
+Decided by the author before writing the model's code (task 17):
+
+- **Threshold**: a label is assigned when its probability is at least **0.5**, fixed and written in
+  the model's metadata. Tuning it by cross-validation on 400 articles (some 50 to 60 per sector)
+  would give a noisy threshold; it is never tuned on the test set.
+- **What the model stores as evidence**: the probability of each label it gives, in a `scores`
+  field of `Labels`; a model has no term to point at, and an empty term would satisfy the contract
+  test while saying nothing.
+- **The model's version**: a hash of its weights file, because training on a CPU is not exact to
+  the bit; the metadata records the training set, the encoder, the seed and the library versions.
+- **Tests without network or GPU**: the adapter's logic is tested with a fake predictor; the test
+  with SetFit itself is marked `ml` and does not run in CI.
+- **Where the model classifies once promoted**: not decided yet; training runs on the author's
+  machine with `uv`. After task 18, a separate image for the jobs with the `ml` group, so the API
+  image stays small.
+- **Composite classifier**: what is stored and read once the model takes a family. It takes each
+  family from its assigned classifier, keeps only the evidence of those families, and its version
+  names the source of every family (`communities=rules@…;sectors=setfit@…;levels=…`).
+- **The `ml` group and its versions** (measured 2026-10-15): `setfit==1.2.0` with the ranges its
+  maintainers test against (`transformers<5`, `sentence-transformers<6`, `huggingface-hub<1`,
+  `datasets<5`), and upper bounds on eight transitive packages that were less than two weeks old
+  (`constraint-dependencies` in `pyproject.toml`; a global `exclude-newer` does not resolve for every
+  Python the project supports). 62 packages, none newer than 2026-10-01; no locked package moved.
+  The group is not a default one and is not in the API image: tests check it, and the built image
+  (452 MB) has no torch. The virtual environment grows from 191 MB to 1.1 GB.
+- **Training speed**: on the author's Mac, torch uses MPS (the Apple GPU). A tiny model (12 examples)
+  trains in 18 s with the encoder cached; the first run also downloads the encoder (about 1.2 GB).
+  The real figure with 400 examples is measured by the training job (unit 4), and decides whether
+  MiniLM is needed.
+- **Contrastive pairs, measured 2026-10-15**: SetFit 1.2.0 oversamples by default, so 400 examples
+  give 89,168 pairs; at the measured 1.9 pairs/s (40 examples, 400 pairs, 227 s on MPS) that is
+  about 13 hours. The training job fixes `num_iterations=20`: 16,000 pairs for 400 examples, about
+  2.4 hours. The count is printed before training (`train --dry-run`) and stored in the model
+  card. This corrects an earlier note that gave 20 iterations as SetFit's own default.
+- **The learning curve** (decided 2026-10-15, before any training): it is measured inside the
+  training set, never on the test set. The set is split in 4 folds by stratum with a fixed seed;
+  with one fold held out, the model is trained on nested subsets of 100, 200 and 300 of the rest
+  and its macro-F1 per family is measured on the held-out fold. With 400 labels there is no point
+  at 400: some articles are always held out. Two of the four folds are run (about 7 hours with
+  mpnet, one night); each point is stored as it ends, so a run can be resumed and the other two
+  folds added later. mpnet, not MiniLM, because the curve must describe the model that is
+  trained.
+- **When the curve "still rises"**: 100 more articles are labelled when the mean macro-F1 over the
+  folds run rises by **at least 3 points from 200 to 300**, in either family. Proposed by the
+  assistant and accepted by the author before seeing any curve; with 100 held-out articles a
+  smaller rise is within the noise.
+- **How a label is scored** (decided 2026-10-15): one-vs-rest F1 per label, and per family the plain
+  mean of its labels' F1 (macro). A label that neither the gold labels nor the predicted ones give
+  to any article has no F1 and is left out of the mean, and the report names it: there was nothing
+  to get right or wrong. Counting it as 0, as scikit-learn's `zero_division=0` does, would punish a
+  model for not inventing the label. The same code scores the learning curve and the evaluation.
+- **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
+  evaluation report are enough, and a model registry would be a second source of truth next to
+  this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
+  with periodic retraining, a hyperparameter search or a second model.
+
 ## Verification
 
 - Encoders: Hugging Face model cards of `paraphrase-multilingual-mpnet-base-v2` and

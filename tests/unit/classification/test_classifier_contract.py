@@ -8,7 +8,9 @@ from pathlib import Path
 import pytest
 
 from datos.classification.application.classifier import ArticleClassifier
+from datos.classification.application.composite_classifier import CompositeClassifier, Family
 from datos.classification.infrastructure.rules_classifier import load_rules_classifier
+from datos.classification.infrastructure.setfit_classifier import SetFitClassifier
 from datos.governments.application.published import CompetenceLevel
 
 
@@ -29,8 +31,28 @@ TEXTS = [
 ]
 
 
+class _FakePredictor:
+    """Deterministic: health when the text speaks of a hospital, the state level for a ministry."""
+
+    def probabilities(self, text: str) -> dict[str, float]:
+        lowered = text.lower()
+        return {
+            "sector:education": 0.05,
+            "sector:health": 0.9 if "hospital" in lowered else 0.1,
+            "sector:housing": 0.9 if "viviendas" in lowered else 0.1,
+            "level:state": 0.9 if "ministerio" in lowered else 0.1,
+            "level:ccaa": 0.9 if "xunta" in lowered else 0.1,
+            "level:local": 0.9 if "cabildo" in lowered else 0.1,
+        }
+
+
 def adapters() -> list[ArticleClassifier]:
-    return [load_rules_classifier(Path("data/classification"), sector_ids=SECTORS)]
+    rules = load_rules_classifier(Path("data/classification"), sector_ids=SECTORS)
+    model = SetFitClassifier(_FakePredictor(), model_version="w1", sector_ids=SECTORS)
+    mixed = CompositeClassifier(
+        {Family.COMMUNITIES: rules, Family.SECTORS: model, Family.LEVELS: model}
+    )
+    return [rules, CompositeClassifier(dict.fromkeys(Family, rules)), model, mixed]
 
 
 @pytest.fixture(params=adapters(), ids=lambda c: c.model_id)
@@ -66,3 +88,14 @@ def test_every_evidence_term_is_in_the_text(classifier: ArticleClassifier) -> No
         text = f"{headline} {lead or ''}".lower()
         for evidence in classifier.classify(headline, lead).evidence:
             assert evidence.term.lower() in text
+
+
+def test_every_score_is_for_a_label_the_classifier_gave(classifier: ArticleClassifier) -> None:
+    for headline, lead in TEXTS:
+        labels = classifier.classify(headline, lead)
+        given = (
+            {f"community:{c}" for c in labels.communities}
+            | {f"sector:{s}" for s in labels.sectors}
+            | {f"level:{level.value}" for level in labels.levels}
+        )
+        assert {score.label for score in labels.scores} <= given
