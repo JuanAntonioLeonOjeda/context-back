@@ -10,7 +10,9 @@ import random
 from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Protocol
 
+from datos.classification.domain.metrics import FamilyScore
 from datos.classification.domain.training_set import LabelledExample, TrainingSetError
 
 
@@ -98,3 +100,80 @@ def curve_splits(
             CurveSplit(fold, size, tuple(rest[:size]), tuple(dealt[fold])) for size in sorted(sizes)
         )
     return splits
+
+
+# The rule of ADR-0016 (D12), set before any curve was seen: 100 more articles are labelled when
+# the mean macro-F1 rises by at least 3 points from 200 to 300 in either family.
+RISE_FROM_SIZE = 200
+RISE_TO_SIZE = 300
+MIN_RISE = 0.03  # F1 is in 0..1, so 3 points are 0.03
+
+
+class ScoredPoint(Protocol):
+    """A measured point as the summary reads it (the use case's `CurvePoint`)."""
+
+    @property
+    def fold(self) -> int: ...
+    @property
+    def size(self) -> int: ...
+    @property
+    def scores(self) -> tuple[FamilyScore, ...]: ...
+
+
+@dataclass(frozen=True, slots=True)
+class SizeSummary:
+    family: str
+    size: int
+    mean_macro_f1: float | None  # over the folds where the family had a score
+    fold_scores: tuple[float, ...]  # each fold's macro-F1, by fold: the spread is in plain view
+
+
+@dataclass(frozen=True, slots=True)
+class RiseVerdict:
+    family: str
+    rise: float | None  # mean over folds of (F1 at 300 - F1 at 200); None if no fold has both
+    folds: int  # folds with both sizes scored: the rise compares the same folds only
+    still_rises: bool | None  # None when it cannot be told: no fold measured both sizes
+
+
+def summarise(points: Sequence[ScoredPoint]) -> tuple[SizeSummary, ...]:
+    """The mean macro-F1 per family and size, families in their first order, sizes ascending."""
+    table = _macro_by_family(points)
+    return tuple(
+        SizeSummary(family, size, _mean(list(by_fold.values())), tuple(by_fold.values()))
+        for family, by_size in table.items()
+        for size, by_fold in sorted(by_size.items())
+    )
+
+
+def rise_verdicts(points: Sequence[ScoredPoint]) -> tuple[RiseVerdict, ...]:
+    """Whether each family still rises from 200 to 300, by the rule above.
+
+    Paired by fold: a run cut after fold 1 reached 200 but not 300 must not compare the mean of
+    two folds at 200 with one fold at 300, which would mix the size with the fold.
+    """
+    verdicts: list[RiseVerdict] = []
+    for family, by_size in _macro_by_family(points).items():
+        low, high = by_size.get(RISE_FROM_SIZE, {}), by_size.get(RISE_TO_SIZE, {})
+        rises = [high[fold] - low[fold] for fold in sorted(low.keys() & high.keys())]
+        rise = _mean(rises)
+        # Rounded before comparing: 0.83 - 0.80 is 0.0299999… in floating point, and three
+        # points must count as three points.
+        verdict = None if rise is None else round(rise, 9) >= MIN_RISE
+        verdicts.append(RiseVerdict(family, rise, len(rises), verdict))
+    return tuple(verdicts)
+
+
+def _macro_by_family(points: Sequence[ScoredPoint]) -> dict[str, dict[int, dict[int, float]]]:
+    """family → size → fold → macro-F1, leaving out a family with no score in that point."""
+    table: dict[str, dict[int, dict[int, float]]] = {}
+    for point in sorted(points, key=lambda p: (p.fold, p.size)):
+        for score in point.scores:
+            by_size = table.setdefault(score.family, {})
+            if score.macro_f1 is not None:
+                by_size.setdefault(point.size, {})[point.fold] = score.macro_f1
+    return table
+
+
+def _mean(values: Sequence[float]) -> float | None:
+    return sum(values) / len(values) if values else None
