@@ -10,18 +10,33 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
-from datos.classification.application.train_model import TrainedModel, TrainingConfig
+from datos.classification.application.train_model import TrainingConfig
 
 LIBRARIES = ("setfit", "sentence-transformers", "transformers", "torch")
 
 
-class _TrainedSetFit:
-    def __init__(self, model: Any, environment: Mapping[str, str]) -> None:  # noqa: ANN401
+class TrainedSetFit:
+    """A model just trained: saved by the training job, asked for probabilities by the curve."""
+
+    def __init__(self, model: Any, labels: Sequence[str], environment: Mapping[str, str]) -> None:  # noqa: ANN401 - SetFit is untyped
         self._model = model
+        self._labels = list(labels)
         self.environment = environment
 
     def save(self, directory: Path) -> None:
         self._model.save_pretrained(str(directory))
+
+    def predict_proba(self, texts: Sequence[str]) -> list[list[float]]:
+        if not texts:
+            return []
+        rows = [
+            [float(p) for p in row] for row in self._model.predict_proba(list(texts), as_numpy=True)
+        ]
+        # Every row must have one probability per label, in their order: a shorter row zipped
+        # with the labels later would silently drop a label.
+        if len(rows) != len(texts) or any(len(row) != len(self._labels) for row in rows):
+            raise ValueError(f"expected {len(texts)} rows of {len(self._labels)} probabilities")
+        return rows
 
 
 class SetFitModelTrainer:
@@ -32,7 +47,7 @@ class SetFitModelTrainer:
         targets: Sequence[Sequence[int]],
         labels: Sequence[str],
         config: TrainingConfig,
-    ) -> TrainedModel:
+    ) -> TrainedSetFit:
         from datasets import Dataset  # lazy on purpose, see the module docstring
         from setfit import SetFitModel, Trainer, TrainingArguments
 
@@ -55,7 +70,7 @@ class SetFitModelTrainer:
         environment = {"device": str(model.model_body.device)} | {
             library: version(library) for library in LIBRARIES
         }
-        return _TrainedSetFit(model, environment)
+        return TrainedSetFit(model, labels, environment)
 
 
 def count_pairs(

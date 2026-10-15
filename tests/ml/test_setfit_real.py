@@ -156,3 +156,70 @@ def test_the_training_job_trains_stores_and_describes_a_model_that_can_be_loaded
     assert {p.name for p in Path.cwd().iterdir()} == cwd_before  # no ./checkpoints left behind
     predictor = SetFitPredictor.load(directory)
     assert list(predictor.probabilities("El hospital amplía la plantilla")) == list(card.labels)
+
+
+def test_the_learning_curve_trains_and_scores_with_the_real_trainer() -> None:
+    """Two folds of six, one size: the real model predicts one probability per label and text."""
+    from datos.classification.application.learning_curve import (
+        CurvePoint,
+        CurveSettings,
+        plan_curve,
+        run_curve,
+    )
+    from datos.classification.application.store_classifications import ArticleText
+    from datos.classification.application.train_model import TrainingConfig, TrainingSetInfo
+    from datos.classification.domain.training_set import LabelledExample
+    from datos.classification.infrastructure.setfit_trainer import SetFitModelTrainer
+    from datos.governments.application.published import CompetenceLevel
+
+    sector_of = {0: "education", 1: "health", 2: "housing"}
+    level_of = {1: CompetenceLevel.CCAA, 3: CompetenceLevel.STATE}
+    examples = [
+        LabelledExample(i, frozenset({sector_of[s]}), frozenset({level_of[lv]}), "random", False)
+        for i, (_, s, lv) in enumerate(EXAMPLES, start=1)
+    ]
+    articles = {i: ArticleText(i, text, None) for i, (text, _, _) in enumerate(EXAMPLES, start=1)}
+
+    class Texts:
+        def texts(self, article_ids: Collection[int]) -> dict[int, ArticleText]:
+            return {i: articles[i] for i in article_ids}
+
+    class Store:
+        def __init__(self) -> None:
+            self.stored: list[CurvePoint] = []
+
+        def points(self) -> list[CurvePoint]:
+            return list(self.stored)
+
+        def add(self, point: CurvePoint) -> None:
+            self.stored.append(point)
+
+    settings = CurveSettings(
+        training_set=TrainingSetInfo("toy-set", "0123456789ab"),
+        config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),
+        folds=2,
+        threshold=0.5,
+    )
+    store = Store()
+    plan = plan_curve(
+        examples=examples,
+        settings=settings,
+        run_folds=(0, 1),
+        sizes=(6,),
+        sector_ids=SECTORS,
+        test_ids=set(),
+        texts=Texts(),
+        store=store,
+    )
+    points = run_curve(
+        plan,
+        trainer=SetFitModelTrainer(),
+        store=store,
+        settings=settings,
+        timer=time.perf_counter,
+        on_point=lambda _: None,
+    )
+
+    assert [(p.fold, p.size) for p in points] == [(0, 6), (1, 6)]
+    assert all({s.family for s in p.scores} == {"sector", "level"} for p in points)
+    assert all(p.training_seconds > 0 for p in points)
