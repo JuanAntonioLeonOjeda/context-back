@@ -31,7 +31,9 @@ _INSERT = text(
 )
 
 
-_SECTOR_IDS = text("SELECT id FROM sectors ORDER BY id")
+# Active only: the model's labels, the rules and the sampling terms come from here, and a planned
+# sector of the taxonomy (is_active = false) has no labels, terms or news yet.
+_SECTOR_IDS = text("SELECT id FROM sectors WHERE is_active ORDER BY id")
 
 
 class PgClassificationRepository:
@@ -41,7 +43,7 @@ class PgClassificationRepository:
         self._engine = engine
 
     def sector_ids(self) -> frozenset[str]:
-        """The sectors of the database, to validate the rules' sector terms against."""
+        """The active sectors: what the rules, the sample and the own model may label."""
         with self._engine.connect() as connection:
             return frozenset(connection.execute(_SECTOR_IDS).scalars())
 

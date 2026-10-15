@@ -162,3 +162,20 @@ def test_nothing_is_written_when_the_table_is_invalid() -> None:
         load_competences(repository, [HEALTH], [GENERAL_CCAA, GENERAL_CCAA])  # type: ignore[arg-type]
 
     assert repository.written is False
+
+
+def test_a_planned_sector_needs_no_competences_yet() -> None:
+    planned = Sector("work", "Trabajo", is_active=False)
+    health_rows = [_row(CompetenceLevel.CCAA)]
+
+    problems = competence_problems([HEALTH, planned], health_rows, COMMUNITIES)
+
+    assert not any("work" in p for p in problems)
+
+
+def test_an_active_sector_without_competences_is_still_reported() -> None:
+    problems = competence_problems(
+        [HEALTH, Sector("work", "Trabajo")], [_row(CompetenceLevel.CCAA)], COMMUNITIES
+    )
+
+    assert "sector work has no competences" in problems
