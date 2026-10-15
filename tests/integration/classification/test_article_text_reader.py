@@ -61,3 +61,13 @@ def test_an_id_with_no_article_is_not_in_the_result_and_other_articles_are_not_r
     texts = PgArticleTextReader(engine).texts([asked, 999_999_999])
 
     assert set(texts) == {asked}
+
+
+def test_the_outlet_of_each_article_that_exists(engine: Engine) -> None:
+    from datos.classification.infrastructure.pg_article_outlet_reader import PgArticleOutletReader
+
+    article_id = _add(engine, "https://r.example/outlet", "Titular", None)
+
+    outlets = PgArticleOutletReader(engine).outlets([article_id, 999_999])
+
+    assert outlets == {article_id: "outlet-r"}
