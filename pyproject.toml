@@ -50,12 +50,39 @@ explicit_package_bases = true
 module = "feedparser"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# `datasets` is only imported by the real SetFit test.
+module = "datasets"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# SetFit ships no type information. The predictor reads its model through a Protocol
+# (src/datos/classification/infrastructure/setfit_predictor.py), never as typed SetFit objects.
+module = "setfit"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not integration' --strict-markers"
-markers = ["integration: needs Docker (Testcontainers)"]
+addopts = "-m 'not integration and not ml' --strict-markers"
+markers = [
+    "integration: needs Docker (Testcontainers)",
+    "ml: needs the `ml` group and downloads the encoder (`uv run pytest -m ml`)",
+]
 
 [tool.uv]
+# Versions of packages that only the `ml` group pulls in, bounded to what was published more than
+# two weeks before 2026-10-15 (the same rule as the web app's package manager). A global
+# `exclude-newer` does not resolve for every Python the project supports. Revisit on each lock update.
+constraint-dependencies = [
+    "aiohttp<3.14.4",
+    "cuda-bindings<13.4.4",
+    "cuda-pathfinder<1.8.3",
+    "filelock<4",
+    "hf-xet<1.7.0",
+    "multidict<7.1.0",
+    "narwhals<2.27.1",
+    "pyarrow<26.0.0",
+]
 # `geo` (shapely) only builds data/geo/; installed by default for local work and CI.
 default-groups = ["dev", "geo"]
 
@@ -69,4 +96,11 @@ dev = [
 geo = [
     "shapely>=2.1",
     "types-shapely>=2.1.0.20260728",
+]
+ml = [
+    "datasets<5",
+    "huggingface-hub<1",
+    "sentence-transformers[train]<6",
+    "setfit==1.2.0",
+    "transformers<5",
 ]
