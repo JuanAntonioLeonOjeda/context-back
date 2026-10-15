@@ -171,6 +171,15 @@ Decided by the author before writing the model's code (task 17):
   to any article has no F1 and is left out of the mean, and the report names it: there was nothing
   to get right or wrong. Counting it as 0, as scikit-learn's `zero_division=0` does, would punish a
   model for not inventing the label. The same code scores the learning curve and the evaluation.
+- **How the evaluation reads the criteria** (decided 2026-10-15, D18 = A, before any test-set
+  number exists): criterion 2 (per outlet) counts all the articles of the test set, not only its
+  random half; the random half is for criterion 1 alone, as written above. Every evaluation run
+  writes a versioned report (model version, test-set hash, every number), so how many times the
+  test set was looked at is on record.
+- **Criterion 3 is dropped** (decided by the author on 2026-10-15): the site stops attributing news
+  items to a responsible party (ADR-0018, which supersedes ADR-0005 and ADR-0014),
+  and shows instead which laws relate to a news item and how each group voted (phase 7). With no
+  attribution there is no "high" attribution to compare, so promotion rests on criteria 1 and 2.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit

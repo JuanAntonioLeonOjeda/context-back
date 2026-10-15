@@ -37,8 +37,7 @@ Before reviewing, read (if not already in context):
    migrations not edited; queries on large tables with a checked plan.
 
 6. **Facts from the database.** Any place where a number, date or party shown to users
-   comes from the LLM or from a hand-typed literal instead of the database or the
-   attribution rule.
+   comes from the LLM or from a hand-typed literal instead of the database.
 
 7. **Units and dates.** Money with basis, rates with denominator, dates with their
    meaning (`published_at` vs `fetched_at`), territories by INE code.

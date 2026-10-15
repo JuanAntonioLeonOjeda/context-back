@@ -4,7 +4,6 @@ from datetime import datetime
 
 from sqlalchemy import Connection, text
 
-from datos.governments.application.published import CompetenceLevel
 from datos.news.application.community_news import ClassifiedArticle
 
 # 1. `in_window`: only the articles published since `since` (index on `published_at`), so the
@@ -26,7 +25,7 @@ _RECENT = text(
     ),
     latest AS (
         SELECT DISTINCT ON (c.article_id)
-               c.article_id, c.communities, c.sectors, c.levels, c.model_id, c.model_version
+               c.article_id, c.communities, c.sectors, c.model_id, c.model_version
         FROM classifications c
         JOIN in_window w ON w.id = c.article_id
         WHERE c.model_id = :model_id
@@ -34,7 +33,7 @@ _RECENT = text(
     ),
     matching AS (
         SELECT w.id, w.outlet_id, o.name AS outlet_name, w.headline, w.url, w.published_at,
-               l.levels, l.model_id, l.model_version,
+               l.model_id, l.model_version,
                row_number() OVER (
                    PARTITION BY w.outlet_id ORDER BY w.published_at DESC, w.id DESC
                ) AS rank_in_outlet
@@ -87,7 +86,6 @@ class PgCommunityNewsReader:
                 headline=row.headline,
                 url=row.url,
                 published_at=row.published_at,
-                levels=frozenset(CompetenceLevel(level) for level in row.levels),
                 model_id=row.model_id,
                 model_version=row.model_version,
             )

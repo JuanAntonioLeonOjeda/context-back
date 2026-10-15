@@ -13,7 +13,7 @@ from datos.api.provider import built_on, per_request
 from datos.clock import SystemClock
 from datos.config import load_settings
 from datos.db import SqlDatabaseProbe, build_engine
-from datos.governments.infrastructure.pg_reader import PgCompetencesReader, PgGovernmentsReader
+from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.indicators.infrastructure.pg_reader import PgIndicatorReader
 from datos.log_setup import configure_logging
 from datos.news.infrastructure.pg_news_reader import PgCommunityNewsReader
@@ -34,7 +34,6 @@ def app() -> FastAPI:
         governments=built_on(connection, PgGovernmentsReader),
         territories=built_on(connection, PgTerritoryReader),
         indicators=built_on(connection, PgIndicatorReader),
-        competences=built_on(connection, PgCompetencesReader),
         news=built_on(connection, PgCommunityNewsReader),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),

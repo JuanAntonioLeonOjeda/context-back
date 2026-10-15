@@ -2,8 +2,8 @@
 
 How to label the 200 articles of `data/eval/test-set-v1.jsonl`. The test set measures every
 classifier (rules, LLM, own model). Its labels must say **what the text is about**, not
-what we believe about who is responsible. Responsibility is computed later by the
-attribution module from competences and the government in force.
+what we believe about who is responsible. The site attributes no news item to a party
+(ADR-0018); the levels say which government acts, and in phase 7 which parliament's laws apply.
 
 Status: draft, pending the author's review (task 19).
 
@@ -90,8 +90,8 @@ Rules:
 - Parties are not governments. A party's internal life (lists, primaries) has no level.
   A party's demand to a government gets the level of that government.
 - Label what the text says, not what the competence table says. If a protest asks for
-  "more housing" and names no government, the level is empty. Who is competent is the
-  attribution module's job.
+  "more housing" and names no government, the level is empty. Who is competent is not
+  a label.
 - Courts are not a level. A ruling on a regional decree gets `ccaa`.
 
 ## Edge cases

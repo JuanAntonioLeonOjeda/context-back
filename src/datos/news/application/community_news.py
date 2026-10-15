@@ -1,25 +1,15 @@
-"""Use case: the latest news of a community and sector, each with who is responsible.
+"""Use case: the latest news of a community and sector.
 
-Reads the stored classifications of the active classifier and computes the attribution on read
-(ADR-0014), so a correction of the curated governments or competences shows at once.
+Reads the stored classifications of the active classifier. No party is attached to an item
+(ADR-0018): who governs is shown apart, from the governments dataset.
 """
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from typing import Protocol
 
-from datos.attribution.application.published import AttributionEntry, attribute
 from datos.clock import SPAIN
-from datos.governments.application.published import (
-    Competence,
-    CompetenceLevel,
-    CompetencesReader,
-    GovernmentsReader,
-    GovernmentTerm,
-)
 
-STATE_TERRITORY_ID = "es"
 WINDOW_DAYS = 30  # today and the 29 days before it, in Spain
 PER_OUTLET = 5
 
@@ -34,15 +24,8 @@ class ClassifiedArticle:
     headline: str
     url: str
     published_at: datetime
-    levels: frozenset[CompetenceLevel]  # the government levels the classifier found
     model_id: str
     model_version: str
-
-
-@dataclass(frozen=True, slots=True)
-class NewsItem:
-    article: ClassifiedArticle
-    attribution: tuple[AttributionEntry, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,7 +33,7 @@ class CommunityNews:
     territory_id: str
     sector_id: str
     since: date  # the first day of the window, in Spain
-    items: tuple[NewsItem, ...]
+    items: tuple[ClassifiedArticle, ...]
 
 
 class CommunityNewsReader(Protocol):
@@ -78,8 +61,6 @@ def community_news(
     today: date,
     model_id: str,
     news: CommunityNewsReader,
-    governments: GovernmentsReader,
-    competences: CompetencesReader,
 ) -> CommunityNews:
     since = today - timedelta(days=WINDOW_DAYS - 1)
     articles = news.recent(
@@ -89,28 +70,4 @@ def community_news(
         model_id=model_id,
         per_outlet=PER_OUTLET,
     )
-    terms = [*governments.terms(territory_id), *governments.terms(STATE_TERRITORY_ID)]
-    table = competences.competences()
-    items = tuple(
-        NewsItem(a, _attribution(a, territory_id, sector_id, terms, table)) for a in articles
-    )
-    return CommunityNews(territory_id, sector_id, since, items)
-
-
-def _attribution(
-    article: ClassifiedArticle,
-    territory_id: str,
-    sector_id: str,
-    terms: Sequence[GovernmentTerm],
-    table: Sequence[Competence],
-) -> tuple[AttributionEntry, ...]:
-    entries = attribute(
-        community_id=territory_id,
-        sector_id=sector_id,
-        levels=article.levels,
-        # The day in Spain: a government changes on a Spanish calendar date (the BOE).
-        published_on=article.published_at.astimezone(SPAIN).date(),
-        terms=terms,
-        competences=table,
-    )
-    return tuple(entries)
+    return CommunityNews(territory_id, sector_id, since, tuple(articles))

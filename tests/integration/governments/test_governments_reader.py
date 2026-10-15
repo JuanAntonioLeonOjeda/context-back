@@ -3,11 +3,10 @@ from operator import attrgetter
 from pathlib import Path
 
 import pytest
-from sqlalchemy import Connection
+from sqlalchemy import Connection, text
 
 from datos.governments.application.load_governments import load_competences, load_governments
 from datos.governments.application.read_governments import government_on
-from datos.governments.domain.competence import Competence
 from datos.governments.domain.government_term import PartyRole
 from datos.governments.infrastructure.csv_source import (
     read_competences,
@@ -15,7 +14,7 @@ from datos.governments.infrastructure.csv_source import (
     read_sectors,
     read_terms,
 )
-from datos.governments.infrastructure.pg_reader import PgCompetencesReader, PgGovernmentsReader
+from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
@@ -82,21 +81,33 @@ def test_parties_come_with_their_display_data(reader: PgGovernmentsReader) -> No
     assert parties["psc"].short_name == "PSC"
 
 
-def test_competences_read_back_as_in_the_dataset(
+def test_competences_are_stored_as_in_the_dataset(
     reader: PgGovernmentsReader, db: Connection
 ) -> None:
-    load_competences(
-        PgGovernmentRepository(db),
-        read_sectors(DATA / "sectors.csv"),
-        read_competences(DATA / "competences.csv"),
-    )
+    """The site no longer reads competences (ADR-0018), but they stay curated data: what is
+    loaded must be what the CSV says, row by row. `reader` loads the territories and terms the
+    competence rules check against."""
     expected = read_competences(DATA / "competences.csv")
+    load_competences(PgGovernmentRepository(db), read_sectors(DATA / "sectors.csv"), expected)
 
-    stored = PgCompetencesReader(db).competences()
+    rows = db.execute(
+        text(
+            "SELECT sector_id, activity, description, level, function, territory_id,"
+            " legal_basis, source_url FROM competences"
+        )
+    ).all()
 
-    def key(c: Competence) -> tuple[str, str, str, str, str]:
-        return (c.sector_id, c.activity, c.level.value, c.function.value, c.territory_id or "")
-
-    assert len(stored) == len(expected) == 31
-    assert sorted(stored, key=key) == sorted(expected, key=key)
-    assert any(c.territory_id == "ccaa-18" for c in stored)
+    assert sorted(tuple(r) for r in rows) == sorted(
+        (
+            c.sector_id,
+            c.activity,
+            c.description,
+            c.level.value,
+            c.function.value,
+            c.territory_id,
+            c.legal_basis,
+            c.source_url,
+        )
+        for c in expected
+    )
+    assert len(rows) == 31

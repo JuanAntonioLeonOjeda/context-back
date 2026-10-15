@@ -8,7 +8,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from datos.api.app import create_app
-from datos.governments.domain.competence import Competence
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
@@ -76,14 +75,6 @@ class FakeGovernments:
 
     def parties(self) -> list[Party]:
         return list(self._parties)
-
-
-class FakeCompetences:
-    def __init__(self, competences: list[Competence]) -> None:
-        self._competences = competences
-
-    def competences(self) -> list[Competence]:
-        return list(self._competences)
 
 
 class FakeNews:
@@ -183,12 +174,10 @@ def make_client(news_reader: FakeNews) -> Callable[..., TestClient]:
         terms: list[GovernmentTerm] = TERMS,
         today: date = TODAY,
         articles: list[ClassifiedArticle] | None = None,
-        competences: list[Competence] | None = None,
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
         indicators = FakeIndicators(INDICATORS, VALUES)
-        competence_table = FakeCompetences(competences or [])
         news_reader.articles = articles or []
         return TestClient(
             create_app(
@@ -196,7 +185,6 @@ def make_client(news_reader: FakeNews) -> Callable[..., TestClient]:
                 governments=lambda: governments,
                 territories=lambda: territories,
                 indicators=lambda: indicators,
-                competences=lambda: competence_table,
                 news=lambda: news_reader,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
