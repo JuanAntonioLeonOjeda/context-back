@@ -35,7 +35,9 @@ a flat for sale): both are useful to label. Its version (a hash of the file) is 
 sample, so the test and training sets can be compared to the terms they were drawn with.
 
 Written on 2026-10-14 from the sector boundaries of `docs/labelling-guide.md`, in Spanish and
-Catalan; to be reviewed by the author before the first sample is drawn.
+Catalan; reviewed and accepted by the author on 2026-10-15, before the first sample is drawn. A
+term can be added later: it only changes the samples drawn afterwards, and each sample records the
+version of the list it used.
 
 ## What is stored
 
