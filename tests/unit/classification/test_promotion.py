@@ -150,3 +150,52 @@ def test_outlets_count_the_whole_test_set_not_only_the_random_half() -> None:
     ]
 
     assert outlets_left_behind(articles, "sector").passes is False
+
+
+def test_a_family_is_promoted_only_when_both_criteria_hold() -> None:
+    from datos.classification.domain.promotion import verdicts
+
+    gold = frozenset({"sector:health", "level:ccaa"})
+    # Sectors: the candidate finds health where the rules do not, in two outlets alike.
+    # Levels: the candidate loses the level in outlet-a three times.
+    articles = [
+        article(
+            i,
+            gold=gold,
+            rules=frozenset({"level:ccaa"}),
+            candidate=frozenset({"sector:health"}) if i < 3 else gold,
+            outlet="outlet-a" if i < 6 else "outlet-b",
+        )
+        for i in range(12)
+    ]
+
+    sector, level = verdicts(articles, LABELS, seed=1)
+
+    assert (sector.family, sector.gain.passes, sector.outlets.passes) == ("sector", True, True)
+    assert sector.promoted is True
+    assert (level.family, level.outlets.passes, level.promoted) == ("level", False, False)
+
+
+def test_no_articles_cannot_be_evaluated() -> None:
+    from datos.classification.domain.promotion import verdicts
+
+    with pytest.raises(ValueError, match="no articles"):
+        verdicts([], LABELS, seed=1)
+
+
+def test_better_overall_but_an_outlet_left_behind_is_not_promoted() -> None:
+    from datos.classification.domain.promotion import verdicts
+
+    # Outlet-b: the candidate finds health in 10 articles the rules miss. Outlet-a: it loses 3.
+    articles = [
+        article(i, gold=HEALTH, rules=NOTHING, candidate=HEALTH, outlet="outlet-b")
+        for i in range(10)
+    ] + [
+        article(100 + i, gold=HEALTH, rules=HEALTH, candidate=NOTHING, outlet="outlet-a")
+        for i in range(3)
+    ]
+
+    sector = verdicts(articles, LABELS, seed=1)[0]
+
+    assert (sector.gain.passes, sector.outlets.passes) == (True, False)
+    assert sector.promoted is False

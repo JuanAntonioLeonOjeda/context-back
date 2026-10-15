@@ -135,3 +135,38 @@ def _same(predicted: frozenset[str], gold: frozenset[str], family: str) -> bool:
     return {x for x in predicted if family_of(x) == family} == {
         x for x in gold if family_of(x) == family
     }
+
+
+FAMILIES = ("sector", "level")  # what the model may take over; communities stay with the rules
+
+
+@dataclass(frozen=True, slots=True)
+class FamilyVerdict:
+    family: str
+    gain: GainResult
+    outlets: OutletsResult
+
+    @property
+    def promoted(self) -> bool:
+        """The model takes this family only if both criteria hold (ADR-0016)."""
+        return self.gain.passes and self.outlets.passes
+
+
+def verdicts(
+    articles: Sequence[EvaluatedArticle], labels: Sequence[str], *, seed: int
+) -> tuple[FamilyVerdict, ...]:
+    """One verdict per family, decided apart: the model can take sectors and leave levels.
+
+    The candidate's labels can be the model's for every family: each criterion compares only the
+    labels of its own family, so the other family's source does not change the verdict.
+    """
+    if not articles:
+        raise ValueError("no articles to evaluate")
+    return tuple(
+        FamilyVerdict(
+            family,
+            overall_gain(articles, labels, family, seed=seed),
+            outlets_left_behind(articles, family),
+        )
+        for family in FAMILIES
+    )
