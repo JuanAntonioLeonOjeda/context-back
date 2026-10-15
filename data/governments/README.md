@@ -8,6 +8,24 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | `parties.csv` | party, as the brand that appears in government |
 | `government_terms.csv` | term: territory, period `[valid_from, valid_to)`, president, caretaker flag, source |
 | `government_term_parties.csv` | party of a term (key: `territory_id` + `valid_from`), its role and the source of that role |
+| `sectors.csv` | sector (topic) of the taxonomy, with `is_active`: in use, or planned for a later batch |
+| `competences.csv` | who does what in a sector: level, function, legal basis and source |
+
+## Sectors
+
+`sectors.csv` holds the 12 topics used to classify laws on
+[elcongresoentumano.es/leyes](https://www.elcongresoentumano.es/leyes) (read on 2026-10-15; the
+names are theirs, the ids ours). Chosen with the author (D15) so that the news and phase 7
+(parliament votes) speak of the same topics. Only the names are taken: that site does not say how
+it assigns topics to laws, and the topics of each law will be curated here (D17).
+
+- `is_active = true`: education, health and housing, the three of launch. Only active sectors are
+  read by the rules, the training sample, the own model and the news API (migration 0007).
+- `is_active = false`: planned. A sector is activated in its own batch, with its competences
+  (sourced, BOE), its rules and enrichment terms and its labels; then its row turns `true` and the
+  data is reloaded. Activating one changes the model's labels, so it needs a new training.
+- Some topics ("Derechos", "Institucional", "Economía") have no clear level of government and need
+  a decision on how attribution treats them before they are activated.
 
 ## How each fact is sourced
 

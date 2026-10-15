@@ -27,6 +27,7 @@ class CompetenceFunction(StrEnum):
 class Sector:
     id: str
     name: str
+    is_active: bool = True  # a planned sector of the taxonomy is false until its batch
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,5 +77,8 @@ def competence_problems(
         if not c.source_url.startswith("https://"):
             problems.append(f"{where}: source is not an https URL")
     used = {c.sector_id for c in competences}
-    problems.extend(f"sector {s.id} has no competences" for s in sectors if s.id not in used)
+    # A planned sector gets its competences in its own batch (data/governments/README.md).
+    problems.extend(
+        f"sector {s.id} has no competences" for s in sectors if s.is_active and s.id not in used
+    )
     return problems

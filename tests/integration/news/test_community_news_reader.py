@@ -169,5 +169,9 @@ def test_maps_the_row_with_outlet_name_levels_and_classifier(connection: Connect
     assert "Never shown" not in repr(article)
 
 
-def test_lists_the_sectors_of_the_database(connection: Connection) -> None:
+def test_lists_the_active_sectors_of_the_database(connection: Connection) -> None:
+    connection.execute(
+        text("INSERT INTO sectors (id, name, is_active) VALUES ('work', 'Work', false)")
+    )
+
     assert PgCommunityNewsReader(connection).sector_ids() == {"education", "health", "housing"}

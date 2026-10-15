@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import Connection, text
 
 from datos.governments.application.load_governments import load_competences, load_governments
+from datos.governments.domain.competence import Sector
 from datos.governments.infrastructure.csv_source import (
     read_competences,
     read_parties,
@@ -112,7 +113,9 @@ def test_loads_sectors_and_competences_twice_with_the_same_result(db: Connection
 
     _load(db)
 
-    assert (_count(db, "sectors"), _count(db, "competences")) == first == (3, 31)
+    assert (_count(db, "sectors"), _count(db, "competences")) == first == (12, 31)
+    active = db.execute(text("SELECT id FROM sectors WHERE is_active ORDER BY id")).scalars()
+    assert list(active) == ["education", "health", "housing"]  # the three of launch (D15)
 
 
 def test_ceuta_has_its_own_rows_for_health_care_and_education(db: Connection) -> None:
@@ -130,3 +133,27 @@ def test_ceuta_has_its_own_rows_for_health_care_and_education(db: Connection) ->
         ("education", "schools-and-teaching-staff", "state"),
         ("health", "healthcare-services", "state"),
     ]
+
+
+def _is_active(db: Connection, sector_id: str) -> bool:
+    return bool(
+        db.execute(
+            text("SELECT is_active FROM sectors WHERE id = :id"), {"id": sector_id}
+        ).scalar_one()
+    )
+
+
+def test_a_planned_sector_is_stored_as_inactive_and_a_later_load_can_change_it(
+    db: Connection,
+) -> None:
+    repository = PgGovernmentRepository(db)
+    housing_rows = [
+        c for c in read_competences(DATA / "competences.csv") if c.sector_id == "housing"
+    ]
+    planned = [Sector("housing", "Vivienda", is_active=False)]
+
+    repository.replace_competences(planned, housing_rows)
+    assert not _is_active(db, "housing")
+
+    repository.replace_competences([Sector("housing", "Vivienda")], housing_rows)
+    assert _is_active(db, "housing")

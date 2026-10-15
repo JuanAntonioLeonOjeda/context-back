@@ -49,7 +49,8 @@ _RECENT = text(
     ORDER BY published_at DESC, outlet_id, id DESC
     """
 )
-_SECTOR_IDS = text("SELECT id FROM sectors")
+# Active only: a planned sector has no news, so `?sector=` must not accept it.
+_SECTOR_IDS = text("SELECT id FROM sectors WHERE is_active")
 
 
 class PgCommunityNewsReader:
