@@ -9,6 +9,9 @@
 - `train --training-set PATH --seed S [--encoder NAME] [--models-dir PATH]`: trains the own model on
   the hand-labelled training set (needs the `ml` group: `uv run --group ml ...`). Refuses a set that
   shares an article with the blind test set, and never overwrites a model.
+- `learning-curve --seed S [--training-set PATH] [--run-folds 0 1] [--dry-run]`: the learning curve
+  inside the training set (ADR-0016, D11 and D12). Writes each point as it ends and carries on from
+  the file if run again.
 """
 
 import argparse
@@ -21,6 +24,13 @@ from pathlib import Path
 import structlog
 from sqlalchemy import Engine
 
+from datos.classification.application.learning_curve import (
+    CurvePlan,
+    CurvePoint,
+    CurveSettings,
+    plan_curve,
+    run_curve,
+)
 from datos.classification.application.sample_for_labelling import Sample, sample_for_labelling
 from datos.classification.application.store_classifications import classify_new
 from datos.classification.application.train_model import (
@@ -32,6 +42,7 @@ from datos.classification.application.train_model import (
     plan_training,
 )
 from datos.classification.domain.training_set import TrainingSetError
+from datos.classification.infrastructure.curve_file import JsonlCurveStore
 from datos.classification.infrastructure.local_model_store import LocalModelStore
 from datos.classification.infrastructure.pg_article_text_reader import PgArticleTextReader
 from datos.classification.infrastructure.pg_candidate_reader import PgCandidateReader
@@ -54,6 +65,7 @@ from datos.classification.infrastructure.setfit_trainer import (
     device_name,
 )
 from datos.classification.infrastructure.training_set_file import read_training_set
+from datos.classification.report import duration, format_point, format_summary
 from datos.config import load_settings
 from datos.db import build_engine
 from datos.log_setup import configure_logging
@@ -65,6 +77,11 @@ DEFAULT_ENCODER = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2" 
 MODELS_DIR = Path("models")
 SET_DIRS = {"train": Path("data/train"), "eval": Path("data/eval")}
 TASKS_DIR = Path("var/labelstudio")
+# D11: 4 folds, 2 of them measured, subsets of 100, 200 and 300 (ADR-0016).
+CURVE_FOLDS = 4
+CURVE_RUN_FOLDS = (0, 1)
+CURVE_SIZES = (100, 200, 300)
+SECONDS_PER_STEP = 8.6  # measured on the author's Mac on 2026-10-15 (MPS)
 
 log = structlog.get_logger(__name__)
 
@@ -96,6 +113,20 @@ def main() -> None:
         default=None,
         help="sentence pairs per example (default: the config's); written in the model's card",
     )
+    curve = commands.add_parser(
+        "learning-curve", help="the learning curve inside the training set (folds, 3 sizes)"
+    )
+    curve.add_argument("--training-set", type=Path, default=DEFAULT_TRAINING_SET)
+    curve.add_argument("--seed", type=int, required=True)
+    curve.add_argument("--encoder", default=DEFAULT_ENCODER)
+    curve.add_argument("--models-dir", type=Path, default=MODELS_DIR)
+    curve.add_argument("--folds", type=int, default=CURVE_FOLDS)
+    curve.add_argument(
+        "--run-folds", type=int, nargs="+", default=list(CURVE_RUN_FOLDS), help="folds to measure"
+    )
+    curve.add_argument("--sizes", type=int, nargs="+", default=list(CURVE_SIZES))
+    curve.add_argument("--num-iterations", type=int, default=None)
+    curve.add_argument("--dry-run", action="store_true", help="show the plan and stop")
     arguments = parser.parse_args()
 
     settings = load_settings()
@@ -107,6 +138,9 @@ def main() -> None:
         return
     if arguments.command == "train":
         _train(arguments, repository, engine)
+        return
+    if arguments.command == "learning-curve":
+        _learning_curve(arguments, repository, engine)
         return
     try:
         classifier = load_rules_classifier(arguments.rules_dir, sector_ids=repository.sector_ids())
@@ -154,6 +188,83 @@ def _train(
     _show_result(card, arguments.models_dir)
 
 
+def _learning_curve(
+    arguments: argparse.Namespace, repository: PgClassificationRepository, engine: Engine
+) -> None:
+    path: Path = arguments.training_set
+    sector_ids = repository.sector_ids()
+    config = _config(arguments)
+    settings = CurveSettings(
+        training_set=TrainingSetInfo(path.stem, file_version(path)),
+        config=config,
+        folds=arguments.folds,
+        threshold=DEFAULT_THRESHOLD,
+    )
+    results = (
+        arguments.models_dir / f"{path.stem}-{_encoder_name(config)}-seed{config.seed}-curve.jsonl"
+    )
+    store = JsonlCurveStore(results)
+    try:
+        plan = plan_curve(
+            examples=read_training_set(path, sector_ids=sector_ids),
+            settings=settings,
+            run_folds=arguments.run_folds,
+            sizes=arguments.sizes,
+            sector_ids=sector_ids,
+            test_ids=labelled_ids([Path("data/eval")]),
+            texts=PgArticleTextReader(engine),
+            store=store,
+        )
+    except TrainingSetError as error:
+        log.error("curve_not_measured", reason=str(error))
+        raise SystemExit(1) from error
+    _show_curve_plan(plan, settings, results)
+    if arguments.dry_run:
+        print("\nDry run: nothing trained, nothing stored.")
+        return
+    if plan.pending:
+        print("\nMeasuring. Each point is stored when it ends; Ctrl+C keeps the ones done.\n")
+        run_curve(
+            plan,
+            trainer=SetFitModelTrainer(),
+            store=store,
+            settings=settings,
+            timer=time.perf_counter,
+            on_point=_show_point,
+        )
+    print(format_summary(store.points()))
+
+
+def _encoder_name(config: TrainingConfig) -> str:
+    return config.encoder.rsplit("/", 1)[-1]
+
+
+def _show_curve_plan(plan: CurvePlan, settings: CurveSettings, results: Path) -> None:
+    """What the author reads before an overnight run: the work left and how long it takes."""
+    config = settings.config
+    pairs = [count_pairs(*plan.training_inputs(split), config) for split in plan.pending]
+    steps = sum(-(-n // config.batch_size) for n in pairs)
+    print(f"Results      : {results}")
+    print(f"Encoder      : {config.encoder}")
+    print(f"Device       : {device_name()}")
+    print(
+        f"Settings     : seed {config.seed}, {settings.folds} folds, "
+        f"threshold {settings.threshold}, iterations {config.num_iterations}"
+    )
+    print(f"Measured     : {len(plan.done)} points already in the file")
+    print(
+        f"To measure   : {len(plan.pending)} points, {sum(pairs):,} sentence pairs, {steps:,} steps"
+    )
+    print(
+        f"Time         : about {duration(steps * SECONDS_PER_STEP)} at {SECONDS_PER_STEP} s per "
+        "step, measured on the author's Mac (2026-10-15)"
+    )
+
+
+def _show_point(point: CurvePoint) -> None:
+    print(format_point(point, point.training_seconds), flush=True)
+
+
 def _show_plan(plan: TrainingPlan, config: TrainingConfig, models_dir: Path) -> None:
     """What the author reads before the run starts, as the TFM's training prints its setup."""
     described = plan.description
@@ -180,25 +291,15 @@ def _show_plan(plan: TrainingPlan, config: TrainingConfig, models_dir: Path) -> 
     print(f"Work         : {pairs:,} sentence pairs = {steps:,} steps of {config.batch_size}")
     print(
         "Time         : about 9 s per step on the author's Mac (measured 2026-10-15), "
-        f"so about {_duration(steps * 8.6)}; the bar below gives the live estimate"
+        f"so about {duration(steps * SECONDS_PER_STEP)}; the bar below gives the live estimate"
     )
 
 
 def _show_result(card: ModelCard, models_dir: Path) -> None:
-    print(f"\nTrained in {_duration(card.training_seconds)}.")
+    print(f"\nTrained in {duration(card.training_seconds)}.")
     print(f"Version : {card.model_version}")
     print(f"Model   : {models_dir / card.name}")
     print(f"Card    : {models_dir / card.name / 'model-card.json'}")
-
-
-def _duration(seconds: float) -> str:
-    """ "2h 24m 05s", "3m 40s", "18s": how long, as a person reads it."""
-    total = round(seconds)
-    hours, rest = divmod(total, 3600)
-    minutes, secs = divmod(rest, 60)
-    if hours:
-        return f"{hours}h {minutes:02d}m {secs:02d}s"
-    return f"{minutes}m {secs:02d}s" if minutes else f"{secs}s"
 
 
 def _config(arguments: argparse.Namespace) -> TrainingConfig:

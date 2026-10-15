@@ -58,3 +58,26 @@ database, shows the plan, asks, and trains with the progress visible.
   dry run gives the figure for the actual set. The first run also downloads the encoder
   (about 1.2 GB) into `~/.cache/huggingface`.
 - The real SetFit tests are `uv run pytest -m ml` (a few minutes); CI never runs them.
+
+## The learning curve
+
+Before labelling more, it answers one question: does the model still improve with more labels? It
+trains on nested subsets of 100, 200 and 300 labelled articles and scores each model on the part
+held out (never the blind test set). The training set is split in 4 folds by stratum, and two are
+measured (decided in ADR-0016, D11 and D12): about 7 hours with mpnet, one night.
+
+```bash
+scripts/learning-curve.sh                    # the plan, then asks; seed 42, folds 0 and 1
+scripts/learning-curve.sh --run-folds 2 3    # add the other two folds another day
+uv run python -m datos.classification learning-curve --seed 42 --dry-run   # the plan only
+```
+
+- Each point is stored in `models/<set>-<encoder>-seed<seed>-curve.jsonl` as soon as it ends, and one
+  line is printed (fold, size, time, macro-F1 per family and label). Run again after a cut and it
+  carries on from the file. It refuses points measured with other settings: a curve from two
+  different trainings says nothing.
+- At the end, a table per family (mean and each fold's score) and the rule decided before seeing any
+  curve: label 100 more if the mean macro-F1 rises at least 3 points from 200 to 300 in either family.
+  "Cannot be told yet" means no fold reached both sizes.
+- With 400 labels there is no point at 400: some articles are always held out.
+
