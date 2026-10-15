@@ -27,6 +27,7 @@ class CompetenceFunction(StrEnum):
 class Sector:
     id: str
     name: str
+    is_active: bool = True  # a planned sector of the taxonomy is false until its batch
 
 
 @dataclass(frozen=True, slots=True)

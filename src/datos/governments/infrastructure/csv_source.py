@@ -55,6 +55,7 @@ class _TermPartyRow(BaseModel):
 class _SectorRow(BaseModel):
     id: str
     name: str
+    is_active: bool = True
 
 
 class _CompetenceRow(BaseModel):
@@ -135,7 +136,7 @@ def _check_unique(values: list[str], *, what: str, path: Path) -> None:
 
 def read_sectors(path: Path) -> list[Sector]:
     parsed = [_parse(_SectorRow, r, path=path, line=i + 2) for i, r in enumerate(_rows(path))]
-    sectors = [Sector(s.id, s.name) for s in parsed]
+    sectors = [Sector(s.id, s.name, s.is_active) for s in parsed]
     _check_unique([s.id for s in sectors], what="sector id", path=path)
     return sectors
 

@@ -32,8 +32,8 @@ _INSERT_TERM_PARTY = text(
 )
 
 _UPSERT_SECTOR = text(
-    "INSERT INTO sectors (id, name) VALUES (:id, :name)"
-    " ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name"
+    "INSERT INTO sectors (id, name, is_active) VALUES (:id, :name, :is_active)"
+    " ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = EXCLUDED.is_active"
 )
 _INSERT_COMPETENCE = text(
     """
@@ -101,7 +101,10 @@ class PgGovernmentRepository:
     ) -> None:
         """Make the stored competences mirror the dataset; sectors are upserted, never deleted."""
         for sector in sectors:
-            self._connection.execute(_UPSERT_SECTOR, {"id": sector.id, "name": sector.name})
+            self._connection.execute(
+                _UPSERT_SECTOR,
+                {"id": sector.id, "name": sector.name, "is_active": sector.is_active},
+            )
         self._connection.execute(text("DELETE FROM competences"))
         for c in competences:
             self._connection.execute(

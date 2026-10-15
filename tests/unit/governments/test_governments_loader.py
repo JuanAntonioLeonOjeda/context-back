@@ -15,6 +15,7 @@ from datos.governments.domain.party import Party
 from datos.governments.infrastructure.csv_source import (
     InvalidGovernmentsFileError,
     read_parties,
+    read_sectors,
     read_terms,
 )
 
@@ -172,3 +173,30 @@ def test_rejects_a_duplicate_party_id(tmp_path: Path) -> None:
 
     with pytest.raises(InvalidGovernmentsFileError, match="duplicate party id a"):
         read_parties(path)
+
+
+def _sectors(tmp_path: Path, content: str) -> Path:
+    path = tmp_path / "sectors.csv"
+    path.write_text(content, encoding="utf-8")
+    return path
+
+
+def test_a_sector_file_without_the_column_reads_every_sector_as_active(tmp_path: Path) -> None:
+    sectors = read_sectors(_sectors(tmp_path, "id,name\nhousing,Vivienda\n"))
+
+    assert sectors == [Sector("housing", "Vivienda", is_active=True)]
+
+
+def test_reads_a_planned_sector_as_inactive(tmp_path: Path) -> None:
+    sectors = read_sectors(
+        _sectors(tmp_path, "id,name,is_active\nhousing,Vivienda,true\nwork,Trabajo,false\n")
+    )
+
+    assert [(s.id, s.is_active) for s in sectors] == [("housing", True), ("work", False)]
+
+
+def test_rejects_an_is_active_that_is_not_a_boolean_with_the_line_number(tmp_path: Path) -> None:
+    with pytest.raises(InvalidGovernmentsFileError, match=r"sectors\.csv line 3"):
+        read_sectors(
+            _sectors(tmp_path, "id,name,is_active\nhousing,Vivienda,true\nwork,Trabajo,maybe\n")
+        )
