@@ -15,6 +15,7 @@ from datos.classification.application.train_model import (
     TrainingConfig,
     TrainingSetInfo,
     model_name,
+    plan_training,
     train_model,
 )
 from datos.classification.domain.training_set import LabelledExample, TrainingSetError
@@ -181,7 +182,7 @@ def test_the_card_says_what_is_needed_to_repeat_the_training(tmp_path: Path) -> 
         "batch_size": 16,
         "body_learning_rate": 2e-5,
         "sampling_strategy": "oversampling",
-        "num_iterations": None,
+        "num_iterations": 20,
     }
     assert card["environment"] == {"device": "mps", "setfit": "1.2.0"}
     assert card["training_seconds"] == 18.0
@@ -228,3 +229,42 @@ def test_a_stored_model_is_frozen_and_a_second_training_is_refused(tmp_path: Pat
         run(tmp_path, trainer)
 
     assert trainer.calls == []
+
+
+def test_a_plan_is_made_without_training_or_storing_anything(tmp_path: Path) -> None:
+    trainer = FakeTrainer()
+
+    plan = plan_training(
+        examples=EXAMPLES,
+        training_set=INFO,
+        sector_ids=SECTORS,
+        test_ids=(),
+        texts=FakeTexts(ARTICLES),
+        store=LocalModelStore(tmp_path),
+        config=CONFIG,
+    )
+
+    assert plan.name == model_name(INFO, CONFIG)
+    assert plan.texts == ("Sanidad amplía Hospitales.", "Un partido", "Alquiler")
+    assert plan.targets[0] == (0, 1, 0, 1, 0, 0)
+    assert plan.description["size"] == 3
+    assert trainer.calls == []
+    assert not list(tmp_path.iterdir())  # nothing stored
+
+
+def test_a_plan_makes_the_same_checks_as_a_training(tmp_path: Path) -> None:
+    with pytest.raises(TrainingSetError, match="blind test set"):
+        plan_training(
+            examples=EXAMPLES,
+            training_set=INFO,
+            sector_ids=SECTORS,
+            test_ids={10},
+            texts=FakeTexts(ARTICLES),
+            store=LocalModelStore(tmp_path),
+            config=CONFIG,
+        )
+
+
+def test_the_pairs_per_example_default_to_the_value_that_can_be_run_in_hours() -> None:
+    # SetFit's own default (every pair) is 89,168 pairs for 400 examples, about 13 hours.
+    assert CONFIG.num_iterations == 20

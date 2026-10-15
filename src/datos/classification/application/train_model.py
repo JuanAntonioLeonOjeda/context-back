@@ -31,9 +31,11 @@ CARD_FILE = "model-card.json"
 class TrainingConfig:
     """Every hyperparameter, written out: the library's defaults are not trusted to stay put.
 
-    The values are SetFit 1.2.0's defaults (checked in its source on 2026-10-15). Pairs are drawn by
-    `sampling_strategy`; `num_iterations` is None, which hands the number of pairs to it. The
-    classifier head is logistic regression, so SetFit's head epochs and batch size do not apply.
+    The values are SetFit 1.2.0's, except `num_iterations`. Left unset, SetFit draws every sentence
+    pair (`sampling_strategy="oversampling"`): 89,168 pairs for 400 examples, about 13 hours on the
+    author's Mac (8.6 s per step of 16 pairs, measured 2026-10-15). 20 pairs-iterations, SetFit's
+    value before 1.0, is 16,000 pairs, about 2.4 hours. The classifier head is logistic regression,
+    so SetFit's head epochs and batch size do not apply.
     """
 
     encoder: str
@@ -42,7 +44,7 @@ class TrainingConfig:
     batch_size: int = 16
     body_learning_rate: float = 2e-5
     sampling_strategy: str = "oversampling"
-    num_iterations: int | None = None
+    num_iterations: int | None = 20
 
 
 class TrainedModel(Protocol):
@@ -108,6 +110,84 @@ def model_name(training_set: TrainingSetInfo, config: TrainingConfig) -> str:
     return f"{training_set.name}-{config.encoder.rsplit('/', 1)[-1]}-seed{config.seed}"
 
 
+@dataclass(frozen=True, slots=True)
+class TrainingPlan:
+    """Everything decided before any training: shown to the author first, and what a dry run is."""
+
+    name: str
+    labels: tuple[str, ...]
+    texts: tuple[str, ...]
+    targets: tuple[tuple[int, ...], ...]
+    description: Mapping[str, object]  # the training set as the card will describe it
+
+
+def plan_training(
+    *,
+    examples: Sequence[LabelledExample],
+    training_set: TrainingSetInfo,
+    sector_ids: Collection[str],
+    test_ids: Collection[int],
+    texts: ArticleTextReader,
+    store: ModelStore,
+    config: TrainingConfig,
+) -> TrainingPlan:
+    """The checks, the texts and the labels, without training or storing anything."""
+    check_usable(examples, test_ids)
+    name = model_name(training_set, config)
+    if store.exists(name):
+        raise TrainingSetError(f"the model {name} exists: a stored model is frozen")
+
+    ordered = sorted(examples, key=lambda e: e.article_id)  # the order is part of reproducibility
+    found = texts.texts([e.article_id for e in ordered])
+    missing = [e.article_id for e in ordered if e.article_id not in found]
+    if missing:
+        raise TrainingSetError(f"articles not in the database: {missing[:5]}")
+
+    labels = model_labels(sector_ids)
+    return TrainingPlan(
+        name=name,
+        labels=labels,
+        texts=tuple(
+            article_text(found[e.article_id].headline, found[e.article_id].lead) for e in ordered
+        ),
+        targets=tuple(tuple(multi_hot(e, labels)) for e in ordered),
+        description={"name": training_set.name, "file_hash": training_set.file_hash}
+        | _describe(ordered, labels),
+    )
+
+
+def fit_model(
+    plan: TrainingPlan,
+    *,
+    trainer: ModelTrainer,
+    store: ModelStore,
+    config: TrainingConfig,
+    threshold: float,
+    now: Callable[[], datetime],
+    timer: Callable[[], float],
+) -> ModelCard:
+    started = timer()
+    model = trainer.train(texts=plan.texts, targets=plan.targets, labels=plan.labels, config=config)
+    seconds = timer() - started
+
+    version = store.save(plan.name, model)
+    card = ModelCard(
+        name=plan.name,
+        model_id="setfit",
+        model_version=version,
+        labels=plan.labels,
+        threshold=threshold,
+        encoder=config.encoder,
+        training_set=plan.description,
+        training=asdict(config),
+        environment=dict(model.environment),
+        training_seconds=round(seconds, 1),
+        trained_at=now().isoformat(),
+    )
+    store.write_card(plan.name, card.to_json())
+    return card
+
+
 def train_model(
     *,
     examples: Sequence[LabelledExample],
@@ -122,46 +202,18 @@ def train_model(
     now: Callable[[], datetime],
     timer: Callable[[], float],
 ) -> ModelCard:
-    check_usable(examples, test_ids)
-    name = model_name(training_set, config)
-    if store.exists(name):
-        raise TrainingSetError(f"the model {name} exists: a stored model is frozen")
-
-    ordered = sorted(examples, key=lambda e: e.article_id)  # the order is part of reproducibility
-    found = texts.texts([e.article_id for e in ordered])
-    missing = [e.article_id for e in ordered if e.article_id not in found]
-    if missing:
-        raise TrainingSetError(f"articles not in the database: {missing[:5]}")
-
-    labels = model_labels(sector_ids)
-    started = timer()
-    model = trainer.train(
-        texts=[
-            article_text(found[e.article_id].headline, found[e.article_id].lead) for e in ordered
-        ],
-        targets=[multi_hot(e, labels) for e in ordered],
-        labels=labels,
+    plan = plan_training(
+        examples=examples,
+        training_set=training_set,
+        sector_ids=sector_ids,
+        test_ids=test_ids,
+        texts=texts,
+        store=store,
         config=config,
     )
-    seconds = timer() - started
-
-    version = store.save(name, model)
-    card = ModelCard(
-        name=name,
-        model_id="setfit",
-        model_version=version,
-        labels=labels,
-        threshold=threshold,
-        encoder=config.encoder,
-        training_set={"name": training_set.name, "file_hash": training_set.file_hash}
-        | _describe(ordered, labels),
-        training=asdict(config),
-        environment=dict(model.environment),
-        training_seconds=round(seconds, 1),
-        trained_at=now().isoformat(),
+    return fit_model(
+        plan, trainer=trainer, store=store, config=config, threshold=threshold, now=now, timer=timer
     )
-    store.write_card(name, card.to_json())
-    return card
 
 
 def _describe(examples: Sequence[LabelledExample], labels: Sequence[str]) -> dict[str, object]:
