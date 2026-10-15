@@ -46,3 +46,30 @@ version of the list it used.
   version of the enrichment terms. Never a headline or a lead.
 - Out of git, `var/labelstudio/<sample>.json`: the Label Studio tasks, with the headline and the lead
   only. The outlet is not shown to the person labelling (`docs/labelling-guide.md`).
+
+## From Label Studio to the labelled set
+
+After each session of 100 (and after the second pass over the `unsure` ones), export the project from
+Label Studio as **JSON** (Export → JSON, not "JSON-MIN") and save it under `var/labelstudio/`, which
+is out of git: the export carries the headlines and the leads.
+
+```bash
+uv run python -m datos.classification export-labels --set train \
+  --sample train-sample-v1 --export var/labelstudio/export.json
+```
+
+It writes `data/train/train-set-v1.jsonl` (`data/eval/test-set-v1.jsonl` with `--set eval`): one line
+per answered article with its id, stratum, `communities`, `sectors`, `government_levels` and
+`unsure`. Never the text.
+
+- The stratum comes from the sample file, not from the tool.
+- An answer with nothing chosen is a row with no labels ("none of these", as the guide says); a
+  skipped article, or one not answered yet, is named in the summary and left out.
+- It stops, naming the article, on: an article twice in the export or not in the sample, an article
+  with more than one answer (keep one in the tool), a sector, level or community outside the
+  vocabulary, or a field the interface does not have.
+- The file is rewritten whole and sorted by article id: the same answers give the same bytes, and the
+  file's hash is what a model's card records as the labels it was trained on. Export again after
+  every session; the final file is the one after the second pass.
+- `tests/fixtures/labelstudio/export.json` has the shape of an export but was written by hand, not
+  captured: check the first real export against it.

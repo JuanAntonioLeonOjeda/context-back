@@ -9,6 +9,10 @@
 - `train --training-set PATH --seed S [--encoder NAME] [--models-dir PATH]`: trains the own model on
   the hand-labelled training set (needs the `ml` group: `uv run --group ml ...`). Refuses a set that
   shares an article with the blind test set, and never overwrites a model.
+- `export-labels --set train|eval --sample NAME --export PATH [--name NAME]`: turns Label Studio's
+  JSON export into the labelled set (`data/train/train-set-v1.jsonl` or
+  `data/eval/test-set-v1.jsonl`): ids and labels only. Names the articles not answered yet and
+  refuses anything outside the sample or the vocabulary.
 - `learning-curve --seed S [--training-set PATH] [--run-folds 0 1] [--dry-run]`: the learning curve
   inside the training set (ADR-0016, D11 and D12). Writes each point as it ends and carries on from
   the file if run again.
@@ -41,8 +45,14 @@ from datos.classification.application.train_model import (
     fit_model,
     plan_training,
 )
+from datos.classification.domain.labelled_export import Assembly, assemble
 from datos.classification.domain.training_set import TrainingSetError
 from datos.classification.infrastructure.curve_file import JsonlCurveStore
+from datos.classification.infrastructure.label_studio_export import read_label_studio_export
+from datos.classification.infrastructure.labelled_set_file import (
+    read_sample_strata,
+    write_labelled_set,
+)
 from datos.classification.infrastructure.local_model_store import LocalModelStore
 from datos.classification.infrastructure.pg_article_text_reader import PgArticleTextReader
 from datos.classification.infrastructure.pg_candidate_reader import PgCandidateReader
@@ -81,6 +91,7 @@ TASKS_DIR = Path("var/labelstudio")
 CURVE_FOLDS = 4
 CURVE_RUN_FOLDS = (0, 1)
 CURVE_SIZES = (100, 200, 300)
+SET_FILE_NAMES = {"train": "train-set-v1", "eval": "test-set-v1"}
 SECONDS_PER_STEP = 8.6  # measured on the author's Mac on 2026-10-15 (MPS)
 
 log = structlog.get_logger(__name__)
@@ -113,6 +124,11 @@ def main() -> None:
         default=None,
         help="sentence pairs per example (default: the config's); written in the model's card",
     )
+    export = commands.add_parser("export-labels", help="Label Studio export → the labelled set")
+    export.add_argument("--set", choices=sorted(SET_DIRS), required=True)
+    export.add_argument("--sample", required=True, help="the sample the tasks came from")
+    export.add_argument("--export", type=Path, required=True, help="Label Studio's JSON export")
+    export.add_argument("--name", default=None, help="default: train-set-v1 or test-set-v1")
     curve = commands.add_parser(
         "learning-curve", help="the learning curve inside the training set (folds, 3 sizes)"
     )
@@ -138,6 +154,9 @@ def main() -> None:
         return
     if arguments.command == "train":
         _train(arguments, repository, engine)
+        return
+    if arguments.command == "export-labels":
+        _export_labels(arguments, repository)
         return
     if arguments.command == "learning-curve":
         _learning_curve(arguments, repository, engine)
@@ -186,6 +205,35 @@ def _train(
         timer=time.perf_counter,
     )
     _show_result(card, arguments.models_dir)
+
+
+def _export_labels(arguments: argparse.Namespace, repository: PgClassificationRepository) -> None:
+    out_dir: Path = SET_DIRS[arguments.set]
+    name = arguments.name or SET_FILE_NAMES[arguments.set]
+    try:
+        strata = read_sample_strata(out_dir / f"{arguments.sample}.jsonl")
+        assembly = assemble(
+            read_label_studio_export(arguments.export),
+            strata,
+            sector_ids=repository.sector_ids(),
+        )
+    except TrainingSetError as error:
+        log.error("labels_not_exported", reason=str(error))
+        raise SystemExit(1) from error
+    target = out_dir / f"{name}.jsonl"
+    replaced = target.exists()
+    write_labelled_set(target, assembly.rows)
+    _show_export(assembly, len(strata), target, replaced=replaced)
+
+
+def _show_export(assembly: Assembly, sample_size: int, target: Path, *, replaced: bool) -> None:
+    rows = assembly.rows
+    print(f"Answered     : {len(rows)} of {sample_size} in the sample")
+    print(f"Not answered : {len(assembly.unlabelled)} skipped or still to do in the tool")
+    print(f"Not in tool  : {len(assembly.not_in_tool)} of the sample were never imported")
+    print(f"Unsure       : {sum(r.unsure for r in rows)}")
+    print(f"No label     : {sum(not (r.sectors or r.government_levels) for r in rows)}")
+    print(f"Written      : {target}{' (replaced)' if replaced else ''}")
 
 
 def _learning_curve(
