@@ -1,0 +1,43 @@
+<!-- Label Studio labelling interface for the hand-labelled sets (ADR-0009, docs/labelling-guide.md).
+     Each choice shows its Spanish name and exports its id (alias). The outlet is not shown. -->
+<View>
+  <Header value="$headline"/>
+  <Text name="lead" value="$lead"/>
+  <Header value="Comunidades" size="5"/>
+  <Choices name="communities" toName="lead" choice="multiple" showInline="true">
+    <Choice value="Andalucía" alias="ccaa-01"/>
+    <Choice value="Aragón" alias="ccaa-02"/>
+    <Choice value="Principado de Asturias" alias="ccaa-03"/>
+    <Choice value="Illes Balears" alias="ccaa-04"/>
+    <Choice value="Canarias" alias="ccaa-05"/>
+    <Choice value="Cantabria" alias="ccaa-06"/>
+    <Choice value="Castilla y León" alias="ccaa-07"/>
+    <Choice value="Castilla-La Mancha" alias="ccaa-08"/>
+    <Choice value="Cataluña" alias="ccaa-09"/>
+    <Choice value="Comunitat Valenciana" alias="ccaa-10"/>
+    <Choice value="Extremadura" alias="ccaa-11"/>
+    <Choice value="Galicia" alias="ccaa-12"/>
+    <Choice value="Comunidad de Madrid" alias="ccaa-13"/>
+    <Choice value="Región de Murcia" alias="ccaa-14"/>
+    <Choice value="Comunidad Foral de Navarra" alias="ccaa-15"/>
+    <Choice value="País Vasco" alias="ccaa-16"/>
+    <Choice value="La Rioja" alias="ccaa-17"/>
+    <Choice value="Ceuta" alias="ccaa-18"/>
+    <Choice value="Melilla" alias="ccaa-19"/>
+  </Choices>
+  <Header value="Sectores" size="5"/>
+  <Choices name="sectors" toName="lead" choice="multiple" showInline="true">
+    <Choice value="Educación" alias="education"/>
+    <Choice value="Sanidad" alias="health"/>
+    <Choice value="Vivienda" alias="housing"/>
+  </Choices>
+  <Header value="Niveles de gobierno" size="5"/>
+  <Choices name="government_levels" toName="lead" choice="multiple" showInline="true">
+    <Choice value="Estado" alias="state"/>
+    <Choice value="Comunidad autónoma" alias="ccaa"/>
+    <Choice value="Local" alias="local"/>
+  </Choices>
+  <Choices name="unsure" toName="lead" choice="multiple">
+    <Choice value="Dudoso" alias="unsure"/>
+  </Choices>
+</View>

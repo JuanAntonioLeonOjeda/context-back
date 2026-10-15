@@ -26,6 +26,7 @@ web and API were merged.
 | [0013](../../../front/docs/adr/0013-svg-map.md) | The map is an SVG drawn with d3-geo, one link per community (front repo) | Accepted |
 | [0014](0014-attribution-on-read.md) | Attribution computed on read, with a three-value confidence | Accepted |
 | [0015](0015-article-classifier.md) | One classifier port, rules as data, classifications append-only | Accepted |
+| [0016](0016-own-classifier-model.md) | The own classifier: SetFit on a multilingual encoder, sectors and levels, promotion set before training | Accepted |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

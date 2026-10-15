@@ -77,8 +77,8 @@ determined.
 
 - `ml` dependency group: `setfit`, `sentence-transformers`, `torch` (CPU build). Never in the API
   image: training and batch classification are jobs.
-- Encoder: a multilingual sentence encoder that covers Spanish and Catalan (candidate
-  `paraphrase-multilingual-mpnet-base-v2`; to verify its licence and Catalan coverage). Proposal:
+- Encoder: a multilingual sentence encoder that covers Spanish and Catalan (decided in ADR-0016:
+  `paraphrase-multilingual-mpnet-base-v2`, licence and Catalan verified). Proposal:
   the model takes **sectors and levels**, where keywords are weak; communities stay with the
   gazetteer unless the test set shows otherwise.
 - Training sample: 400 articles not in the test set, stratified like it (equal per outlet, half
