@@ -166,6 +166,11 @@ Decided by the author before writing the model's code (task 17):
   folds run rises by **at least 3 points from 200 to 300**, in either family. Proposed by the
   assistant and accepted by the author before seeing any curve; with 100 held-out articles a
   smaller rise is within the noise.
+- **How a label is scored** (decided 2026-10-15): one-vs-rest F1 per label, and per family the plain
+  mean of its labels' F1 (macro). A label that neither the gold labels nor the predicted ones give
+  to any article has no F1 and is left out of the mean, and the report names it: there was nothing
+  to get right or wrong. Counting it as 0, as scikit-learn's `zero_division=0` does, would punish a
+  model for not inventing the label. The same code scores the learning curve and the evaluation.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
