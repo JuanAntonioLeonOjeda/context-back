@@ -138,6 +138,17 @@ Decided by the author before writing the model's code (task 17):
 - **Composite classifier**: what is stored and read once the model takes a family. It takes each
   family from its assigned classifier, keeps only the evidence of those families, and its version
   names the source of every family (`communities=rules@…;sectors=setfit@…;levels=…`).
+- **The `ml` group and its versions** (measured 2026-10-15): `setfit==1.2.0` with the ranges its
+  maintainers test against (`transformers<5`, `sentence-transformers<6`, `huggingface-hub<1`,
+  `datasets<5`), and upper bounds on eight transitive packages that were less than two weeks old
+  (`constraint-dependencies` in `pyproject.toml`; a global `exclude-newer` does not resolve for every
+  Python the project supports). 62 packages, none newer than 2026-10-01; no locked package moved.
+  The group is not a default one and is not in the API image: tests check it, and the built image
+  (452 MB) has no torch. The virtual environment grows from 191 MB to 1.1 GB.
+- **Training speed**: on the author's Mac, torch uses MPS (the Apple GPU). A tiny model (12 examples)
+  trains in 18 s with the encoder cached; the first run also downloads the encoder (about 1.2 GB).
+  The real figure with 400 examples is measured by the training job (unit 4), and decides whether
+  MiniLM is needed.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
