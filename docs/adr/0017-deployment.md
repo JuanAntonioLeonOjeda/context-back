@@ -1,7 +1,7 @@
 # ADR-0017: Deployment: Docker Compose on a single host, no Kubernetes
 
-- **Status:** Proposed
-- **Date:** 2026-10-15
+- **Status:** Accepted
+- **Date:** 2026-10-15 (accepted by the author the same day)
 - **Phase:** news-live
 
 ## Context

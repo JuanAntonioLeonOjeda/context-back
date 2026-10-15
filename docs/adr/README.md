@@ -27,7 +27,7 @@ web and API were merged.
 | [0014](0014-attribution-on-read.md) | Attribution computed on read, with a three-value confidence | Accepted |
 | [0015](0015-article-classifier.md) | One classifier port, rules as data, classifications append-only | Accepted |
 | [0016](0016-own-classifier-model.md) | The own classifier: SetFit on a multilingual encoder, sectors and levels, promotion set before training | Accepted |
-| [0017](0017-deployment.md) | Deployment: Docker Compose on a single host, no Kubernetes | Proposed |
+| [0017](0017-deployment.md) | Deployment: Docker Compose on a single host, no Kubernetes | Accepted |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
