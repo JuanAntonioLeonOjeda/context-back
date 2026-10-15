@@ -177,3 +177,13 @@ def _macro_by_family(points: Sequence[ScoredPoint]) -> dict[str, dict[int, dict[
 
 def _mean(values: Sequence[float]) -> float | None:
     return sum(values) / len(values) if values else None
+
+
+def label_more(verdicts: Sequence[RiseVerdict]) -> bool | None:
+    """D12: label 100 more articles if either family still rises. None when no family can be told
+    and none rises: a curve not yet measured is not an answer."""
+    if any(v.still_rises for v in verdicts):
+        return True
+    if any(v.still_rises is None for v in verdicts):
+        return None
+    return False

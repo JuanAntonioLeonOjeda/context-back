@@ -2,7 +2,7 @@
 
 import pytest
 
-from datos.classification.__main__ import _duration
+from datos.classification.report import duration
 
 
 @pytest.mark.parametrize(
@@ -17,4 +17,4 @@ from datos.classification.__main__ import _duration
     ],
 )
 def test_a_duration_is_written_as_a_person_reads_it(seconds: float, text: str) -> None:
-    assert _duration(seconds) == text
+    assert duration(seconds) == text

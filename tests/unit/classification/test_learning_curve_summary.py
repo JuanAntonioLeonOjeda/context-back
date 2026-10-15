@@ -83,3 +83,35 @@ def test_each_family_has_its_own_verdict() -> None:
 
     assert verdict(points, "sector").still_rises is False
     assert verdict(points, "level").still_rises is True
+
+
+def test_label_more_when_either_family_rises() -> None:
+    from datos.classification.domain.learning_curve import label_more
+
+    points = [point(0, 200, 0.6, level=0.5), point(0, 300, 0.6, level=0.6)]
+
+    assert label_more(rise_verdicts(points)) is True
+
+
+def test_no_more_labels_when_no_family_rises() -> None:
+    from datos.classification.domain.learning_curve import label_more
+
+    points = [point(0, 200, 0.6, level=0.5), point(0, 300, 0.6, level=0.5)]
+
+    assert label_more(rise_verdicts(points)) is False
+
+
+def test_a_curve_not_yet_measured_gives_no_answer() -> None:
+    from datos.classification.domain.learning_curve import label_more
+
+    assert label_more(rise_verdicts([point(0, 200, 0.6), point(0, 100, 0.5)])) is None
+
+
+def test_one_family_that_rises_decides_even_if_the_other_cannot_be_told() -> None:
+    from datos.classification.domain.learning_curve import label_more
+
+    points = [point(0, 200, 0.6, level=None), point(0, 300, 0.7, level=None)]
+    verdicts = rise_verdicts(points)
+
+    assert [v.still_rises for v in verdicts] == [True, None]
+    assert label_more(verdicts) is True
