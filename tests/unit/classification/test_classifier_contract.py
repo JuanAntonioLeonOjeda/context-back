@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from datos.classification.application.classifier import ArticleClassifier
+from datos.classification.application.composite_classifier import CompositeClassifier, Family
 from datos.classification.infrastructure.rules_classifier import load_rules_classifier
 from datos.governments.application.published import CompetenceLevel
 
@@ -30,7 +31,8 @@ TEXTS = [
 
 
 def adapters() -> list[ArticleClassifier]:
-    return [load_rules_classifier(Path("data/classification"), sector_ids=SECTORS)]
+    rules = load_rules_classifier(Path("data/classification"), sector_ids=SECTORS)
+    return [rules, CompositeClassifier(dict.fromkeys(Family, rules))]
 
 
 @pytest.fixture(params=adapters(), ids=lambda c: c.model_id)
