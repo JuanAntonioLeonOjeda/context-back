@@ -118,6 +118,31 @@ after.
   before deciding); intervals wider than the 5-point margin (a larger test set, v2); a test set that
   shows the rules wrong on communities (then the model takes them too, by a new decision).
 
+## Implementation decisions (2026-10-15)
+
+Decided by the author before writing the model's code (task 17):
+
+- **Threshold**: a label is assigned when its probability is at least **0.5**, fixed and written in
+  the model's metadata. Tuning it by cross-validation on 400 articles (some 50 to 60 per sector)
+  would give a noisy threshold; it is never tuned on the test set.
+- **What the model stores as evidence**: the probability of each label it gives, in a `scores`
+  field of `Labels`; a model has no term to point at, and an empty term would satisfy the contract
+  test while saying nothing.
+- **The model's version**: a hash of its weights file, because training on a CPU is not exact to
+  the bit; the metadata records the training set, the encoder, the seed and the library versions.
+- **Tests without network or GPU**: the adapter's logic is tested with a fake predictor; the test
+  with SetFit itself is marked `ml` and does not run in CI.
+- **Where the model classifies once promoted**: not decided yet; training runs on the author's
+  machine with `uv`. After task 18, a separate image for the jobs with the `ml` group, so the API
+  image stays small.
+- **Composite classifier**: what is stored and read once the model takes a family. It takes each
+  family from its assigned classifier, keeps only the evidence of those families, and its version
+  names the source of every family (`communities=rules@…;sectors=setfit@…;levels=…`).
+- **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
+  evaluation report are enough, and a model registry would be a second source of truth next to
+  this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
+  with periodic retraining, a hyperparameter search or a second model.
+
 ## Verification
 
 - Encoders: Hugging Face model cards of `paraphrase-multilingual-mpnet-base-v2` and
