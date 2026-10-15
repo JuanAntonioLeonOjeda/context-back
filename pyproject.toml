@@ -56,9 +56,9 @@ module = "datasets"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-# SetFit ships no type information. The predictor reads its model through a Protocol
+# SetFit ships no type information, and torch is absent where the ml group is not installed (CI). The predictor reads its model through a Protocol
 # (src/datos/classification/infrastructure/setfit_predictor.py), never as typed SetFit objects.
-module = "setfit"
+module = ["setfit", "setfit.*", "torch", "torch.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

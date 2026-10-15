@@ -5,7 +5,10 @@ import tomllib
 from pathlib import Path
 
 HEAVY = ("setfit", "torch", "sentence_transformers", "transformers", "datasets")
-PREDICTOR = Path("src/datos/classification/infrastructure/setfit_predictor.py")
+ADAPTERS = [
+    Path("src/datos/classification/infrastructure/setfit_predictor.py"),
+    Path("src/datos/classification/infrastructure/setfit_trainer.py"),
+]
 
 
 def test_ml_is_not_a_default_group() -> None:
@@ -38,7 +41,7 @@ def test_no_module_imports_the_heavy_libraries_at_the_top_level() -> None:
     assert offenders == []
 
 
-def test_only_the_predictor_imports_them_at_all() -> None:
+def test_only_the_two_setfit_adapters_import_them_at_all() -> None:
     pattern = re.compile(rf"^\s*(from|import)\s+({'|'.join(HEAVY)})\b", re.MULTILINE)
 
     importers = [
@@ -47,4 +50,4 @@ def test_only_the_predictor_imports_them_at_all() -> None:
         if pattern.search(path.read_text(encoding="utf-8"))
     ]
 
-    assert importers == [PREDICTOR]
+    assert importers == ADAPTERS

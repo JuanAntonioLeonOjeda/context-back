@@ -7,6 +7,7 @@ is the evaluation of task 18, on the blind test set. Never runs in CI.
 """
 
 import time
+from collections.abc import Collection
 from pathlib import Path
 
 import pytest
@@ -96,3 +97,62 @@ def test_the_adapter_reads_it_and_speaks_the_projects_vocabulary(saved_model: Pa
     assert labels.communities == frozenset()
     assert labels.sectors <= SECTORS
     assert {score.label for score in labels.scores} <= set(LABELS)
+
+
+def test_the_training_job_trains_stores_and_describes_a_model_that_can_be_loaded(
+    tmp_path: Path,
+) -> None:
+    """The whole use case with the real trainer: examples in, a frozen model directory out."""
+    from datetime import UTC, datetime
+
+    from datos.classification.application.store_classifications import ArticleText
+    from datos.classification.application.train_model import (
+        CARD_FILE,
+        TrainingConfig,
+        TrainingSetInfo,
+        train_model,
+    )
+    from datos.classification.domain.training_set import LabelledExample, model_labels
+    from datos.classification.infrastructure.local_model_store import (
+        LocalModelStore,
+        directory_hash,
+    )
+    from datos.classification.infrastructure.setfit_trainer import SetFitModelTrainer
+    from datos.governments.application.published import CompetenceLevel
+
+    sector_of = {0: "education", 1: "health", 2: "housing"}
+    level_of = {1: CompetenceLevel.CCAA, 3: CompetenceLevel.STATE}
+    examples = [
+        LabelledExample(i, frozenset({sector_of[s]}), frozenset({level_of[lv]}), "random", False)
+        for i, (_, s, lv) in enumerate(EXAMPLES, start=1)
+    ]
+    articles = {i: ArticleText(i, text, None) for i, (text, _, _) in enumerate(EXAMPLES, start=1)}
+
+    class Texts:
+        def texts(self, article_ids: Collection[int]) -> dict[int, ArticleText]:
+            return {i: articles[i] for i in article_ids}
+
+    cwd_before = {p.name for p in Path.cwd().iterdir()}
+    card = train_model(
+        examples=examples,
+        training_set=TrainingSetInfo("toy-set", "0123456789ab"),
+        sector_ids=SECTORS,
+        test_ids=set(),
+        texts=Texts(),
+        trainer=SetFitModelTrainer(),
+        store=LocalModelStore(tmp_path),
+        config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),
+        threshold=0.5,
+        now=lambda: datetime(2026, 10, 15, tzinfo=UTC),
+        timer=time.perf_counter,
+    )
+
+    directory = tmp_path / card.name
+    assert directory_hash(directory) == card.model_version
+    assert card.labels == model_labels(SECTORS)
+    assert card.environment["device"]
+    assert card.training_seconds > 0
+    assert (directory / CARD_FILE).exists()
+    assert {p.name for p in Path.cwd().iterdir()} == cwd_before  # no ./checkpoints left behind
+    predictor = SetFitPredictor.load(directory)
+    assert list(predictor.probabilities("El hospital amplía la plantilla")) == list(card.labels)
