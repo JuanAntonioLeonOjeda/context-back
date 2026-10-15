@@ -9,6 +9,7 @@ from collections.abc import Collection
 
 from datos.classification.application.probability_predictor import ProbabilityPredictor
 from datos.classification.domain.labels import NO_LABELS, Labels, Score
+from datos.classification.domain.text import article_text
 from datos.governments.application.published import CompetenceLevel
 
 DEFAULT_THRESHOLD = 0.5  # fixed and written in the model's metadata; never tuned on the test set
@@ -38,7 +39,7 @@ class SetFitClassifier:
         self.model_version = model_version
 
     def classify(self, headline: str, lead: str | None) -> Labels:
-        text = f"{headline} {lead or ''}".strip()
+        text = article_text(headline, lead)
         if not text:
             return NO_LABELS  # nothing to read: the predictor is not asked
         probabilities = self._predictor.probabilities(text)
