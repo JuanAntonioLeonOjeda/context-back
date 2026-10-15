@@ -27,7 +27,7 @@ Update the status column when a phase creates or finishes a path.
 | `src/datos/api/` | FastAPI app factory and the per-request provider of readers; routers live in each module's `interface/` (or `routes.py`): `/health`, `/territories`, `/parties`, `/communities/{id}/governments`, `/communities/{id}/indicators`, `/communities/{id}/news`, `/map/governments`, `/map/geometry` | ✅ |
 | `src/datos/http.py`, `src/datos/clock.py` | shared bounded HTTP client (honest user agent, size cap); the clock (today in Spain) | ✅ |
 | `src/datos/config.py`, `src/datos/main.py` | settings and composition root | ✅ |
-| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag; `0004`: downloads, indicators and append-only observations; `0005`: append-only classifications) | 🚧 |
+| `migrations/` | versioned SQL migrations (`0001`: reference data and news metadata; `0002`: per-territory competences; `0003`: outlet LLM flag; `0004`: downloads, indicators and append-only observations; `0005`: append-only classifications; `0006`: scores of a model's classifications) | 🚧 |
 | `data/territories/` | territories CSV from INE, with its source in `README.md` | ✅ |
 | `data/governments/` | curated parties (with their standard colour, from Wikidata), government terms since 2020, sectors and competences, with sources | ✅ |
 | `data/geo/` | `ccaa.geojson`: the 19 communities simplified for the map, from the IGN (CC BY 4.0), with its build and attribution in `README.md` | ✅ |
