@@ -113,7 +113,9 @@ def test_loads_sectors_and_competences_twice_with_the_same_result(db: Connection
 
     _load(db)
 
-    assert (_count(db, "sectors"), _count(db, "competences")) == first == (3, 31)
+    assert (_count(db, "sectors"), _count(db, "competences")) == first == (12, 31)
+    active = db.execute(text("SELECT id FROM sectors WHERE is_active ORDER BY id")).scalars()
+    assert list(active) == ["education", "health", "housing"]  # the three of launch (D15)
 
 
 def test_ceuta_has_its_own_rows_for_health_care_and_education(db: Connection) -> None:

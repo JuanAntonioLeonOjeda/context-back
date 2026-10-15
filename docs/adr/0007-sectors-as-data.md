@@ -33,3 +33,13 @@ Design for N sectors and launch with education, health and housing. Candidates f
 ## Verification
 
 Candidate sectors are regional competences with public data by community (to confirm per sector).
+
+## Amendment (2026-10-15): a taxonomy of 12, three active
+
+Decided with the author (D15): the sectors are the 12 topics that elcongresoentumano.es uses for
+laws (housing, work, taxes, health, education, rights, justice, environment, economy,
+institutional, pensions, migration), so news and parliament votes (phase 7) share them. Only the
+three of launch are active. A planned sector is a row with `is_active = false` (migration 0007),
+chosen over a separate taxonomy file because the database then knows every topic; the cost is that
+every reader of the sectors must filter on it, and the two readers that exist do, with tests. The
+candidates listed in the Decision are superseded by this list.
