@@ -154,6 +154,18 @@ Decided by the author before writing the model's code (task 17):
   about 13 hours. The training job fixes `num_iterations=20`: 16,000 pairs for 400 examples, about
   2.4 hours. The count is printed before training (`train --dry-run`) and stored in the model
   card. This corrects an earlier note that gave 20 iterations as SetFit's own default.
+- **The learning curve** (decided 2026-10-15, before any training): it is measured inside the
+  training set, never on the test set. The set is split in 4 folds by stratum with a fixed seed;
+  with one fold held out, the model is trained on nested subsets of 100, 200 and 300 of the rest
+  and its macro-F1 per family is measured on the held-out fold. With 400 labels there is no point
+  at 400: some articles are always held out. Two of the four folds are run (about 7 hours with
+  mpnet, one night); each point is stored as it ends, so a run can be resumed and the other two
+  folds added later. mpnet, not MiniLM, because the curve must describe the model that is
+  trained.
+- **When the curve "still rises"**: 100 more articles are labelled when the mean macro-F1 over the
+  folds run rises by **at least 3 points from 200 to 300**, in either family. Proposed by the
+  assistant and accepted by the author before seeing any curve; with 100 held-out articles a
+  smaller rise is within the noise.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
