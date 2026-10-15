@@ -1,6 +1,6 @@
 # ADR-0016: The own classifier: SetFit on a multilingual encoder, sectors and levels, promotion set before training
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-14
 - **Phase:** news-live
 
