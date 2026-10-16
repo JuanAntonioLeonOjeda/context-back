@@ -29,3 +29,5 @@ class Feed:
     needs_page_fetch: bool
     # html_section only: regex an absolute link must fully match to count as an article.
     article_url_pattern: str | None = None
+    # True: the page of each article carries the outlet's tags (`article:tag`); its feed has none.
+    tags_in_page: bool = False

@@ -121,6 +121,8 @@ def complete_with_page(listed: FeedItem, page: FeedItem) -> FeedItem:
         link=listed.link,
         published_at=listed.published_at or page.published_at,
         summary=listed.summary or page.summary,
+        # What the outlet published with the article: the listing's, else the page's.
+        tags=listed.tags or page.tags,
     )
 
 

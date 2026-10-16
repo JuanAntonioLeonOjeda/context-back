@@ -71,3 +71,15 @@ def test_the_article_url_pattern_is_required_valid_and_only_for_sections(
 
     with pytest.raises(InvalidNewsFileError, match=r"feeds\.csv line 2"):
         read_feeds(path, read_outlets(DATA / "outlets.csv"))
+
+
+def test_only_outlets_that_let_us_in_have_tags_read_from_their_pages() -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = read_feeds(DATA / "feeds.csv", outlets)
+    by_id = {o.id: o for o in outlets}
+
+    in_page = {f.outlet_id for f in feeds if f.tags_in_page}
+
+    assert in_page == {"rtve", "3cat", "telemadrid"}
+    # An outlet that blocks AI crawlers (ADR-0019) never has its pages read for tags.
+    assert all(by_id[outlet].external_llm_allowed for outlet in in_page)
