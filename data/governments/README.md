@@ -89,8 +89,11 @@ of a caretaker government do not change.
 
 ## Known limits
 
-- **General election of 29 Nov 2026** (Real Decreto 806/2026): the State term in force
-  ends that day and a caretaker term must be added after it.
+- **General election of 29 Nov 2026** (Real Decreto 806/2026, BOE-A-2026-20742, of 5 October):
+  the State term in force ends that day and a caretaker term with the same president, parties and
+  supporters starts, added on 2026-10-16 because the decree already fixes the date. It is a
+  forecast of the rule, not of the result: until the new Government is appointed (a Real Decreto
+  in the BOE), it stays open. If the election were postponed, both rows would be changed.
 - **Caretaker without an election** (validated by the author): a government also becomes caretaker
   when its president ceases for another reason (resignation, disqualification) until the
   successor is appointed: Cataluña 2020 (Aragonès substituting Torra), Comunitat

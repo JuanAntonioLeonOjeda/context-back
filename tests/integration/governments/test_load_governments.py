@@ -55,7 +55,7 @@ def test_loads_the_versioned_dataset_and_a_second_load_changes_nothing(db: Conne
 
     assert first == second
     assert first[0] == 34
-    assert first[1] == 93
+    assert first[1] == 94
 
 
 def test_every_territory_with_a_government_is_covered_today(db: Connection) -> None:
@@ -104,7 +104,7 @@ def test_a_failed_load_leaves_the_previous_data_untouched(db: Connection) -> Non
     with pytest.raises(Exception, match="problem"):
         load_governments(PgGovernmentRepository(db), parties, terms[:-1], since=SINCE, today=TODAY)
 
-    assert _count(db, "government_terms") == 93
+    assert _count(db, "government_terms") == 94
 
 
 def test_loads_sectors_and_competences_twice_with_the_same_result(db: Connection) -> None:
