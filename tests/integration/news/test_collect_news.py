@@ -71,6 +71,8 @@ def news_database_url(postgres_url: str) -> str:
 def engine_url(news_database_url: str) -> str:
     """The news tables are emptied before each test."""
     with create_engine(news_database_url).begin() as connection:
+        connection.execute(text("DELETE FROM article_tags"))
+        connection.execute(text("DELETE FROM tags"))
         connection.execute(text("DELETE FROM articles"))
         connection.execute(text("DELETE FROM outlets"))
     return news_database_url
@@ -190,3 +192,39 @@ def test_known_urls_returns_only_the_stored_ones_of_that_outlet(engine_url: str)
     assert repository.known_urls("rtvc", [stored, "https://rtvc.es/new/"]) == {stored}
     assert repository.known_urls("telemadrid", [stored]) == set()
     assert repository.known_urls("rtvc", []) == set()
+
+
+def test_the_tags_of_a_real_feed_are_stored_once_and_a_second_read_adds_none(
+    engine_url: str,
+) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("el-pais", FeedKind.RSS, "https://feeds.elpais.com/rss", "spain", False)]
+    source = _serve({"feeds.elpais.com": (FIXTURES / "el-pais.xml").read_bytes()})
+    repository = PgNewsRepository(create_engine(engine_url))
+
+    [first] = collect_articles(feeds, outlets, source, repository)
+    [second] = collect_articles(feeds, outlets, source, repository)
+
+    assert first.tags_linked > 3 and second.tags_linked == 0
+    with create_engine(engine_url).connect() as connection:
+        links = connection.execute(text("SELECT count(*) FROM article_tags")).scalar_one()
+        tags = connection.execute(text("SELECT count(*) FROM tags")).scalar_one()
+    # "España" and "Ceuta" are on several articles: the tag is one row, the links are many.
+    assert links == first.tags_linked and tags < links
+
+
+def test_an_article_stored_without_tags_gets_them_when_its_feed_is_read_again(
+    engine_url: str,
+) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("el-pais", FeedKind.RSS, "https://feeds.elpais.com/rss", "spain", False)]
+    source = _serve({"feeds.elpais.com": (FIXTURES / "el-pais.xml").read_bytes()})
+    repository = PgNewsRepository(create_engine(engine_url))
+
+    collect_articles(feeds, outlets, source, repository)
+    with create_engine(engine_url).begin() as connection:
+        connection.execute(text("DELETE FROM article_tags"))  # as before tags existed
+
+    [again] = collect_articles(feeds, outlets, source, repository)
+
+    assert again.inserted == 0 and again.tags_linked > 0
