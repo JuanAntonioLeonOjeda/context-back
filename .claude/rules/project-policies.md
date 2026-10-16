@@ -90,8 +90,10 @@ docker compose ps
   (RDL 24/2021 art. 67), never shown. Never store article bodies.
 - Outlets with an express mining reservation are not processed. Outlets flagged
   `external_llm_allowed = false` (`data/news/outlets.csv`) are never sent to an external
-  LLM. Respect `robots.txt` and never bypass bot protection. Details:
-  `docs/sources-audit.md`. Legal review before any public launch.
+  LLM. Respect `robots.txt` and never bypass bot protection. An article body is read (for
+  keywords, never stored) only where the site allows it, and an outlet whose `robots.txt` blocks
+  AI crawlers does not allow it (ADR-0019). Details: `docs/sources-audit.md`. No legal review is
+  sought: a personal, non-commercial project that stays within what each site allows (ADR-0019).
 
 ## Neutrality is a product requirement
 

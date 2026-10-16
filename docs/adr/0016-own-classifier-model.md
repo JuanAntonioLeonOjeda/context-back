@@ -195,3 +195,10 @@ Decided by the author before writing the model's code (task 17):
 - Where the rules are weak: `data/classification/README.md`, coverage of 2026-10-14.
 - The test set method and its strata: `specs/foundation/plan.md`, "Blind test set method".
 - The criteria are applied by the evaluation of task 18 (`specs/news-live/tasks.md`).
+
+## Amendment (2026-10-16): the input also carries the outlet's tags
+
+The input is no longer only the headline and the lead: it is the headline, the tags the outlet
+published with the article (filtered by `data/classification/tag-stoplist.csv`, at most 8, in the
+feed's order) and the lead, in that order and cut at the encoder's 128 tokens. Decided by the author
+and recorded in ADR-0019 (proposed), which also sets when the article body may be read.
