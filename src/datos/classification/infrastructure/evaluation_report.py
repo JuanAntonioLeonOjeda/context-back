@@ -20,6 +20,7 @@ REPORTS_DIR = Path("data/eval/reports")
 class RunInfo:
     test_set: Mapping[str, object]  # name, file hash, size
     rules_version: str
+    tag_stoplist: str  # the list the texts of the exam were built with
     model: Mapping[str, object]  # name and version of the candidate, from its card
     seed: int
     run_at: datetime  # with its zone
@@ -30,6 +31,7 @@ def report(info: RunInfo, family_verdicts: tuple[FamilyVerdict, ...]) -> dict[st
         "run_at": info.run_at.isoformat(),
         "test_set": dict(info.test_set),
         "rules_version": info.rules_version,
+        "tag_stoplist": info.tag_stoplist,
         "model": dict(info.model),
         "seed": info.seed,
         "families": [_family(v) for v in family_verdicts],

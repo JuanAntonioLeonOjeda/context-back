@@ -50,8 +50,8 @@ def evaluated_articles(
                     {f"sector:{s}" for s in example.sectors}
                     | {f"level:{lv.value}" for lv in example.levels}
                 ),
-                rules=_label_set(rules.classify(text.headline, text.lead)),
-                candidate=_label_set(candidate.classify(text.headline, text.lead)),
+                rules=_label_set(rules.classify(text.headline, text.lead, text.tags)),
+                candidate=_label_set(candidate.classify(text.headline, text.lead, text.tags)),
             )
         )
     return evaluated

@@ -89,6 +89,7 @@ from datos.classification.infrastructure.setfit_trainer import (
     count_pairs,
     device_name,
 )
+from datos.classification.infrastructure.tag_stoplist_file import tag_stoplist_version
 from datos.classification.infrastructure.training_set_file import read_training_set
 from datos.classification.report import (
     duration,
@@ -175,7 +176,7 @@ def main() -> None:
     engine = build_engine(str(settings.database_url))
     repository = PgClassificationRepository(engine)
     if arguments.command == "sample":
-        _sample(arguments, repository, PgCandidateReader(engine))
+        _sample(arguments, repository, PgCandidateReader(engine), PgArticleTextReader(engine))
         return
     if arguments.command == "train":
         _train(arguments, repository, engine)
@@ -212,6 +213,7 @@ def _train(
             sector_ids=sector_ids,
             test_ids=labelled_ids([Path("data/eval")]),
             texts=PgArticleTextReader(engine),
+            tag_stoplist=tag_stoplist_version(),
             store=store,
             config=config,
         )
@@ -299,6 +301,7 @@ def _evaluate(
             "size": len(examples),
         },
         rules_version=rules.model_version,
+        tag_stoplist=tag_stoplist_version(),
         model={"name": card["name"], "version": card["model_version"]},
         seed=arguments.seed,
         run_at=datetime.now(UTC),
@@ -322,6 +325,7 @@ def _learning_curve(
         config=config,
         folds=arguments.folds,
         threshold=DEFAULT_THRESHOLD,
+        tag_stoplist=tag_stoplist_version(),
     )
     results = (
         arguments.models_dir / f"{path.stem}-{_encoder_name(config)}-seed{config.seed}-curve.jsonl"
@@ -436,6 +440,7 @@ def _sample(
     arguments: argparse.Namespace,
     repository: PgClassificationRepository,
     reader: PgCandidateReader,
+    texts: PgArticleTextReader,
 ) -> None:
     until: datetime = arguments.until
     if until.tzinfo is None:
@@ -471,6 +476,10 @@ def _sample(
         seed=arguments.seed,
         until=until,
         terms_version=file_version(arguments.terms),
+        tags_by_id={
+            i: t.tags for i, t in texts.texts([a.article_id for a in drawn.articles]).items()
+        },
+        tag_stoplist=tag_stoplist_version(),
     )
     log.info("sample_drawn", size=len(drawn.articles), files=[str(p) for p in paths])
 

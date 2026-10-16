@@ -10,7 +10,7 @@ next run.
 """
 
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -25,6 +25,7 @@ from datos.news.domain.article import (
     to_article,
 )
 from datos.news.domain.outlet import Feed, Outlet
+from datos.news.domain.tag import Tag, clean_tags
 
 log = structlog.get_logger(__name__)
 
@@ -58,6 +59,10 @@ class NewsRepository(Protocol):
         """The subset of `urls` already stored for the outlet."""
         ...
 
+    def add_tags(self, outlet_id: str, tags_by_url: Mapping[str, Sequence[Tag]]) -> int:
+        """Link tags to stored articles (new or old); return how many links were new."""
+        ...
+
 
 @dataclass(slots=True)
 class FeedResult:
@@ -67,6 +72,7 @@ class FeedResult:
     pages_read: int = 0
     pages_deferred: int = 0  # new articles over the per-run page limit: next run
     inserted: int = 0
+    tags_linked: int = 0
     error: str | None = None
 
 
@@ -108,6 +114,7 @@ def _collect_feed(
         log.warning("feed_unavailable", outlet=feed.outlet_id, url=feed.url, reason=result.error)
         return result
     result.read = len(items)
+    listed = items  # before the pages are read: the tags are in the listing, new items or not
     if feed.needs_page_fetch:
         items = _complete_new_items(feed, items, sources, repository, max_pages, result)
     articles: dict[str, Article] = {}
@@ -118,6 +125,9 @@ def _collect_feed(
         else:
             articles.setdefault(article.url, article)  # the same URL twice in one feed
     result.inserted = repository.add_new(list(articles.values()))
+    # After the articles exist. Every listed item, not only the new ones: it completes the articles
+    # stored before tags did, and a link already there is left alone.
+    result.tags_linked = repository.add_tags(feed.outlet_id, _tags_by_url(listed))
     log.info(
         "feed_collected",
         outlet=feed.outlet_id,
@@ -127,8 +137,19 @@ def _collect_feed(
         pages_read=result.pages_read,
         pages_deferred=result.pages_deferred,
         inserted=result.inserted,
+        tags_linked=result.tags_linked,
     )
     return result
+
+
+def _tags_by_url(items: Sequence[FeedItem]) -> Mapping[str, tuple[Tag, ...]]:
+    """The cleaned tags of the items that have a link and at least one valid tag."""
+    by_url: dict[str, tuple[Tag, ...]] = {}
+    for item in items:
+        tags = clean_tags(item.tags)
+        if tags and _has_link(item):
+            by_url.setdefault(normalise_url(item.link or ""), tags)
+    return by_url
 
 
 def _complete_new_items(
