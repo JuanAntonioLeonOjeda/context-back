@@ -228,3 +228,42 @@ def test_an_article_stored_without_tags_gets_them_when_its_feed_is_read_again(
     [again] = collect_articles(feeds, outlets, source, repository)
 
     assert again.inserted == 0 and again.tags_linked > 0
+
+
+def test_the_tags_of_an_article_keep_the_order_of_the_feed(engine_url: str) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("el-pais", FeedKind.RSS, "https://feeds.elpais.com/rss", "spain", False)]
+    source = _serve({"feeds.elpais.com": (FIXTURES / "el-pais.xml").read_bytes()})
+
+    collect_articles(feeds, outlets, source, PgNewsRepository(create_engine(engine_url)))
+
+    query = text(
+        "SELECT array_agg(t.label ORDER BY at.position) FROM article_tags at"
+        " JOIN tags t ON t.id = at.tag_id GROUP BY at.article_id"
+    )
+    with create_engine(engine_url).connect() as connection:
+        per_article = connection.execute(query).scalars().all()
+    # The first article of the El País fixture lists these four first, in this order.
+    assert ["España", "Crisis migratoria", "Ceuta", "Marruecos"] in [t[:4] for t in per_article]
+
+
+def test_a_link_made_before_tags_had_a_place_gets_it_and_one_that_has_it_keeps_it(
+    engine_url: str,
+) -> None:
+    outlets = read_outlets(DATA / "outlets.csv")
+    feeds = [Feed("el-pais", FeedKind.RSS, "https://feeds.elpais.com/rss", "spain", False)]
+    source = _serve({"feeds.elpais.com": (FIXTURES / "el-pais.xml").read_bytes()})
+    repository = PgNewsRepository(create_engine(engine_url))
+    [first] = collect_articles(feeds, outlets, source, repository)
+    with create_engine(engine_url).begin() as connection:
+        connection.execute(text("UPDATE article_tags SET position = NULL"))
+
+    [again] = collect_articles(feeds, outlets, source, repository)
+    [third] = collect_articles(feeds, outlets, source, repository)
+
+    assert again.tags_linked == first.tags_linked and third.tags_linked == 0
+    with create_engine(engine_url).connect() as connection:
+        missing = connection.execute(
+            text("SELECT count(*) FROM article_tags WHERE position IS NULL")
+        ).scalar_one()
+    assert missing == 0

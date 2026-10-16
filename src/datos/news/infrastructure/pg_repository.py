@@ -34,14 +34,16 @@ _INSERT_TAG = text(
     ON CONFLICT (key) DO NOTHING
     """
 )
-# Joins by (outlet, URL) and key, so a URL the outlet has not stored yet links nothing.
+# Joins by (outlet, URL) and key, so a URL the outlet has not stored yet links nothing. A link made
+# before tags had a place gets it now; one that has it is left alone.
 _LINK_TAG = text(
     """
-    INSERT INTO article_tags (article_id, tag_id, source)
-    SELECT a.id, t.id, 'feed'
+    INSERT INTO article_tags (article_id, tag_id, source, position)
+    SELECT a.id, t.id, 'feed', :position
     FROM articles a, tags t
     WHERE a.outlet_id = :outlet_id AND a.url = :url AND t.key = :key
-    ON CONFLICT DO NOTHING
+    ON CONFLICT (article_id, tag_id, source) DO UPDATE SET position = EXCLUDED.position
+    WHERE article_tags.position IS NULL
     """
 )
 
@@ -95,15 +97,16 @@ class PgNewsRepository:
             return {row.url for row in rows}
 
     def add_tags(self, outlet_id: str, tags_by_url: Mapping[str, Sequence[Tag]]) -> int:
-        """Link the feed's tags to stored articles; return how many links were new.
+        """Link the feed's tags to stored articles, in the order the feed gave them; return how
+        many links were new or got their place.
 
         Safe to repeat: a link already there is left alone, so a feed read again completes the
         articles stored before tags existed and adds nothing twice.
         """
         links = [
-            {"outlet_id": outlet_id, "url": url, "key": tag.key}
+            {"outlet_id": outlet_id, "url": url, "key": tag.key, "position": position}
             for url, tags in tags_by_url.items()
-            for tag in tags
+            for position, tag in enumerate(tags)
         ]
         if not links:
             return 0
