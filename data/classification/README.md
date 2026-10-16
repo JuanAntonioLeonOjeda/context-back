@@ -86,3 +86,26 @@ These numbers say how much the rules fire, not how often they are right: a sampl
 matches showed clear policy news next to clear noise (an illness at a wedding, news from
 Hungary), the expected weakness of keywords. Precision and recall are measured on the blind test
 set when it exists, overall, per outlet and per party.
+
+## `tag-stoplist.csv`: tags the model never reads
+
+Not part of the rules: the rules' version is a hash of the four files above and this one does not
+change it. It lists the tags an outlet publishes with an article (`tags`, ADR-0019) that the model
+must not read, because they say nothing about the topic and give away who published it:
+
+- `outlet_marker`: the outlet or its section, not the topic (`Home La Razón`, `OKD`, `NLPremium`,
+  `Cool`, `Actualidad`, `A fondo`, `Portada…`).
+- `byline`: the author (`Artículos Manuel Marraco`, from El Mundo). A new author appears with a new
+  tag, so it is one `prefix` row, not one row per author.
+
+`tag` is in key form (lower case, single spaces: the form the database stores), and the loader
+rejects any row that is not. `match` is `exact` (the whole tag) or `prefix` (the tag, or the tag
+followed by more words: `portada` matches `portada local`, not `portadas`). A tag is compared by its
+key, so `Home La Razón` and `home  la razón` are the same entry.
+
+The tags themselves are stored as the outlet wrote them: the list is applied when the text for the
+model is built, so changing it never needs a new collection. Its version is a hash of the file; a
+model's card and a labelling sample record the one they used.
+
+Written on 2026-10-16 from the 1,210 tags stored that day: each entry above appears in a single
+outlet. It is a judgement, not a measurement; the author reviews it before it is used.

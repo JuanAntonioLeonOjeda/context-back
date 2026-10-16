@@ -1,0 +1,9 @@
+tag,match,reason
+home la razón,exact,outlet_marker
+okd,exact,outlet_marker
+nlpremium,exact,outlet_marker
+cool,exact,outlet_marker
+actualidad,exact,outlet_marker
+a fondo,exact,outlet_marker
+portada,prefix,outlet_marker
+artículos,prefix,byline
