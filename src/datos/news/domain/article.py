@@ -25,6 +25,7 @@ class FeedItem:
     link: str | None
     published_at: datetime | None
     summary: str | None
+    tags: tuple[str, ...] = ()  # as the feed gives them: cleaned by `clean_tags` when stored
 
 
 @dataclass(frozen=True, slots=True)
