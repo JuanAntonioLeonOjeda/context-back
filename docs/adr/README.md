@@ -29,6 +29,7 @@ web and API were merged.
 | [0016](0016-own-classifier-model.md) | The own classifier: SetFit on a multilingual encoder, sectors and levels, promotion set before training | Accepted |
 | [0017](0017-deployment.md) | Deployment: Docker Compose on a single host, no Kubernetes | Accepted |
 | [0018](0018-no-responsible-party.md) | No responsible party per news item; laws and votes instead | Accepted |
+| [0019](0019-article-tags-as-model-input.md) | The outlet's tags as part of what the model reads; the article body only where the site allows it | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
