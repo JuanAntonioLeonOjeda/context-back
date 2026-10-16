@@ -43,7 +43,7 @@ def test_reads_back_every_term_of_the_dataset_with_its_parties(reader: PgGovernm
     stored = reader.terms()
     key = attrgetter("territory_id", "valid_from")
 
-    assert len(stored) == len(expected) == 93
+    assert len(stored) == len(expected) == 94
     for got, want in zip(sorted(stored, key=key), sorted(expected, key=key), strict=True):
         assert got.valid_to == want.valid_to and got.is_caretaker == want.is_caretaker
         assert sorted(got.parties, key=lambda p: p.party_id) == sorted(

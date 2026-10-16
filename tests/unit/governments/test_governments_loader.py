@@ -73,6 +73,30 @@ def test_the_versioned_dataset_passes_every_rule() -> None:
     assert dataset_problems(parties, terms, territory_ids, since=SINCE, today=TODAY) == []
 
 
+def _state_on(day: date) -> GovernmentTerm:
+    terms = read_terms(DATA / "government_terms.csv", DATA / "government_term_parties.csv")
+    [term] = [t for t in terms if t.territory_id == "es" and t.covers(day)]
+    return term
+
+
+def test_the_state_government_becomes_caretaker_on_the_day_of_the_2026_election() -> None:
+    before, on_the_day = _state_on(date(2026, 11, 28)), _state_on(date(2026, 11, 29))
+
+    assert not before.is_caretaker and on_the_day.is_caretaker
+    assert before.valid_to == on_the_day.valid_from == date(2026, 11, 29)
+    assert on_the_day.valid_to is None  # open until the new Government is appointed
+    assert "BOE-A-2026-20742" in on_the_day.source_url  # the decree that calls the election
+
+
+def test_a_caretaker_term_keeps_the_president_the_parties_and_the_supporters() -> None:
+    before, caretaker = _state_on(date(2026, 11, 28)), _state_on(date(2026, 11, 29))
+
+    assert caretaker.president_name == before.president_name
+    assert {(p.party_id, p.role) for p in caretaker.parties} == {
+        (p.party_id, p.role) for p in before.parties
+    }
+
+
 # --- validation ------------------------------------------------------------------------
 
 
