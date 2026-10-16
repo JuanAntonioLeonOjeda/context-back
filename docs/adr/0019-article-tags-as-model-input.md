@@ -1,6 +1,6 @@
 # ADR-0019: The outlet's tags as part of what the model reads; the article body only where the site allows it
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-16
 - **Phase:** news-live
 
@@ -88,7 +88,7 @@ when the article itself cannot be read.
   lets our user agent fetch the page, it does not block known AI crawlers, and its pages carry no
   machine-readable mining reservation. The author kept the second condition on purpose: if a site's
   `robots.txt` says no, we stay out, even though our collector is not an AI crawler. Of the 14
-  outlets, 8 pass today (`docs/sources-audit.md`,
+  outlets, 8 pass today (erratum below: 7) (`docs/sources-audit.md`,
   section 7). From the body, only keywords are kept (YAKE, a dependency approved by the author on
   2026-10-16); the text is never stored. This part is decided here and not built yet.
 
@@ -124,3 +124,28 @@ when the article itself cannot be read.
   section 7 (checked 2026-10-13). To be checked again for each outlet when the body reading is built.
 - Not measured: whether the tags improve the model. The blind test set (ADR-0016) will say it, per
   outlet.
+
+## Amendment (2026-10-16): the page's own tags first, no keyword extraction
+
+Written when the body reading was about to be built, after checking the real pages.
+
+- **Erratum.** Seven outlets pass the reading rule, not eight: ABC and Canarias7 also block AI
+  crawlers (they group the crawlers in one `robots.txt` block, which a first check missed). The seven
+  that block are exactly the outlets marked `external_llm_allowed = false` in `outlets.csv`. The seven
+  that pass are El Español, OKdiario, Diario de Avisos, RTVE, RTVC, Telemadrid and 3Cat; on a sample
+  page of each, nothing reserves mining.
+- **The pages of RTVE, 3Cat and Telemadrid already publish the outlet's own tags** as
+  `<meta property="article:tag">`, in every one of 40 pages sampled for 3Cat and for Telemadrid. They
+  are the outlet's tags, as the feed's are, and better than any extraction. The page is already read
+  for the lead, so reading them adds no request. These three outlets are the ones that had no tags.
+  They are stored as the outlet published them (`source = 'feed'`: the source means "published with
+  the article", whether in its feed or in its page). RTVC has none in its pages.
+- **No keyword extraction (YAKE).** Only RTVC would have needed it; the author decided not to add a
+  dependency (numpy, networkx, an LGPL licence) and mediocre keywords for one outlet. The `body`
+  source stays in the schema, unused. If a later change reads bodies, it will need its own decision.
+- **The rule is checked on every run, not once** (`ReadPolicy`): robots.txt for our collector and
+  for the known AI crawlers, and a `tdm-reservation` in the page. An outlet that changes what its
+  site allows stops being read with no change in the code. The tags of pages already stored for
+  an outlet are not removed when it stops allowing.
+- The articles of the three outlets collected before this change were given their tags by one run
+  of `python -m datos.news backfill-page-tags` (316 pages, one per second).

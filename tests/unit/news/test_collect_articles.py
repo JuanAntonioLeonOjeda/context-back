@@ -320,3 +320,43 @@ def test_an_item_with_a_link_but_no_valid_tag_links_nothing() -> None:
     [result] = collect_articles([_feed()], [OUTLET], _sources(items), repository)
 
     assert result.inserted == 1 and result.tags_linked == 0
+
+
+def test_a_page_read_for_the_lead_brings_the_tags_the_listing_lacks() -> None:
+    page = FeedItem("T", "https://a.example/news/1", WHEN, "Lead", tags=("Metro", "Madrid"))
+    pages = FakePages({"https://a.example/news/1": page})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    [result] = collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, summary=None)]}, pages), repository
+    )
+
+    assert result.tags_linked == 2
+    assert repository.tagged[("outlet-a", "https://a.example/news/1")] == {"metro", "madrid"}
+
+
+def test_the_tags_of_the_listing_come_before_the_ones_of_the_page() -> None:
+    page = FeedItem("T", "https://a.example/news/1", WHEN, "Lead", tags=("De la página",))
+    pages = FakePages({"https://a.example/news/1": page})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, tags=("Del listado",))]}, pages), repository
+    )
+
+    assert repository.tagged[("outlet-a", "https://a.example/news/1")] == {"del listado"}
+
+
+def test_a_page_that_gave_no_tag_because_the_site_does_not_allow_it_links_nothing() -> None:
+    # The page reader returns no tags where the policy says no: the lead is still read.
+    pages = FakePages({"https://a.example/news/1": FeedItem("T", "u", WHEN, "Lead")})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    [result] = collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, summary=None)]}, pages), repository
+    )
+
+    assert result.inserted == 1 and result.tags_linked == 0

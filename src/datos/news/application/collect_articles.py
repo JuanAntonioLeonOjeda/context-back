@@ -127,7 +127,7 @@ def _collect_feed(
     result.inserted = repository.add_new(list(articles.values()))
     # After the articles exist. Every listed item, not only the new ones: it completes the articles
     # stored before tags did, and a link already there is left alone.
-    result.tags_linked = repository.add_tags(feed.outlet_id, _tags_by_url(listed))
+    result.tags_linked = repository.add_tags(feed.outlet_id, _tags_by_url([*items, *listed]))
     log.info(
         "feed_collected",
         outlet=feed.outlet_id,
@@ -143,7 +143,11 @@ def _collect_feed(
 
 
 def _tags_by_url(items: Sequence[FeedItem]) -> Mapping[str, tuple[Tag, ...]]:
-    """The cleaned tags of the items that have a link and at least one valid tag."""
+    """The cleaned tags of the items that have a link and at least one valid tag.
+
+    The first item that has tags for a link wins: a page read for the lead can bring the tags the
+    listing lacks (ADR-0019), and the listing's own tags come first when it has them.
+    """
     by_url: dict[str, tuple[Tag, ...]] = {}
     for item in items:
         tags = clean_tags(item.tags)

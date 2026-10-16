@@ -1,6 +1,7 @@
 """PostgreSQL storage of outlets and article metadata."""
 
 from collections.abc import Mapping, Sequence
+from datetime import datetime
 
 from sqlalchemy import Engine, text
 
@@ -47,6 +48,18 @@ _LINK_TAG = text(
     """
 )
 
+# The newest first: the ones a labelling sample is most likely to draw. Served by the unique index
+# on (outlet_id, url) for the outlet, then a filter: an outlet holds thousands of articles at most.
+_UNTAGGED_URLS = text(
+    """
+    SELECT a.url FROM articles a
+    WHERE a.outlet_id = :outlet_id AND a.fetched_at >= :since
+      AND NOT EXISTS (SELECT 1 FROM article_tags at WHERE at.article_id = a.id)
+    ORDER BY a.id DESC
+    LIMIT :limit
+    """
+)
+
 _KNOWN_URLS = text("SELECT url FROM articles WHERE outlet_id = :outlet_id AND url = ANY(:urls)")
 
 
@@ -87,6 +100,13 @@ class PgNewsRepository:
                 )
                 inserted += result.rowcount
         return inserted
+
+    def untagged_urls(self, outlet_id: str, *, since: datetime, limit: int) -> list[str]:
+        with self._engine.connect() as connection:
+            rows = connection.execute(
+                _UNTAGGED_URLS, {"outlet_id": outlet_id, "since": since, "limit": limit}
+            )
+            return list(rows.scalars())
 
     def known_urls(self, outlet_id: str, urls: Sequence[str]) -> set[str]:
         if not urls:
