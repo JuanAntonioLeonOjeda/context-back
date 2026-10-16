@@ -34,7 +34,17 @@ def _to_item(entry: Mapping[str, object]) -> FeedItem:
         link=_text(entry, "link"),
         published_at=_utc(entry.get("published_parsed") or entry.get("updated_parsed")),
         summary=_text(entry, "summary"),
+        tags=_tags(entry),
     )
+
+
+def _tags(entry: Mapping[str, object]) -> tuple[str, ...]:
+    # feedparser puts <category> and <media:keywords> together in `tags`, each as {"term": ...}.
+    tags = entry.get("tags")
+    if not isinstance(tags, list):
+        return ()
+    terms = (tag.get("term") for tag in tags if isinstance(tag, Mapping))
+    return tuple(term for term in terms if isinstance(term, str))
 
 
 def _text(entry: Mapping[str, object], key: str) -> str | None:
