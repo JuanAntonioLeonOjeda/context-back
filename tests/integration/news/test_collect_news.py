@@ -10,6 +10,7 @@ from sqlalchemy.engine import make_url
 from datos.http import SourceUnavailableError, build_client
 from datos.news.application.collect_articles import Sources, collect_articles
 from datos.news.domain.outlet import Feed, FeedKind
+from datos.news.domain.tag import clean_tags
 from datos.news.infrastructure.article_page_source import ArticlePageSource
 from datos.news.infrastructure.csv_source import read_outlets
 from datos.news.infrastructure.feed_source_by_kind import FeedSourceByKind
@@ -267,3 +268,36 @@ def test_a_link_made_before_tags_had_a_place_gets_it_and_one_that_has_it_keeps_i
             text("SELECT count(*) FROM article_tags WHERE position IS NULL")
         ).scalar_one()
     assert missing == 0
+
+
+def test_the_untagged_urls_of_an_outlet_are_the_newest_without_tags_since_a_date(
+    engine_url: str,
+) -> None:
+    from datetime import UTC, datetime
+
+    repository = PgNewsRepository(create_engine(engine_url))
+    repository.upsert_outlets(read_outlets(DATA / "outlets.csv"))
+    with create_engine(engine_url).begin() as connection:
+        for outlet, n, fetched in [
+            ("rtve", 1, "2026-10-01"),
+            ("rtve", 2, "2026-10-10"),
+            ("rtve", 3, "2026-10-12"),
+            ("rtve", 4, "2026-10-14"),
+            ("3cat", 5, "2026-10-14"),
+        ]:
+            connection.execute(
+                text(
+                    "INSERT INTO articles (outlet_id, url, published_at, fetched_at, headline)"
+                    " VALUES (:o, :u, :at, :at, 'H')"
+                ),
+                {"o": outlet, "u": f"https://x.example/{n}", "at": f"{fetched}T10:00:00+00:00"},
+            )
+    repository.add_tags("rtve", {"https://x.example/4": clean_tags(["Política"])})
+    since = datetime(2026, 10, 5, tzinfo=UTC)
+
+    assert repository.untagged_urls("rtve", since=since, limit=10) == [
+        "https://x.example/3",
+        "https://x.example/2",
+    ]
+    assert repository.untagged_urls("rtve", since=since, limit=1) == ["https://x.example/3"]
+    assert repository.untagged_urls("3cat", since=since, limit=10) == ["https://x.example/5"]
