@@ -8,6 +8,17 @@ TAGS_IN_TEXT_MAX = 8
 TAGS_LABEL = "Etiquetas:"
 
 
+def tags_line(tags: Sequence[str]) -> str:
+    """The tags as the model reads them ("Etiquetas: Sanidad, Madrid."), or nothing without tags.
+
+    One place, two readers: the text of the model and the screen where the author labels, so the
+    author sees exactly the tags the model gets.
+    """
+    if not tags:
+        return ""
+    return f"{TAGS_LABEL} {', '.join(tags[:TAGS_IN_TEXT_MAX])}."
+
+
 def article_text(headline: str, lead: str | None, tags: Sequence[str] = ()) -> str:
     """The headline, the tags and the lead as one string.
 
@@ -16,9 +27,5 @@ def article_text(headline: str, lead: str | None, tags: Sequence[str] = ()) -> s
     gives worse answers without failing anywhere. `tags` arrive already filtered and in the
     order of the feed: only the first ones are read.
     """
-    parts = [headline]
-    if tags:
-        parts.append(f"{TAGS_LABEL} {', '.join(tags[:TAGS_IN_TEXT_MAX])}.")
-    if lead:
-        parts.append(lead)
-    return " ".join(parts).strip()
+    parts = [headline, tags_line(tags), lead or ""]
+    return " ".join(part for part in parts if part).strip()

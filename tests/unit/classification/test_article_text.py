@@ -1,4 +1,4 @@
-from datos.classification.domain.text import TAGS_IN_TEXT_MAX, article_text
+from datos.classification.domain.text import TAGS_IN_TEXT_MAX, article_text, tags_line
 
 
 def test_without_tags_the_text_is_the_headline_and_the_lead() -> None:
@@ -29,3 +29,10 @@ def test_only_the_first_tags_are_read() -> None:
 
 def test_the_tags_never_push_the_headline_out_of_the_front() -> None:
     assert article_text("Titular", "Entradilla.", ("A",)).startswith("Titular ")
+
+
+def test_the_line_of_tags_is_the_one_the_text_carries() -> None:
+    tags = ("Sanidad", "Madrid")
+
+    assert tags_line(tags) in article_text("Titular", "Entradilla.", tags)
+    assert tags_line(()) == ""

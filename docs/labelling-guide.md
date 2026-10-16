@@ -9,9 +9,10 @@ Status: draft, pending the author's review (task 19).
 
 ## What you see and what you label
 
-- Label **only from the headline and the lead**, the same input the classifiers get. Do not
-  open the link. If the headline and the lead are not enough, the right answer is the
-  one they support, even if the full article says more.
+- Label **only from the headline, the tags and the lead**, the same input the classifiers get.
+  The tags are the ones the outlet published with the article, already filtered (`Etiquetas: …`,
+  at most eight; none when the outlet gives none). Do not open the link. If what you see is not
+  enough, the right answer is the one it supports, even if the full article says more.
 - No model proposal is shown. Label each article on its own, in the order given.
 - Articles in Catalan follow exactly the same rules.
 - If you hesitate for more than a minute, pick the best answer **and** tick `unsure`. Those

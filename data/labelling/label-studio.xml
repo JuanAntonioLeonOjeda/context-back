@@ -1,7 +1,10 @@
 <!-- Label Studio labelling interface for the hand-labelled sets (ADR-0009, docs/labelling-guide.md).
-     Each choice shows its Spanish name and exports its id (alias). The outlet is not shown. -->
+     Each choice shows its Spanish name and exports its id (alias). The outlet is not shown.
+     The headline, the tags (already filtered by tag-stoplist.csv, as the model reads them) and the
+     lead are shown: $tags is a ready line ("Etiquetas: Sanidad, Madrid.") or empty. -->
 <View>
   <Header value="$headline"/>
+  <Text name="tags" value="$tags"/>
   <Text name="lead" value="$lead"/>
   <Header value="Comunidades" size="5"/>
   <Choices name="communities" toName="lead" choice="multiple" showInline="true">

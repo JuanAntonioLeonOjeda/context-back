@@ -176,7 +176,7 @@ def main() -> None:
     engine = build_engine(str(settings.database_url))
     repository = PgClassificationRepository(engine)
     if arguments.command == "sample":
-        _sample(arguments, repository, PgCandidateReader(engine))
+        _sample(arguments, repository, PgCandidateReader(engine), PgArticleTextReader(engine))
         return
     if arguments.command == "train":
         _train(arguments, repository, engine)
@@ -440,6 +440,7 @@ def _sample(
     arguments: argparse.Namespace,
     repository: PgClassificationRepository,
     reader: PgCandidateReader,
+    texts: PgArticleTextReader,
 ) -> None:
     until: datetime = arguments.until
     if until.tzinfo is None:
@@ -475,6 +476,10 @@ def _sample(
         seed=arguments.seed,
         until=until,
         terms_version=file_version(arguments.terms),
+        tags_by_id={
+            i: t.tags for i, t in texts.texts([a.article_id for a in drawn.articles]).items()
+        },
+        tag_stoplist=tag_stoplist_version(),
     )
     log.info("sample_drawn", size=len(drawn.articles), files=[str(p) for p in paths])
 

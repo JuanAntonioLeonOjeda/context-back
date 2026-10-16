@@ -5,7 +5,7 @@ of git (sources audit: the lead is processed, never published)."""
 import csv
 import hashlib
 import json
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -13,6 +13,7 @@ from pydantic import BaseModel, ValidationError
 
 from datos.classification.application.sample_for_labelling import Sample
 from datos.classification.domain.sampling import EnrichmentTerm, MatchKind
+from datos.classification.domain.text import tags_line
 
 LABELLED_SET_DIRS = (Path("data/train"), Path("data/eval"))
 
@@ -74,6 +75,8 @@ def write_sample(
     seed: int,
     until: datetime,
     terms_version: str,
+    tags_by_id: Mapping[int, Sequence[str]],
+    tag_stoplist: str,
 ) -> tuple[Path, Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     tasks_dir.mkdir(parents=True, exist_ok=True)
@@ -104,6 +107,7 @@ def write_sample(
                 "seed": seed,
                 "until": until.isoformat(),
                 "enrichment_terms_version": terms_version,
+                "tag_stoplist_version": tag_stoplist,  # the tags the author saw while labelling
                 "quotas": {
                     o: {"random": q.random, "enriched": q.enriched}
                     for o, q in sample.quotas.items()
@@ -120,7 +124,8 @@ def write_sample(
         + "\n",
         encoding="utf-8",
     )
-    # The labelling tool sees the headline and the lead only, never the outlet (labelling guide).
+    # The labelling tool sees the headline, the tags and the lead, never the outlet (labelling
+    # guide). The tags are the ones the model will read: filtered, in order, at most eight.
     tasks.write_text(
         json.dumps(
             [
@@ -128,6 +133,7 @@ def write_sample(
                     "data": {
                         "article_id": a.article_id,
                         "headline": sample.texts[a.article_id].headline,
+                        "tags": tags_line(tags_by_id.get(a.article_id, ())),
                         "lead": sample.texts[a.article_id].lead or "",
                     }
                 }
