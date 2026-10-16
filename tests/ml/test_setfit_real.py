@@ -7,7 +7,7 @@ is the evaluation of task 18, on the blind test set. Never runs in CI.
 """
 
 import time
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from pathlib import Path
 
 import pytest
@@ -139,6 +139,7 @@ def test_the_training_job_trains_stores_and_describes_a_model_that_can_be_loaded
         sector_ids=SECTORS,
         test_ids=set(),
         texts=Texts(),
+        tag_stoplist="list-v1",
         trainer=SetFitModelTrainer(),
         store=LocalModelStore(tmp_path),
         config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),
@@ -199,6 +200,7 @@ def test_the_learning_curve_trains_and_scores_with_the_real_trainer() -> None:
         config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),
         folds=2,
         threshold=0.5,
+        tag_stoplist="list-v1",
     )
     store = Store()
     plan = plan_curve(
@@ -262,7 +264,7 @@ def test_the_evaluation_runs_with_a_real_trained_model(tmp_path: Path) -> None:
         model_id = "rules"
         model_version = "none"
 
-        def classify(self, headline: str, lead: str | None) -> Labels:
+        def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
             return Labels(frozenset(), frozenset(), frozenset())
 
     card = train_model(
@@ -271,6 +273,7 @@ def test_the_evaluation_runs_with_a_real_trained_model(tmp_path: Path) -> None:
         sector_ids=SECTORS,
         test_ids=set(),
         texts=Texts(),
+        tag_stoplist="list-v1",
         trainer=SetFitModelTrainer(),
         store=LocalModelStore(tmp_path),
         config=TrainingConfig(encoder=ENCODER, seed=42, num_iterations=4, batch_size=8),

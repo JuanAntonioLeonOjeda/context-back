@@ -15,6 +15,7 @@ GOLD = frozenset({"sector:health", "level:ccaa"})
 INFO = RunInfo(
     test_set={"name": "test-set-v1", "file_hash": "abc123", "size": 4},
     rules_version="d74a59205b94",
+    tag_stoplist="list-v1",
     model={"name": "train-set-v1-mpnet-seed42", "version": "f00d"},
     seed=20261105,
     run_at=datetime(2026, 11, 5, 10, 30, tzinfo=UTC),

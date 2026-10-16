@@ -1,6 +1,6 @@
 """The evaluation use case with fake classifiers: what each sees, compares and misses."""
 
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Mapping, Sequence
 
 import pytest
 
@@ -33,7 +33,7 @@ class Fixed:
         self._labels = labels
         self.seen: list[tuple[str, str | None]] = []
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
         self.seen.append((headline, lead))
         return self._labels
 

@@ -128,6 +128,7 @@ def plan_training(
     sector_ids: Collection[str],
     test_ids: Collection[int],
     texts: ArticleTextReader,
+    tag_stoplist: str,
     store: ModelStore,
     config: TrainingConfig,
 ) -> TrainingPlan:
@@ -148,10 +149,17 @@ def plan_training(
         name=name,
         labels=labels,
         texts=tuple(
-            article_text(found[e.article_id].headline, found[e.article_id].lead) for e in ordered
+            article_text(
+                found[e.article_id].headline, found[e.article_id].lead, found[e.article_id].tags
+            )
+            for e in ordered
         ),
         targets=tuple(tuple(multi_hot(e, labels)) for e in ordered),
-        description={"name": training_set.name, "file_hash": training_set.file_hash}
+        description={
+            "name": training_set.name,
+            "file_hash": training_set.file_hash,
+            "tag_stoplist": tag_stoplist,  # the tags the texts were built without
+        }
         | _describe(ordered, labels),
     )
 
@@ -195,6 +203,7 @@ def train_model(
     sector_ids: Collection[str],
     test_ids: Collection[int],
     texts: ArticleTextReader,
+    tag_stoplist: str,
     trainer: ModelTrainer,
     store: ModelStore,
     config: TrainingConfig,
@@ -208,6 +217,7 @@ def train_model(
         sector_ids=sector_ids,
         test_ids=test_ids,
         texts=texts,
+        tag_stoplist=tag_stoplist,
         store=store,
         config=config,
     )

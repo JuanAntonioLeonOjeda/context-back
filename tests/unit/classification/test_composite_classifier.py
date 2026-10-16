@@ -1,5 +1,6 @@
 """The composite classifier of ADR-0016: each family of labels from its assigned classifier."""
 
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -25,7 +26,7 @@ class Fixed:
         self._labels = labels
         self.calls = 0
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
         self.calls += 1
         return self._labels
 

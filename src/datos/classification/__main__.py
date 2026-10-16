@@ -89,6 +89,7 @@ from datos.classification.infrastructure.setfit_trainer import (
     count_pairs,
     device_name,
 )
+from datos.classification.infrastructure.tag_stoplist_file import tag_stoplist_version
 from datos.classification.infrastructure.training_set_file import read_training_set
 from datos.classification.report import (
     duration,
@@ -212,6 +213,7 @@ def _train(
             sector_ids=sector_ids,
             test_ids=labelled_ids([Path("data/eval")]),
             texts=PgArticleTextReader(engine),
+            tag_stoplist=tag_stoplist_version(),
             store=store,
             config=config,
         )
@@ -299,6 +301,7 @@ def _evaluate(
             "size": len(examples),
         },
         rules_version=rules.model_version,
+        tag_stoplist=tag_stoplist_version(),
         model={"name": card["name"], "version": card["model_version"]},
         seed=arguments.seed,
         run_at=datetime.now(UTC),
@@ -322,6 +325,7 @@ def _learning_curve(
         config=config,
         folds=arguments.folds,
         threshold=DEFAULT_THRESHOLD,
+        tag_stoplist=tag_stoplist_version(),
     )
     results = (
         arguments.models_dir / f"{path.stem}-{_encoder_name(config)}-seed{config.seed}-curve.jsonl"
