@@ -61,6 +61,14 @@ ignore_missing_imports = true
 module = ["setfit", "setfit.*", "torch", "torch.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# `transformers` is only imported by the tokenizer test, and it is absent where the ml group is not
+# installed (CI) but present locally with an untyped tokenizer. `follow_imports = "skip"` makes it
+# `Any` in both places, so the test needs no `type: ignore` that would be unused in one of them.
+module = ["transformers", "transformers.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-m 'not integration and not ml' --strict-markers"
