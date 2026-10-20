@@ -37,9 +37,9 @@ def test_a_saved_model_tokenizes_like_its_encoder(tmp_path: Path) -> None:
     )
     model.save_pretrained(str(tmp_path))
 
-    # transformers ships no type information for the tokenizer: it is read through its call only.
-    original = AutoTokenizer.from_pretrained(ENCODER)  # type: ignore[no-untyped-call]
-    saved = AutoTokenizer.from_pretrained(str(tmp_path))  # type: ignore[no-untyped-call]
+    # transformers is `Any` for mypy (see pyproject.toml).
+    original = AutoTokenizer.from_pretrained(ENCODER)
+    saved = AutoTokenizer.from_pretrained(str(tmp_path))
 
     assert (
         saved(TEXTS, truncation=True, max_length=128)["input_ids"]
