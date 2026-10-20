@@ -3,6 +3,29 @@
 Backend and data pipeline of a portal that puts Spanish regional political news in
 context. Work in progress; see `docs/project-brief.md` and `docs/adr/`.
 
+## MAIN DEPENDENCIES
+![Python](https://img.shields.io/badge/PYTHON-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FASTAPI-0.143.0-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Uvicorn](https://img.shields.io/badge/UVICORN-0.54.0-black?style=for-the-badge&logo=gunicorn&logoColor=white)
+![Pydantic](https://img.shields.io/badge/PYDANTIC%20SETTINGS-2.15.0-E92063?style=for-the-badge&logo=pydantic&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLALCHEMY-2.1.4-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![Alembic](https://img.shields.io/badge/ALEMBIC-1.20.0-black?style=for-the-badge)
+![Psycopg](https://img.shields.io/badge/PSYCOPG-3.3.6-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/POSTGRESQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![pgvector](https://img.shields.io/badge/PGVECTOR-0.8.2-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![HTTPX](https://img.shields.io/badge/HTTPX-0.28.1-black?style=for-the-badge)
+![Feedparser](https://img.shields.io/badge/FEEDPARSER-6.0.14-FFA500?style=for-the-badge&logo=rss&logoColor=white)
+![Structlog](https://img.shields.io/badge/STRUCTLOG-26.1.0-black?style=for-the-badge)
+![Shapely](https://img.shields.io/badge/SHAPELY-2.2.0-black?style=for-the-badge)
+![SetFit](https://img.shields.io/badge/SETFIT-1.2.0-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![Sentence Transformers](https://img.shields.io/badge/SENTENCE%20TRANSFORMERS-5.7.0-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![Docker](https://img.shields.io/badge/DOCKER-COMPOSE-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Label Studio](https://img.shields.io/badge/LABEL%20STUDIO-1.23.0-black?style=for-the-badge)
+
+Shapely is only needed to build the map geometry; SetFit and Sentence Transformers belong to the
+optional `ml` group and never ship in the API image. Dev tools: uv, Ruff 0.17.0, mypy 2.4.0, pytest
+9.1.1, Testcontainers.
+
 ## Run everything
 
 With Docker Desktop and the `front` repository next to this one (`datos/back`, `datos/front`):
@@ -18,8 +41,8 @@ The Compose project is called `datos`: it is the whole system, not only this rep
 | `front` | the web app (nginx serves it and forwards `/api` to `back-main`) | http://localhost:3000 |
 | `back-main` | the API; on start it applies the migrations and loads the CSV data | http://localhost:8000/docs |
 | `db` | PostgreSQL with pgvector | `localhost:5432` |
-| `pgadmin` | database browser; the server "datos (local)" is preconfigured, password `datos` | http://localhost:5050 |
 
+- Database browser: one pgAdmin shared by all local projects, in `../../pgadmin` (`docker compose up -d` there; http://localhost:5050; the server "datos (local)" is preconfigured, password `datos`). Start it first: `pgadmin-net` is the network it creates.
 - Stop: `docker compose --profile app down` (the data stays in the `datos_db-data` volume).
 - Only the database, to develop the API locally: `docker compose up -d db`.
 - Reload the CSV data after editing it: `docker compose --profile app restart back-main`.
