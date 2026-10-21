@@ -202,3 +202,61 @@ The input is no longer only the headline and the lead: it is the headline, the t
 published with the article (filtered by `data/classification/tag-stoplist.csv`, at most 8, in the
 feed's order) and the lead, in that order and cut at the encoder's 128 tokens. Decided by the author
 and recorded in ADR-0019 (proposed), which also sets when the article body may be read.
+
+## Amendment (2026-10-21, proposed): what happens when a sector is added
+
+Skeleton drafted by the assistant; the options are proposals and the decision is the author's.
+
+### Context
+
+- The taxonomy has 12 topics and three are live (ADR-0007); `sectors.is_active` (migration 0007)
+  says which ones. The model's labels, the rules and the sampling terms come from the active sectors
+  only.
+- The model is one-vs-rest (one binary head per label, `multi_target_strategy="one-vs-rest"`). A
+  trained model has exactly the labels it was trained with; a new sector has no head in it.
+- The labelling guide says an article with no sector is `none`: "not about public policy in these
+  sectors". It does not tell an article out of every sector from one that belongs to a topic that is
+  planned but not active, and the Label Studio interface cannot record the difference.
+- So the 400 training labels (and the test set) hold, as negatives, articles that a future sector
+  would claim as positives (a transport plan, a court ruling on the environment).
+
+### Options considered
+
+**What to do with the labels already written**
+- **A — keep them and accept the noise.** Pros: no extra work. Cons: for the new sector, every one of
+  its articles in the old set is a false negative, and the model learns that the topic is "none".
+- **B — review only the articles that could belong to the new sector** (found by its enrichment
+  terms) before training it. Pros: the cost is proportional to the sector. Cons: needs the terms
+  first, and the review changes a set whose hash a model's card records.
+- **C — record "other topic" while labelling now** (a new choice, or reuse of `unsure`). Pros: the
+  trace exists from the start. Cons: it changes the interface and the guide before the first label,
+  and `unsure` has another job (the second pass).
+
+**What to do with the model**
+- **D — retrain on all the labels with the new head.** Pros: one model, one version. Cons: hours of
+  training and a new promotion run for every family that changes.
+- **E — train only the new head and keep the others.** Pros: cheaper. Cons: SetFit trains the body
+  and the heads together, so the old heads would not match a new body; not verified for this case.
+
+**What happens to the test set**
+- **F — a new blind test set (v2) for the new sector.** Pros: honest numbers. Cons: another round of
+  hand labelling, and the promotion criteria of this ADR are written for three sectors.
+
+### Decision
+
+_To be written by the author._
+
+### Questions to settle before deciding
+
+1. Does a sector added later start with the rules only, and does the model take it by the same
+   promotion criteria as today, in a later run?
+2. Is a new training set labelled from scratch for all sectors, or only extended?
+3. Does the test set stay frozen (v1) and a new one cover the new sector, or is v1 edited? (It must
+   not be, if it has already been looked at.)
+4. Does the guide change before the first label of the 400, or after?
+
+### Not verified
+
+- What `SetFitClassifier` does when the active sectors grow but the model keeps its old labels: its
+  `_check` rejects a label outside the vocabulary, but a label that is missing from the model's
+  output was not tested.
