@@ -35,7 +35,7 @@ Update the status column when a phase creates or finishes a path.
 | `data/eval/`, `docs/labelling-guide.md` | blind test set (200 hand-labelled articles, never used for training); the guide is done, the set waits for ~3 weeks of collection | 🚧 |
 | `tests/` | `unit/`, `integration/`, `fixtures/` (trimmed real feeds, sitemaps, section pages and article-page metadata) | 🚧 |
 | `docker-compose.yml`, `Dockerfile`, `docker/`, `.dockerignore` | PostgreSQL with pgvector, Label Studio, pgAdmin (profiles `app` and `tools`); profile `app`: `back-main` (the API; on start it applies the migrations and loads the CSV data, `docker/entrypoint.sh`), `collector` (`docker/collector.sh`) (same image; every 3 hours collects the feeds and classifies the new articles, logs JSON to stdout) and `front` (built from `../front`); the Compose project is `datos` | ✅ |
-| `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template (replaced by the `collector` service) | ✅ |
+| `scripts/` | `collect-news.sh` (one collection run, JSON logs in `var/log/`), `launchd/` schedule template (replaced by the `collector` service), `learning-curve.sh` (the learning curve of ADR-0016 on your machine, each point stored when it ends), `show-curve.sh` (the points measured so far as a table, read-only), `train-model.sh` | ✅ |
 | `.env.example` | every environment variable, documented | ✅ |
 | `.github/workflows/ci.yml` | ruff, mypy, unit + integration tests (green on GitHub) | ✅ |
 | `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
