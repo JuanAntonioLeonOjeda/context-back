@@ -1,0 +1,255 @@
+{
+  "families": [
+    {
+      "criterion_1_overall": {
+        "articles": 102,
+        "candidate_macro_f1": 0.5841269841269842,
+        "gain": 0.060317460317460325,
+        "interval_95": {
+          "high": 0.22228354978354944,
+          "low": -0.05629870129870124,
+          "resamples": 2000
+        },
+        "passes": true,
+        "rules_macro_f1": 0.5238095238095238
+      },
+      "criterion_2_outlets": {
+        "outlets": [
+          {
+            "articles": 15,
+            "candidate_right": 14,
+            "difference": 3,
+            "outlet_id": "3cat",
+            "rules_right": 11
+          },
+          {
+            "articles": 15,
+            "candidate_right": 15,
+            "difference": 3,
+            "outlet_id": "abc",
+            "rules_right": 12
+          },
+          {
+            "articles": 15,
+            "candidate_right": 13,
+            "difference": 2,
+            "outlet_id": "canarias7",
+            "rules_right": 11
+          },
+          {
+            "articles": 15,
+            "candidate_right": 13,
+            "difference": 2,
+            "outlet_id": "diario-de-avisos",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 14,
+            "difference": 5,
+            "outlet_id": "el-confidencial",
+            "rules_right": 9
+          },
+          {
+            "articles": 14,
+            "candidate_right": 13,
+            "difference": 1,
+            "outlet_id": "el-espanol",
+            "rules_right": 12
+          },
+          {
+            "articles": 14,
+            "candidate_right": 13,
+            "difference": 1,
+            "outlet_id": "el-mundo",
+            "rules_right": 12
+          },
+          {
+            "articles": 14,
+            "candidate_right": 11,
+            "difference": 3,
+            "outlet_id": "el-pais",
+            "rules_right": 8
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 1,
+            "outlet_id": "la-razon",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": -1,
+            "outlet_id": "la-vanguardia",
+            "rules_right": 13
+          },
+          {
+            "articles": 14,
+            "candidate_right": 13,
+            "difference": 2,
+            "outlet_id": "okdiario",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 1,
+            "outlet_id": "rtvc",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 14,
+            "difference": 4,
+            "outlet_id": "rtve",
+            "rules_right": 10
+          },
+          {
+            "articles": 14,
+            "candidate_right": 13,
+            "difference": 1,
+            "outlet_id": "telemadrid",
+            "rules_right": 12
+          }
+        ],
+        "passes": true
+      },
+      "family": "sector",
+      "promoted": true
+    },
+    {
+      "criterion_1_overall": {
+        "articles": 102,
+        "candidate_macro_f1": 0.3080721747388414,
+        "gain": -0.09470560303893633,
+        "interval_95": {
+          "high": 0.10034184017736646,
+          "low": -0.29524938829286657,
+          "resamples": 2000
+        },
+        "passes": false,
+        "rules_macro_f1": 0.40277777777777773
+      },
+      "criterion_2_outlets": {
+        "outlets": [
+          {
+            "articles": 15,
+            "candidate_right": 11,
+            "difference": 1,
+            "outlet_id": "3cat",
+            "rules_right": 10
+          },
+          {
+            "articles": 15,
+            "candidate_right": 9,
+            "difference": -3,
+            "outlet_id": "abc",
+            "rules_right": 12
+          },
+          {
+            "articles": 15,
+            "candidate_right": 9,
+            "difference": -3,
+            "outlet_id": "canarias7",
+            "rules_right": 12
+          },
+          {
+            "articles": 15,
+            "candidate_right": 11,
+            "difference": 3,
+            "outlet_id": "diario-de-avisos",
+            "rules_right": 8
+          },
+          {
+            "articles": 14,
+            "candidate_right": 10,
+            "difference": -1,
+            "outlet_id": "el-confidencial",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 2,
+            "difference": -2,
+            "outlet_id": "el-espanol",
+            "rules_right": 4
+          },
+          {
+            "articles": 14,
+            "candidate_right": 6,
+            "difference": -2,
+            "outlet_id": "el-mundo",
+            "rules_right": 8
+          },
+          {
+            "articles": 14,
+            "candidate_right": 13,
+            "difference": 3,
+            "outlet_id": "el-pais",
+            "rules_right": 10
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 1,
+            "outlet_id": "la-razon",
+            "rules_right": 11
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 4,
+            "outlet_id": "la-vanguardia",
+            "rules_right": 8
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 0,
+            "outlet_id": "okdiario",
+            "rules_right": 12
+          },
+          {
+            "articles": 14,
+            "candidate_right": 10,
+            "difference": 0,
+            "outlet_id": "rtvc",
+            "rules_right": 10
+          },
+          {
+            "articles": 14,
+            "candidate_right": 9,
+            "difference": -1,
+            "outlet_id": "rtve",
+            "rules_right": 10
+          },
+          {
+            "articles": 14,
+            "candidate_right": 12,
+            "difference": 1,
+            "outlet_id": "telemadrid",
+            "rules_right": 11
+          }
+        ],
+        "passes": false
+      },
+      "family": "level",
+      "promoted": false
+    }
+  ],
+  "model": {
+    "name": "train-set-v3-paraphrase-multilingual-mpnet-base-v2-seed42",
+    "version": "d33978f5b50f"
+  },
+  "rules_version": "d74a59205b94",
+  "run_at": "2026-10-26T12:39:15.308568+00:00",
+  "seed": 20261105,
+  "tag_stoplist": "5ce90a411d3a",
+  "test_set": {
+    "file_hash": "4a613bd981cc",
+    "name": "test-set-v1",
+    "size": 200
+  }
+}
