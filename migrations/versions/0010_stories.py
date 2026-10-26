@@ -64,7 +64,7 @@ def upgrade() -> None:
             run_id     bigint NOT NULL,
             story_id   bigint NOT NULL,
             article_id bigint NOT NULL REFERENCES articles (id),
-            similarity real NOT NULL,           -- cosine to the story's mean vector
+            similarity real NOT NULL,           -- its strongest link in the story
 
             PRIMARY KEY (story_id, article_id),
             FOREIGN KEY (story_id, run_id) REFERENCES stories (id, run_id),

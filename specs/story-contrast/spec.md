@@ -41,7 +41,7 @@ and window give the same stories.
 
 **AC3 — traceability.**
 Given a story, when it is stored, then it records the encoder version, the threshold, the
-window and, for each article, its similarity to the story. Nothing is overwritten: a new run
+window and, for each article, its strongest link inside the story. Nothing is overwritten: a new run
 writes new stories and the reader uses the latest run.
 
 **AC4 — read side.**

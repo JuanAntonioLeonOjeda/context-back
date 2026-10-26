@@ -18,7 +18,7 @@ runs; the API only reads stored rows.
 
 | Layer | File | Role |
 |---|---|---|
-| domain | `grouping.py` | **pure**: given `(article_id, outlet_id, published_at, vector)` and a threshold and window, returns the stories. Cosine similarity, pairs from different outlets inside the window, connected components. No I/O. |
+| domain | `grouping.py` | **pure**: given candidate pairs (ids, outlets, cosine similarity, days apart) and a threshold and window, returns the stories: the links, then connected components. No I/O. |
 | domain | `story.py` | `Story`, `StoryArticle` (similarity to the story), `GroupingSettings` |
 | application | `embed_articles.py` | embeds the articles of the last N days that have no vector for this encoder version |
 | application | `group_stories.py` | reads vectors, calls `grouping`, writes a run |
@@ -34,7 +34,7 @@ runs; the API only reads stored rows.
   unique `(article_id, encoder_version)`. Append-only.
 - `story_runs(id, encoder_version, threshold, window_days, created_at)`.
 - `stories(id, run_id)`; `story_articles(story_id, article_id, similarity)` with
-  `similarity` = cosine to the story's mean vector.
+  `similarity` = the strongest accepted link the article has inside its story (how tied it is, not a quality score).
 - No vector index in the MVP: the job compares only articles inside the window, ~8,500 per week,
   in memory with numpy. An HNSW index is added when the volume asks for it (not now).
 
@@ -45,6 +45,7 @@ runs; the API only reads stored rows.
   C end up together though they are not alike). The first step after the job runs is to read the
   biggest stories on real data; if they chain, the fix is a second pass that cuts a component whose
   articles are not all close to its mean, a change in `grouping.py` only.
+- **The pairs come from pgvector**, not from numpy: a self-join inside the window computes the cosine similarities in the database (no new dependency), and the pure `grouping.py` decides which pairs are links.
 - **Minimum two outlets** per story (AC2). Two articles of the same outlet are not a contrast.
 - **Community and sector by majority** of the stored classification of its articles (more than half);
   with no majority the story has no community and appears nowhere by community.
