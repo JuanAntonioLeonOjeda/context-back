@@ -46,6 +46,7 @@ runs; the API only reads stored rows.
   biggest stories on real data; if they chain, the fix is a second pass that cuts a component whose
   articles are not all close to its mean, a change in `grouping.py` only.
 - **The pairs come from pgvector**, not from numpy: a self-join inside the window computes the cosine similarities in the database (no new dependency), and the pure `grouping.py` decides which pairs are links.
+- **The embedded text is the headline and the lead, without tags**: each outlet writes its own tags (and some none), so they would pull apart the vectors of two outlets covering the same event; this also keeps `stories` from reading the classification module's internals.
 - **Minimum two outlets** per story (AC2). Two articles of the same outlet are not a contrast.
 - **Community and sector by majority** of the stored classification of its articles (more than half);
   with no majority the story has no community and appears nowhere by community.
