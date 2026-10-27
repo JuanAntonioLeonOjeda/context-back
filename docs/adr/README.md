@@ -32,6 +32,7 @@ web and API were merged.
 | [0019](0019-article-tags-as-model-input.md) | The outlet's tags as part of what the model reads; the article body only where the site allows it | Accepted |
 | [0020](0020-story-grouping.md) | Grouping the articles of the same story with embeddings, a threshold and a window | Proposed |
 | [0021](0021-story-links.md) | Linking each story to the earlier story it continues, one parent per story | Proposed |
+| [0022](0022-model-classifies-on-the-author-machine.md) | The promoted model classifies on the author's machine, on a schedule | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
