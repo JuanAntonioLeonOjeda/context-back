@@ -6,6 +6,8 @@
 - `group --threshold T [--window-days N] [--days N]`: groups the articles of the last N days
   (60 by default) into stories with the latest embeddings and stores the run. The threshold has no
   default: it is the author's, and provisional until pairs are labelled (spec, decision 1).
+- `link --threshold T [--window-days N]`: links each story of the latest grouping run to the earlier
+  story it continues (phase history-trace) and stores the run. Same rule for the threshold.
 """
 
 import argparse
@@ -19,14 +21,18 @@ from datos.db import build_engine
 from datos.log_setup import configure_logging
 from datos.stories.application.embed_articles import embed_new
 from datos.stories.application.group_stories import NoEmbeddingsError, group_recent
+from datos.stories.application.link_stories import NoStoriesError, link_stories
 from datos.stories.domain.story import GroupingSettings
+from datos.stories.domain.tree import TreeSettings
 from datos.stories.infrastructure.pg_embedding_repository import PgEmbeddingRepository
+from datos.stories.infrastructure.pg_story_link_repository import PgStoryLinkRepository
 from datos.stories.infrastructure.pg_story_repository import PgStoryRepository
 from datos.stories.infrastructure.sentence_encoder import SentenceEncoder
 
 DEFAULT_ENCODER = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"  # ADR-0016
 EMBED_WINDOW_DAYS = 60  # spec, decision 3
 LINK_WINDOW_DAYS = 3  # spec, decision 1: provisional
+TREE_WINDOW_DAYS = 14  # history-trace plan: provisional
 
 log = structlog.get_logger(__name__)
 
@@ -41,6 +47,9 @@ def main() -> None:
     group.add_argument("--threshold", type=float, required=True)
     group.add_argument("--window-days", type=int, default=LINK_WINDOW_DAYS)
     group.add_argument("--days", type=int, default=EMBED_WINDOW_DAYS)
+    link = commands.add_parser("link", help="link each story to the earlier story it continues")
+    link.add_argument("--threshold", type=float, required=True)
+    link.add_argument("--window-days", type=int, default=TREE_WINDOW_DAYS)
     arguments = parser.parse_args()
 
     settings = load_settings()
@@ -53,6 +62,14 @@ def main() -> None:
         embed_new(
             SentenceEncoder.load(arguments.encoder), PgEmbeddingRepository(engine), since=since
         )
+        return
+    if arguments.command == "link":
+        links = PgStoryLinkRepository(engine)
+        try:
+            link_stories(links, links, TreeSettings(arguments.threshold, arguments.window_days))
+        except NoStoriesError as error:
+            log.error("stories_not_linked", reason=str(error))
+            raise SystemExit(1) from error
         return
     stories = PgStoryRepository(engine)
     try:
