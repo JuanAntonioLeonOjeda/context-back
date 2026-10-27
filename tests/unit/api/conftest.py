@@ -110,6 +110,16 @@ class FakeNews:
         }
         return list(self.articles)
 
+    def latest_per_tree(
+        self, *, territory_id: str, sector_id: str, model_id: str
+    ) -> list[ClassifiedArticle]:
+        self.last_query = {
+            "territory_id": territory_id,
+            "sector_id": sector_id,
+            "model_id": model_id,
+        }
+        return list(self.articles)
+
 
 class FakeStories:
     """Returns its stories as stored; records the last query so tests can check it."""
