@@ -13,6 +13,8 @@ from datos.indicators.application.read_indicators import IndicatorReader
 from datos.indicators.interface.routes import build_indicators_router
 from datos.news.application.community_news import CommunityNewsReader
 from datos.news.interface.routes import build_news_router
+from datos.stories.application.community_stories import CommunityStoriesReader
+from datos.stories.interface.routes import build_stories_router
 from datos.territories.routes import TerritoryReader, build_territories_router
 
 
@@ -23,6 +25,7 @@ def create_app(
     territories: Provider[TerritoryReader],
     indicators: Provider[IndicatorReader],
     news: Provider[CommunityNewsReader],
+    stories: Provider[CommunityStoriesReader],
     clock: Clock,
     geometry: Mapping[str, object],
     classifier_id: str,
@@ -39,6 +42,14 @@ def create_app(
     app.include_router(
         build_news_router(
             news=news,
+            territories=territories,
+            clock=clock,
+            classifier_id=classifier_id,
+        )
+    )
+    app.include_router(
+        build_stories_router(
+            stories=stories,
             territories=territories,
             clock=clock,
             classifier_id=classifier_id,
