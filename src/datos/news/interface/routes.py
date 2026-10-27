@@ -44,6 +44,9 @@ class NewsItemOut(BaseModel):
     url: str
     published_at: datetime
     classified_by: ClassifierOut
+    # The story of the item when it has a tree of related stories; the tree is at
+    # `/stories/{tree_story_id}/tree`.
+    tree_story_id: int | None
 
 
 class CommunityNewsOut(BaseModel):
@@ -102,4 +105,5 @@ def _item(article: ClassifiedArticle) -> NewsItemOut:
         url=article.url,
         published_at=article.published_at,
         classified_by=ClassifierOut(model_id=article.model_id, model_version=article.model_version),
+        tree_story_id=article.tree_story_id,
     )
