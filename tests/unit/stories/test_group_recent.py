@@ -14,6 +14,7 @@ class FakeStories:
         self._version = version
         self._pairs = pairs
         self.runs: list[tuple[str, GroupingSettings, list[Story]]] = []
+        self.run_since: list[datetime] = []
 
     def latest_encoder_version(self) -> str | None:
         return self._version
@@ -24,9 +25,15 @@ class FakeStories:
         return self._pairs
 
     def add_run(
-        self, encoder_version: str, settings: GroupingSettings, stories: list[Story]
+        self,
+        encoder_version: str,
+        settings: GroupingSettings,
+        stories: list[Story],
+        *,
+        since: datetime,
     ) -> int:
         self.runs.append((encoder_version, settings, stories))
+        self.run_since.append(since)
         return len(self.runs)
 
 
@@ -38,6 +45,7 @@ def test_the_run_stores_the_stories_with_the_version_and_settings_it_used() -> N
     assert run_id == 1
     version, settings, stories = fake.runs[0]
     assert (version, settings) == ("v1", SETTINGS)
+    assert fake.run_since == [SINCE]  # the run says how far back it read
     assert [m.article_id for m in stories[0].members] == [1, 2]
 
 

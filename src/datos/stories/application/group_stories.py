@@ -17,7 +17,8 @@ log = structlog.get_logger(__name__)
 
 class CandidatePairReader(Protocol):
     def latest_encoder_version(self) -> str | None:
-        """The encoder version of the most recent embedding, or None with no embeddings."""
+        """The encoder version with the most embeddings (the newest one on a tie), or None with
+        no embeddings: a version just started does not win over the one that covers the articles."""
         ...
 
     def candidate_pairs(
@@ -30,9 +31,15 @@ class CandidatePairReader(Protocol):
 
 class StoryWriter(Protocol):
     def add_run(
-        self, encoder_version: str, settings: GroupingSettings, stories: list[Story]
+        self,
+        encoder_version: str,
+        settings: GroupingSettings,
+        stories: list[Story],
+        *,
+        since: datetime,
     ) -> int:
-        """Store a run with its stories whole or not at all; return the run id."""
+        """Store a run with its stories whole or not at all, and the `since` it read from;
+        return the run id."""
         ...
 
 
@@ -53,7 +60,7 @@ def group_recent(
         raise NoEmbeddingsError("no article has a vector: run `python -m datos.stories embed`")
     pairs = reader.candidate_pairs(encoder_version, since=since, settings=settings)
     stories = group_stories(pairs, settings)
-    run_id = writer.add_run(encoder_version, settings, stories)
+    run_id = writer.add_run(encoder_version, settings, stories, since=since)
     log.info(
         "stories_grouped",
         run_id=run_id,
