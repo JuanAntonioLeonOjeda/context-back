@@ -1,5 +1,6 @@
-"""`GET /communities/{id}/news`: the latest news of a community and sector. Headline, link and
-date only: never the lead (sources audit, section 7), and no party (ADR-0018).
+"""`GET /communities/{id}/news` and `/trees`: the latest news of a community and sector, and its
+trees. Headline, link and date only: never the lead (sources audit, section 7), and no party
+(ADR-0018).
 """
 
 from datetime import date, datetime
@@ -18,9 +19,19 @@ from datos.news.application.community_news import (
     CommunityNewsReader,
     InvalidRangeError,
     community_news,
+    community_trees,
 )
 from datos.territories.routes import TerritoryReader
 from datos.territories.territory import Level
+
+TREES_DESCRIPTION = """
+The trees of related stories that reach this community and sector, one item per tree: the newest
+news of the tree that the active classifier placed there. No dates filter them. `tree_story_id` of
+each item is the story to ask `/stories/{story_id}/tree` for, which answers the whole tree.
+
+**Order:** publication time of that news, newest first; ties by outlet id. The order never depends
+on an outlet's size, audience or line. No item names a party (ADR-0018).
+"""
 
 DESCRIPTION = f"""
 The news of a range of days (Spain time) that the active classifier placed in this community and
@@ -54,6 +65,12 @@ class NewsItemOut(BaseModel):
     # The story of the item when it has a tree of related stories; the tree is at
     # `/stories/{tree_story_id}/tree`.
     tree_story_id: int | None
+
+
+class CommunityTreesOut(BaseModel):
+    territory_id: str
+    sector_id: str
+    items: list[NewsItemOut]
 
 
 class CommunityNewsOut(BaseModel):
@@ -107,6 +124,33 @@ def build_news_router(
             sector_id=result.sector_id,
             since=result.since,
             until=result.until,
+            items=[_item(item) for item in result.items],
+        )
+
+    @router.get(
+        "/communities/{territory_id}/trees",
+        response_model=CommunityTreesOut,
+        description=TREES_DESCRIPTION,
+    )
+    def trees(
+        territory_id: str,
+        sector: Annotated[str, Query(description="A sector id: education, health or housing")],
+        news_reader: Annotated[CommunityNewsReader, Depends(news)],
+        territory_reader: Annotated[TerritoryReader, Depends(territories)],
+    ) -> CommunityTreesOut:
+        if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
+        if sector not in news_reader.sector_ids():
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"unknown sector {sector}")
+        result = community_trees(
+            territory_id=territory_id,
+            sector_id=sector,
+            model_id=classifier_id,
+            news=news_reader,
+        )
+        return CommunityTreesOut(
+            territory_id=result.territory_id,
+            sector_id=result.sector_id,
             items=[_item(item) for item in result.items],
         )
 

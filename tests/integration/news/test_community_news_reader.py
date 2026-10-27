@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -252,6 +253,83 @@ def test_an_item_names_the_story_whose_tree_it_belongs_to_and_only_then(
         with_tree_parent: parent,
         lonely: None,
     }
+
+
+def build_trees(connection: Connection, chains: list[list[int]]) -> list[list[int]]:
+    """One story per article in one grouping run and one tree run; each chain of articles is a
+    tree whose stories are the child of the one before. Returns the story ids of each chain."""
+    run_id = int(
+        connection.execute(
+            text(
+                "INSERT INTO story_runs (encoder_version, threshold, window_days)"
+                " VALUES ('v1', 0.88, 3) RETURNING id"
+            )
+        ).scalar_one()
+    )
+    stories = [[add_story_with_article(connection, run_id, a) for a in chain] for chain in chains]
+    tree_run = int(
+        connection.execute(
+            text(
+                "INSERT INTO story_tree_runs (story_run_id, threshold, window_days)"
+                " VALUES (:run, 0.75, 14) RETURNING id"
+            ),
+            {"run": run_id},
+        ).scalar_one()
+    )
+    for chain in stories:
+        for parent, child in pairwise(chain):
+            connection.execute(
+                text(
+                    "INSERT INTO story_links (tree_run_id, story_run_id, story_id,"
+                    " parent_story_id, similarity) VALUES (:tree, :run, :child, :parent, 0.8)"
+                ),
+                {"tree": tree_run, "run": run_id, "child": child, "parent": parent},
+            )
+    return stories
+
+
+def latest_per_tree(db: Connection) -> list[tuple[int, int | None]]:
+    articles = PgCommunityNewsReader(db).latest_per_tree(
+        territory_id=CANARIAS, sector_id="health", model_id="rules"
+    )
+    return [(a.article_id, a.tree_story_id) for a in articles]
+
+
+def test_a_tree_is_listed_once_by_its_newest_article_in_the_community_and_sector_any_day(
+    connection: Connection,
+) -> None:
+    oldest = add_article(connection, "outlet-a", DAY - timedelta(days=200))
+    middle = add_article(connection, "outlet-b", DAY - timedelta(days=100))
+    newest = add_article(connection, "outlet-a", DAY - timedelta(days=50))
+    elsewhere = add_article(connection, "outlet-b", DAY)  # newer, but in another community
+    for article_id in (oldest, middle, newest):
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+    classify(connection, elsewhere, communities=[MADRID], sectors=["health"])
+    [stories] = build_trees(connection, [[oldest, middle, newest, elsewhere]])
+
+    assert latest_per_tree(connection) == [(newest, stories[2])]
+
+
+def test_two_trees_are_two_items_newest_first_and_an_article_outside_any_tree_is_not_one(
+    connection: Connection,
+) -> None:
+    older = [
+        add_article(connection, "outlet-a", DAY - timedelta(days=30)),
+        add_article(connection, "outlet-b", DAY - timedelta(days=29)),
+    ]
+    newer = [
+        add_article(connection, "outlet-a", DAY - timedelta(days=2)),
+        add_article(connection, "outlet-b", DAY - timedelta(days=1)),
+    ]
+    alone = add_article(connection, "outlet-a", DAY)
+    for article_id in (*older, *newer, alone):
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+    older_stories, newer_stories = build_trees(connection, [older, newer])
+
+    assert latest_per_tree(connection) == [
+        (newer[1], newer_stories[1]),
+        (older[1], older_stories[1]),
+    ]
 
 
 def test_the_end_of_the_range_is_excluded_and_the_start_included(connection: Connection) -> None:

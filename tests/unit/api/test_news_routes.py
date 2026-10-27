@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import UTC, date, datetime
 from typing import Protocol
 from zoneinfo import ZoneInfo
@@ -58,12 +59,12 @@ def test_without_dates_the_reader_is_asked_for_the_last_3_days_in_spain(
         make_client(today=date(2026, 10, 14)).get("/communities/ccaa-05/news?sector=housing").json()
     )
 
-    assert (body["since"], body["until"]) == ("2026-10-12", "2026-10-14")
+    assert (body["since"], body["until"]) == ("2026-10-08", "2026-10-14")
     assert body["items"] == []
     assert news_reader.last_query == {
         "territory_id": "ccaa-05",
         "sector_id": "housing",
-        "since": datetime(2026, 10, 12, tzinfo=SPAIN),
+        "since": datetime(2026, 10, 8, tzinfo=SPAIN),
         "until": datetime(2026, 10, 15, tzinfo=SPAIN),  # the end of the last day, excluded
         "model_id": "rules",
         "per_outlet_per_day": 5,
@@ -84,7 +85,7 @@ def test_a_range_of_dates_is_passed_to_the_reader_with_both_days_included(
     assert news_reader.last_query["until"] == datetime(2026, 10, 4, tzinfo=SPAIN)
 
 
-def test_only_the_first_day_means_until_today_and_only_the_last_means_three_days_back(
+def test_only_the_first_day_means_until_today_and_only_the_last_means_a_week_back(
     make_client: Client,
 ) -> None:
     client = make_client(today=date(2026, 10, 14))
@@ -93,7 +94,7 @@ def test_only_the_first_day_means_until_today_and_only_the_last_means_three_days
     only_to = client.get("/communities/ccaa-05/news?sector=health&date_to=2026-10-05").json()
 
     assert (only_from["since"], only_from["until"]) == ("2026-10-10", "2026-10-14")
-    assert (only_to["since"], only_to["until"]) == ("2026-10-03", "2026-10-05")
+    assert (only_to["since"], only_to["until"]) == ("2026-09-29", "2026-10-05")
 
 
 def test_a_backwards_or_too_long_range_or_a_bad_date_answers_422(make_client: Client) -> None:
@@ -155,3 +156,29 @@ def test_an_item_says_which_story_has_the_tree_it_belongs_to_or_null(make_client
     ).json()
 
     assert [item["tree_story_id"] for item in body["items"]] == [42, None]
+
+
+def test_trees_ask_the_reader_for_the_community_sector_and_classifier_and_name_the_tree(
+    make_client: Client, news_reader: RecordsQuery
+) -> None:
+    tree_item = replace(article(), tree_story_id=37)
+
+    response = make_client(articles=[tree_item]).get("/communities/ccaa-05/trees?sector=health")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert (body["territory_id"], body["sector_id"]) == ("ccaa-05", "health")
+    assert [i["tree_story_id"] for i in body["items"]] == [37]
+    assert set(body["items"][0]) >= {"headline", "url", "published_at", "outlet_name"}
+    assert news_reader.last_query == {
+        "territory_id": "ccaa-05",
+        "sector_id": "health",
+        "model_id": "rules",
+    }
+
+
+def test_trees_of_an_unknown_community_or_sector_are_refused(make_client: Client) -> None:
+    client = make_client()
+
+    assert client.get("/communities/ccaa-99/trees?sector=health").status_code == 404
+    assert client.get("/communities/ccaa-05/trees?sector=nope").status_code == 422

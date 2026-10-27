@@ -10,7 +10,7 @@ from typing import Protocol
 
 from datos.clock import SPAIN
 
-DEFAULT_DAYS = 3  # without dates: today and the 2 days before it, in Spain
+DEFAULT_DAYS = 7  # without dates: today and the 6 days before it, in Spain (the last week)
 MAX_RANGE_DAYS = 31  # the longest range one request may ask for
 PER_OUTLET_PER_DAY = 5
 
@@ -29,6 +29,13 @@ class ClassifiedArticle:
     model_version: str
     # The story of the article when it has a tree of related stories (phase history-trace).
     tree_story_id: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class CommunityTrees:
+    territory_id: str
+    sector_id: str
+    items: tuple[ClassifiedArticle, ...]  # one per tree; `tree_story_id` is always set
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,6 +64,14 @@ class CommunityNewsReader(Protocol):
         classification by `model_id` has this community and sector; at most `per_outlet_per_day`
         per outlet and day in Spain (the newest); newest first, ties by outlet id, then article
         id."""
+        ...
+
+    def latest_per_tree(
+        self, *, territory_id: str, sector_id: str, model_id: str
+    ) -> list[ClassifiedArticle]:
+        """For each tree of related stories (latest tree run) that has an article whose latest
+        classification by `model_id` has this community and sector: the newest of those articles,
+        whatever its day. Newest first, ties by outlet id, then article id."""
         ...
 
 
@@ -90,3 +105,14 @@ def community_news(
         per_outlet_per_day=PER_OUTLET_PER_DAY,
     )
     return CommunityNews(territory_id, sector_id, since, until, tuple(articles))
+
+
+def community_trees(
+    *, territory_id: str, sector_id: str, model_id: str, news: CommunityNewsReader
+) -> CommunityTrees:
+    """The trees of related stories that reach this community and sector, each by its newest
+    article there. No date filters them: a tree is as old as its stories."""
+    articles = news.latest_per_tree(
+        territory_id=territory_id, sector_id=sector_id, model_id=model_id
+    )
+    return CommunityTrees(territory_id, sector_id, tuple(articles))
