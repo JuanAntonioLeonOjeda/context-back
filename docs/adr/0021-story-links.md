@@ -1,6 +1,6 @@
 # ADR-0021: Linking each story to the earlier story it continues, one parent per story
 
-- **Status:** Proposed (drafted with the measurements below; the author confirms the reasoning)
+- **Status:** Accepted (by the author, 2026-10-27)
 - **Date:** 2026-10-27
 - **Phase:** history-trace
 

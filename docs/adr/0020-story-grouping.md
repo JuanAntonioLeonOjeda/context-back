@@ -1,6 +1,6 @@
 # ADR-0020: Grouping the articles of the same story with embeddings, a threshold and a window
 
-- **Status:** Proposed (drafted with the measurements below; the author confirms the reasoning)
+- **Status:** Accepted (by the author, 2026-10-27)
 - **Date:** 2026-10-27
 - **Phase:** story-contrast
 
