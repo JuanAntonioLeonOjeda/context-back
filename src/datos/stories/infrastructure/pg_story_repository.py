@@ -6,8 +6,11 @@ from sqlalchemy import Engine, text
 
 from datos.stories.domain.story import CandidatePair, GroupingSettings, Story
 
+# By coverage, not by recency: a version started a moment ago has few vectors and would group
+# almost nothing; the newest breaks a tie.
 _LATEST_ENCODER_VERSION = text(
-    "SELECT encoder_version FROM article_embeddings ORDER BY created_at DESC LIMIT 1"
+    "SELECT encoder_version FROM article_embeddings"
+    " GROUP BY encoder_version ORDER BY count(*) DESC, max(created_at) DESC LIMIT 1"
 )
 # The cosine similarity is computed here, by pgvector: `<=>` is the cosine distance. There is no
 # vector index on purpose: a join of two columns cannot use one, and the window keeps it bounded.
@@ -30,8 +33,8 @@ _PAIRS = text(
     """
 )
 _INSERT_RUN = text(
-    "INSERT INTO story_runs (encoder_version, threshold, window_days)"
-    " VALUES (:encoder_version, :threshold, :window_days) RETURNING id"
+    "INSERT INTO story_runs (encoder_version, threshold, window_days, since)"
+    " VALUES (:encoder_version, :threshold, :window_days, :since) RETURNING id"
 )
 _INSERT_STORY = text("INSERT INTO stories (run_id) VALUES (:run_id) RETURNING id")
 _INSERT_MEMBER = text(
@@ -72,7 +75,12 @@ class PgStoryRepository:
             ]
 
     def add_run(
-        self, encoder_version: str, settings: GroupingSettings, stories: list[Story]
+        self,
+        encoder_version: str,
+        settings: GroupingSettings,
+        stories: list[Story],
+        *,
+        since: datetime,
     ) -> int:
         with self._engine.begin() as connection:
             run_id = int(
@@ -82,6 +90,7 @@ class PgStoryRepository:
                         "encoder_version": encoder_version,
                         "threshold": settings.threshold,
                         "window_days": settings.window_days,
+                        "since": since,
                     },
                 ).scalar_one()
             )

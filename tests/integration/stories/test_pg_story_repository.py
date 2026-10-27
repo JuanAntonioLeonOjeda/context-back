@@ -101,8 +101,8 @@ def test_a_run_is_stored_whole_and_a_second_run_does_not_touch_the_first(engine:
     pairs = repository.candidate_pairs("v1", since=SINCE, settings=SETTINGS)
     stories = group_stories(pairs, SETTINGS)
 
-    first = repository.add_run("v1", SETTINGS, stories)
-    second = repository.add_run("v1", SETTINGS, stories)
+    first = repository.add_run("v1", SETTINGS, stories, since=SINCE)
+    second = repository.add_run("v1", SETTINGS, stories, since=SINCE)
 
     with engine.connect() as connection:
         rows = connection.execute(
@@ -112,5 +112,25 @@ def test_a_run_is_stored_whole_and_a_second_run_does_not_touch_the_first(engine:
     assert [tuple(r) for r in rows] == [(first, 3), (second, 3)]
 
 
-def test_the_latest_encoder_version_is_the_one_of_the_newest_embedding(engine: Engine) -> None:
+def test_the_run_records_how_far_back_it_read(engine: Engine) -> None:
+    repository = PgStoryRepository(engine)
+    stories = group_stories(
+        repository.candidate_pairs("v1", since=SINCE, settings=SETTINGS), SETTINGS
+    )
+
+    run_id = repository.add_run("v1", SETTINGS, stories, since=SINCE)
+
+    with engine.connect() as connection:
+        stored = connection.execute(
+            text("SELECT since FROM story_runs WHERE id = :id"), {"id": run_id}
+        ).scalar_one()
+    assert stored == SINCE
+
+
+def test_the_encoder_version_is_the_one_with_most_embeddings_not_the_newest(engine: Engine) -> None:
+    assert PgStoryRepository(engine).latest_encoder_version() == "v1"
+
+    # A newer version that has only started covers one article: it must not win.
+    PgEmbeddingRepository(engine).add("encoder", "v2", [(1, vector(1.0))])
+
     assert PgStoryRepository(engine).latest_encoder_version() == "v1"
