@@ -1,8 +1,11 @@
 """Command line: uv run python -m datos.classification <command>
 
-- `classify-new [--rules-dir PATH]`: classifies the articles the rules classifier has not seen yet
-  (a new version of the rules, that is, any change in data/classification/, classifies everything
-  again). Run it after each collection.
+- `classify-new [--rules-dir PATH] [--model DIR [--promote FAMILY ...]]`: classifies the articles
+  the classifier has not seen yet (a new version of the rules, that is, any change in
+  data/classification/, classifies everything again). Run it after each collection. With `--model`
+  the own model (needs the `ml` group, so it runs on the author's machine) takes the promoted
+  families (`sectors` by default, as the evaluation of 2026-10-26 decided) and the rules the rest;
+  the result is stored as the `composite` classifier, beside the rules' rows, which stay.
 - `sample --set train|eval --name NAME --size N --seed S --until ISO-DATETIME [--dry-run]`: draws a
   sample for hand labelling (data/sampling/README.md). Refuses to overwrite a sample: a sample is
   frozen, a new one gets a new name.
@@ -31,6 +34,8 @@ from pathlib import Path
 import structlog
 from sqlalchemy import Engine
 
+from datos.classification.application.classifier import ArticleClassifier
+from datos.classification.application.composite_classifier import Family, promoted_classifier
 from datos.classification.application.evaluate_model import evaluate_model
 from datos.classification.application.learning_curve import (
     CurvePlan,
@@ -124,6 +129,14 @@ def main() -> None:
     commands = parser.add_subparsers(dest="command", required=True)
     classify = commands.add_parser("classify-new", help="classify the articles not seen yet")
     classify.add_argument("--rules-dir", type=Path, default=DEFAULT_RULES_DIR)
+    classify.add_argument("--model", type=Path, default=None, help="a model directory in models/")
+    classify.add_argument(
+        "--promote",
+        nargs="+",
+        choices=[family.value for family in Family],
+        default=[Family.SECTORS.value],
+        help="the families the model gives (default: sectors); the rules give the rest",
+    )
     sample = commands.add_parser("sample", help="draw a sample for hand labelling")
     sample.add_argument("--set", choices=sorted(SET_DIRS), required=True)
     sample.add_argument("--name", required=True, help="e.g. train-sample-v1")
@@ -191,8 +204,17 @@ def main() -> None:
         _learning_curve(arguments, repository, engine)
         return
     try:
-        classifier = load_rules_classifier(arguments.rules_dir, sector_ids=repository.sector_ids())
-    except InvalidRulesFileError as error:
+        sector_ids = repository.sector_ids()
+        classifier: ArticleClassifier = load_rules_classifier(
+            arguments.rules_dir, sector_ids=sector_ids
+        )
+        if arguments.model is not None:
+            classifier = promoted_classifier(
+                classifier,
+                _load_model(arguments.model, sector_ids),
+                [Family(name) for name in arguments.promote],
+            )
+    except (InvalidRulesFileError, FileNotFoundError) as error:
         log.error("articles_not_classified", reason=str(error))
         raise SystemExit(1) from error
     classify_new(classifier, repository)
@@ -266,6 +288,17 @@ def _show_export(assembly: Assembly, sample_size: int, target: Path, *, replaced
     print(f"Written      : {target}{' (replaced)' if replaced else ''}")
 
 
+def _load_model(model_dir: Path, sector_ids: frozenset[str]) -> SetFitClassifier:
+    """The trained model of a directory, as a classifier of sectors and levels."""
+    card = json.loads((model_dir / CARD_FILE).read_text(encoding="utf-8"))
+    return SetFitClassifier(
+        SetFitPredictor.load(model_dir),
+        model_version=card["model_version"],
+        sector_ids=sector_ids,
+        threshold=card["threshold"],
+    )
+
+
 def _evaluate(
     arguments: argparse.Namespace, repository: PgClassificationRepository, engine: Engine
 ) -> None:
@@ -275,12 +308,7 @@ def _evaluate(
     try:
         card = json.loads((model_dir / CARD_FILE).read_text(encoding="utf-8"))
         rules = load_rules_classifier(DEFAULT_RULES_DIR, sector_ids=sector_ids)
-        candidate = SetFitClassifier(
-            SetFitPredictor.load(model_dir),
-            model_version=card["model_version"],
-            sector_ids=sector_ids,
-            threshold=card["threshold"],
-        )
+        candidate = _load_model(model_dir, sector_ids)
         examples = read_training_set(test_set, sector_ids=sector_ids)
         family_verdicts = evaluate_model(
             examples,
