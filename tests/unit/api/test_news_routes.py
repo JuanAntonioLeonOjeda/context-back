@@ -51,22 +51,61 @@ def test_an_item_has_headline_link_date_classifier_and_never_a_party_or_the_lead
     assert (body["territory_id"], body["sector_id"]) == ("ccaa-05", "health")
 
 
-def test_the_reader_is_asked_for_30_days_in_spain_5_per_outlet_and_the_active_classifier(
+def test_without_dates_the_reader_is_asked_for_the_last_3_days_in_spain(
     make_client: Client, news_reader: RecordsQuery
 ) -> None:
     body = (
         make_client(today=date(2026, 10, 14)).get("/communities/ccaa-05/news?sector=housing").json()
     )
 
-    assert body["since"] == "2026-09-15"
+    assert (body["since"], body["until"]) == ("2026-10-12", "2026-10-14")
     assert body["items"] == []
     assert news_reader.last_query == {
         "territory_id": "ccaa-05",
         "sector_id": "housing",
-        "since": datetime(2026, 9, 15, tzinfo=SPAIN),
+        "since": datetime(2026, 10, 12, tzinfo=SPAIN),
+        "until": datetime(2026, 10, 15, tzinfo=SPAIN),  # the end of the last day, excluded
         "model_id": "rules",
-        "per_outlet": 5,
+        "per_outlet_per_day": 5,
     }
+
+
+def test_a_range_of_dates_is_passed_to_the_reader_with_both_days_included(
+    make_client: Client, news_reader: RecordsQuery
+) -> None:
+    body = (
+        make_client(today=date(2026, 10, 14))
+        .get("/communities/ccaa-05/news?sector=health&date_from=2026-10-01&date_to=2026-10-03")
+        .json()
+    )
+
+    assert (body["since"], body["until"]) == ("2026-10-01", "2026-10-03")
+    assert news_reader.last_query["since"] == datetime(2026, 10, 1, tzinfo=SPAIN)
+    assert news_reader.last_query["until"] == datetime(2026, 10, 4, tzinfo=SPAIN)
+
+
+def test_only_the_first_day_means_until_today_and_only_the_last_means_three_days_back(
+    make_client: Client,
+) -> None:
+    client = make_client(today=date(2026, 10, 14))
+
+    only_from = client.get("/communities/ccaa-05/news?sector=health&date_from=2026-10-10").json()
+    only_to = client.get("/communities/ccaa-05/news?sector=health&date_to=2026-10-05").json()
+
+    assert (only_from["since"], only_from["until"]) == ("2026-10-10", "2026-10-14")
+    assert (only_to["since"], only_to["until"]) == ("2026-10-03", "2026-10-05")
+
+
+def test_a_backwards_or_too_long_range_or_a_bad_date_answers_422(make_client: Client) -> None:
+    client = make_client(today=date(2026, 10, 14))
+    base = "/communities/ccaa-05/news?sector=health"
+
+    assert client.get(f"{base}&date_from=2026-10-05&date_to=2026-10-01").status_code == 422
+    assert client.get(f"{base}&date_from=2026-09-01&date_to=2026-10-14").status_code == 422
+    assert (
+        client.get(f"{base}&date_from=2026-09-14&date_to=2026-10-14").status_code == 200
+    )  # 31 days
+    assert client.get(f"{base}&date_from=ayer").status_code == 422
 
 
 def test_an_unknown_community_or_the_state_answers_404(make_client: Client) -> None:

@@ -6,15 +6,16 @@ from sqlalchemy import Connection, text
 
 from datos.news.application.community_news import ClassifiedArticle
 
-# 1. `in_window`: only the articles published since `since` (index on `published_at`), so the
-#    work grows with the window, not with everything ever stored.
+# 1. `in_window`: only the articles published from `since` to `until` (index on `published_at`), so
+#    the work grows with the range, not with everything ever stored.
 # 2. `latest`: the latest classification of each of those by the active classifier, so a new
 #    version of the rules (or the own model) replaces the old labels without configuration.
 #    The window is a property of the article, so filtering by it first gives the same rows. The
 #    community and the sector are not: they are filtered only after the latest classification
 #    is chosen, or an older one that still had them could win over the current one.
-# 3. `matching`: the community and sector asked for, numbered per outlet.
-# 4. At most `per_outlet` per outlet; the order never depends on the outlet's size or line.
+# 3. `matching`: the community and sector asked for, numbered per outlet and day in Spain.
+# 4. At most `per_outlet_per_day` per outlet and day; the order never depends on the outlet's size
+#    or line.
 # 5. `tree_story_id`: the story of the article in the grouping run the latest tree run was made
 #    on, when that story has a link as child or as parent (a tree needs two stories).
 # The lead is never selected: the API must not be able to return it.
@@ -23,7 +24,7 @@ _RECENT = text(
     WITH in_window AS (
         SELECT a.id, a.outlet_id, a.headline, a.url, a.published_at
         FROM articles a
-        WHERE a.published_at >= :since
+        WHERE a.published_at >= :since AND a.published_at < :until
     ),
     latest AS (
         SELECT DISTINCT ON (c.article_id)
@@ -37,7 +38,8 @@ _RECENT = text(
         SELECT w.id, w.outlet_id, o.name AS outlet_name, w.headline, w.url, w.published_at,
                l.model_id, l.model_version,
                row_number() OVER (
-                   PARTITION BY w.outlet_id ORDER BY w.published_at DESC, w.id DESC
+                   PARTITION BY w.outlet_id, (w.published_at AT TIME ZONE 'Europe/Madrid')::date
+                   ORDER BY w.published_at DESC, w.id DESC
                ) AS rank_in_outlet
         FROM latest l
         JOIN in_window w ON w.id = l.article_id
@@ -58,7 +60,7 @@ _RECENT = text(
                 AND sa.story_id IN (l.story_id, l.parent_story_id)
           )
     ) related ON true
-    WHERE m.rank_in_outlet <= :per_outlet
+    WHERE m.rank_in_outlet <= :per_outlet_per_day
     ORDER BY m.published_at DESC, m.outlet_id, m.id DESC
     """
 )
@@ -79,8 +81,9 @@ class PgCommunityNewsReader:
         territory_id: str,
         sector_id: str,
         since: datetime,
+        until: datetime,
         model_id: str,
-        per_outlet: int,
+        per_outlet_per_day: int,
     ) -> list[ClassifiedArticle]:
         rows = self._connection.execute(
             _RECENT,
@@ -88,8 +91,9 @@ class PgCommunityNewsReader:
                 "territory_id": territory_id,
                 "sector_id": sector_id,
                 "since": since,
+                "until": until,
                 "model_id": model_id,
-                "per_outlet": per_outlet,
+                "per_outlet_per_day": per_outlet_per_day,
             },
         )
         return [

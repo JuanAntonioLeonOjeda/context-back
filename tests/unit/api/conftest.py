@@ -96,15 +96,17 @@ class FakeNews:
         territory_id: str,
         sector_id: str,
         since: datetime,
+        until: datetime,
         model_id: str,
-        per_outlet: int,
+        per_outlet_per_day: int,
     ) -> list[ClassifiedArticle]:
         self.last_query = {
             "territory_id": territory_id,
             "sector_id": sector_id,
             "since": since,
+            "until": until,
             "model_id": model_id,
-            "per_outlet": per_outlet,
+            "per_outlet_per_day": per_outlet_per_day,
         }
         return list(self.articles)
 

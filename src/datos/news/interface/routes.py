@@ -11,18 +11,25 @@ from pydantic import BaseModel
 from datos.api.provider import Provider
 from datos.clock import Clock
 from datos.news.application.community_news import (
-    PER_OUTLET,
-    WINDOW_DAYS,
+    DEFAULT_DAYS,
+    MAX_RANGE_DAYS,
+    PER_OUTLET_PER_DAY,
     ClassifiedArticle,
     CommunityNewsReader,
+    InvalidRangeError,
     community_news,
 )
 from datos.territories.routes import TerritoryReader
 from datos.territories.territory import Level
 
 DESCRIPTION = f"""
-The news of the last {WINDOW_DAYS} days (today included, Spain time) that the active classifier
-placed in this community and sector, at most {PER_OUTLET} per outlet (its newest).
+The news of a range of days (Spain time) that the active classifier placed in this community and
+sector. Without dates: the last {DEFAULT_DAYS} days, today included. With `date_from` and/or
+`date_to` (ISO dates, both included): that range, of at most {MAX_RANGE_DAYS} days. At most
+{PER_OUTLET_PER_DAY} per outlet and day (its newest).
+
+Nothing is deleted: any day the collector ran can be asked for. A day it did not run, or before the
+portal began collecting, answers an empty list, not an error.
 
 **Order:** publication time, newest first; ties by outlet id. The order never depends on an
 outlet's size, audience or line.
@@ -53,6 +60,7 @@ class CommunityNewsOut(BaseModel):
     territory_id: str
     sector_id: str
     since: date
+    until: date
     items: list[NewsItemOut]
 
 
@@ -75,22 +83,30 @@ def build_news_router(
         sector: Annotated[str, Query(description="A sector id: education, health or housing")],
         news_reader: Annotated[CommunityNewsReader, Depends(news)],
         territory_reader: Annotated[TerritoryReader, Depends(territories)],
+        date_from: Annotated[date | None, Query(description="First day, ISO date")] = None,
+        date_to: Annotated[date | None, Query(description="Last day, ISO date")] = None,
     ) -> CommunityNewsOut:
         if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
         if sector not in news_reader.sector_ids():
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"unknown sector {sector}")
-        result = community_news(
-            territory_id=territory_id,
-            sector_id=sector,
-            today=clock.today(),
-            model_id=classifier_id,
-            news=news_reader,
-        )
+        try:
+            result = community_news(
+                territory_id=territory_id,
+                sector_id=sector,
+                today=clock.today(),
+                date_from=date_from,
+                date_to=date_to,
+                model_id=classifier_id,
+                news=news_reader,
+            )
+        except InvalidRangeError as error:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(error)) from error
         return CommunityNewsOut(
             territory_id=result.territory_id,
             sector_id=result.sector_id,
             since=result.since,
+            until=result.until,
             items=[_item(item) for item in result.items],
         )
 
