@@ -11,6 +11,7 @@ from datos.territories.repository import PgTerritoryRepository
 pytestmark = pytest.mark.integration
 
 SINCE = datetime(2026, 9, 15, tzinfo=UTC)
+UNTIL = datetime(2026, 11, 15, tzinfo=UTC)
 DAY = datetime(2026, 10, 10, 9, 0, tzinfo=UTC)
 CANARIAS, MADRID = "ccaa-05", "ccaa-13"
 
@@ -88,8 +89,9 @@ def recent(db: Connection, territory_id: str = CANARIAS, sector_id: str = "healt
         territory_id=territory_id,
         sector_id=sector_id,
         since=SINCE,
+        until=UNTIL,
         model_id="rules",
-        per_outlet=5,
+        per_outlet_per_day=5,
     )
     return [a.article_id for a in articles]
 
@@ -158,7 +160,12 @@ def test_maps_the_row_with_outlet_name_and_classifier(connection: Connection) ->
     )
 
     [article] = PgCommunityNewsReader(connection).recent(
-        territory_id=CANARIAS, sector_id="health", since=SINCE, model_id="rules", per_outlet=5
+        territory_id=CANARIAS,
+        sector_id="health",
+        since=SINCE,
+        until=UNTIL,
+        model_id="rules",
+        per_outlet_per_day=5,
     )
 
     assert article.outlet_name == "Outlet A"
@@ -193,7 +200,12 @@ def add_story_with_article(db: Connection, run_id: int, article_id: int) -> int:
 
 def tree_story_ids(db: Connection) -> dict[int, int | None]:
     articles = PgCommunityNewsReader(db).recent(
-        territory_id=CANARIAS, sector_id="health", since=SINCE, model_id="rules", per_outlet=5
+        territory_id=CANARIAS,
+        sector_id="health",
+        since=SINCE,
+        until=UNTIL,
+        model_id="rules",
+        per_outlet_per_day=5,
     )
     return {a.article_id: a.tree_story_id for a in articles}
 
@@ -240,3 +252,46 @@ def test_an_item_names_the_story_whose_tree_it_belongs_to_and_only_then(
         with_tree_parent: parent,
         lonely: None,
     }
+
+
+def test_the_end_of_the_range_is_excluded_and_the_start_included(connection: Connection) -> None:
+    first = add_article(connection, "outlet-a", DAY)
+    last_second = add_article(connection, "outlet-a", DAY + timedelta(hours=1))
+    at_the_end = add_article(connection, "outlet-a", DAY + timedelta(hours=2))
+    for article_id in (first, last_second, at_the_end):
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+
+    articles = PgCommunityNewsReader(connection).recent(
+        territory_id=CANARIAS,
+        sector_id="health",
+        since=DAY,
+        until=DAY + timedelta(hours=2),
+        model_id="rules",
+        per_outlet_per_day=5,
+    )
+
+    assert [a.article_id for a in articles] == [last_second, first]
+
+
+def test_the_cap_is_per_outlet_and_per_day_in_spain_not_per_range(connection: Connection) -> None:
+    today = [add_article(connection, "outlet-a", DAY + timedelta(minutes=m)) for m in range(7)]
+    yesterday = [
+        add_article(connection, "outlet-a", DAY - timedelta(days=1) + timedelta(minutes=m))
+        for m in range(7)
+    ]
+    for article_id in [*today, *yesterday]:
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+
+    assert recent(connection) == [*reversed(today[2:]), *reversed(yesterday[2:])]
+
+
+def test_a_day_is_a_day_in_spain_not_in_utc(connection: Connection) -> None:
+    # 22:30 UTC on the 10th is 00:30 on the 11th in Spain (CEST): a different day from 09:00 UTC.
+    late = datetime(2026, 10, 10, 22, 30, tzinfo=UTC)
+    morning = [add_article(connection, "outlet-a", DAY + timedelta(minutes=m)) for m in range(5)]
+    after_midnight = add_article(connection, "outlet-a", late)
+    for article_id in [*morning, after_midnight]:
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+
+    assert after_midnight in recent(connection)
+    assert len(recent(connection)) == 6

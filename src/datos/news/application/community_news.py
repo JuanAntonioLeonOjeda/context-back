@@ -10,8 +10,9 @@ from typing import Protocol
 
 from datos.clock import SPAIN
 
-WINDOW_DAYS = 30  # today and the 29 days before it, in Spain
-PER_OUTLET = 5
+DEFAULT_DAYS = 3  # without dates: today and the 2 days before it, in Spain
+MAX_RANGE_DAYS = 31  # the longest range one request may ask for
+PER_OUTLET_PER_DAY = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,7 +35,8 @@ class ClassifiedArticle:
 class CommunityNews:
     territory_id: str
     sector_id: str
-    since: date  # the first day of the window, in Spain
+    since: date  # the first day of the range, in Spain
+    until: date  # the last day of the range, in Spain
     items: tuple[ClassifiedArticle, ...]
 
 
@@ -47,13 +49,19 @@ class CommunityNewsReader(Protocol):
         territory_id: str,
         sector_id: str,
         since: datetime,
+        until: datetime,
         model_id: str,
-        per_outlet: int,
+        per_outlet_per_day: int,
     ) -> list[ClassifiedArticle]:
-        """Articles published since `since` whose latest classification by `model_id` has this
-        community and sector; at most `per_outlet` per outlet (the newest); newest first, ties
-        by outlet id, then article id."""
+        """Articles published from `since` (included) to `until` (excluded) whose latest
+        classification by `model_id` has this community and sector; at most `per_outlet_per_day`
+        per outlet and day in Spain (the newest); newest first, ties by outlet id, then article
+        id."""
         ...
+
+
+class InvalidRangeError(ValueError):
+    """The dates asked for are not a range this service answers."""
 
 
 def community_news(
@@ -61,15 +69,24 @@ def community_news(
     territory_id: str,
     sector_id: str,
     today: date,
+    date_from: date | None,
+    date_to: date | None,
     model_id: str,
     news: CommunityNewsReader,
 ) -> CommunityNews:
-    since = today - timedelta(days=WINDOW_DAYS - 1)
+    """The news of a range of days in Spain: the last `DEFAULT_DAYS` ending today by default."""
+    until = date_to or today
+    since = date_from or until - timedelta(days=DEFAULT_DAYS - 1)
+    if since > until:
+        raise InvalidRangeError("the first day is after the last day")
+    if (until - since).days + 1 > MAX_RANGE_DAYS:
+        raise InvalidRangeError(f"a range is at most {MAX_RANGE_DAYS} days")
     articles = news.recent(
         territory_id=territory_id,
         sector_id=sector_id,
         since=datetime.combine(since, time.min, tzinfo=SPAIN),
+        until=datetime.combine(until + timedelta(days=1), time.min, tzinfo=SPAIN),
         model_id=model_id,
-        per_outlet=PER_OUTLET,
+        per_outlet_per_day=PER_OUTLET_PER_DAY,
     )
-    return CommunityNews(territory_id, sector_id, since, tuple(articles))
+    return CommunityNews(territory_id, sector_id, since, until, tuple(articles))
