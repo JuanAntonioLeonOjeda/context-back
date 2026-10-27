@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     database_url: PostgresDsn
     log_level: LogLevel = LogLevel.INFO
     log_json: bool = True
-    # Whose stored classifications the news API reads (ADR-0015): 'rules' until the own model
-    # is promoted.
-    active_classifier_id: str = "rules"
+    # Whose stored classifications the news API reads (ADR-0015, ADR-0022): 'composite' (the own
+    # model's sectors with the rules' communities and levels); 'rules' goes back to the rules alone.
+    active_classifier_id: str = "composite"
 
 
 def load_settings() -> Settings:
