@@ -12,6 +12,7 @@ from datos.governments.domain.government_term import GovernmentTerm, PartyRole, 
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
 from datos.news.application.community_news import ClassifiedArticle
+from datos.stories.application.community_stories import CommunityStory, StoryRun
 from datos.territories.territory import Level, Territory
 
 TODAY = date(2026, 10, 13)
@@ -106,6 +107,39 @@ class FakeNews:
         return list(self.articles)
 
 
+class FakeStories:
+    """Returns its stories as stored; records the last query so tests can check it."""
+
+    def __init__(self) -> None:
+        self.run: StoryRun | None = None
+        self.found: list[CommunityStory] = []
+        self.last_query: dict[str, object] = {}
+
+    def sector_ids(self) -> frozenset[str]:
+        return frozenset({"education", "health", "housing"})
+
+    def latest_run(self) -> StoryRun | None:
+        return self.run
+
+    def stories(
+        self,
+        *,
+        run_id: int,
+        territory_id: str,
+        sector_id: str | None,
+        since: datetime,
+        model_id: str,
+    ) -> list[CommunityStory]:
+        self.last_query = {
+            "run_id": run_id,
+            "territory_id": territory_id,
+            "sector_id": sector_id,
+            "since": since,
+            "model_id": model_id,
+        }
+        return list(self.found)
+
+
 GEOMETRY: dict[str, object] = {"type": "FeatureCollection", "attribution": "test", "features": []}
 
 TERRITORIES = [
@@ -167,18 +201,27 @@ def news_reader() -> FakeNews:
 
 
 @pytest.fixture
-def make_client(news_reader: FakeNews) -> Callable[..., TestClient]:
+def stories_reader() -> FakeStories:
+    return FakeStories()
+
+
+@pytest.fixture
+def make_client(news_reader: FakeNews, stories_reader: FakeStories) -> Callable[..., TestClient]:
     def make(
         *,
         reachable: bool = True,
         terms: list[GovernmentTerm] = TERMS,
         today: date = TODAY,
         articles: list[ClassifiedArticle] | None = None,
+        run: StoryRun | None = None,
+        stories: list[CommunityStory] | None = None,
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
         indicators = FakeIndicators(INDICATORS, VALUES)
         news_reader.articles = articles or []
+        stories_reader.run = run
+        stories_reader.found = stories or []
         return TestClient(
             create_app(
                 FixedProbe(reachable=reachable),
@@ -186,6 +229,7 @@ def make_client(news_reader: FakeNews) -> Callable[..., TestClient]:
                 territories=lambda: territories,
                 indicators=lambda: indicators,
                 news=lambda: news_reader,
+                stories=lambda: stories_reader,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
                 classifier_id="rules",

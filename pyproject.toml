@@ -56,9 +56,18 @@ module = "datasets"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-# SetFit ships no type information, and torch is absent where the ml group is not installed (CI). The predictor reads its model through a Protocol
-# (src/datos/classification/infrastructure/setfit_predictor.py), never as typed SetFit objects.
-module = ["setfit", "setfit.*", "torch", "torch.*"]
+# SetFit ships no type information, and torch and sentence-transformers are absent where the ml
+# group is not installed (CI). The predictor and the sentence encoder read their model through a
+# Protocol (classification/infrastructure/setfit_predictor.py and
+# stories/infrastructure/sentence_encoder.py), never as typed library objects.
+module = [
+  "setfit",
+  "setfit.*",
+  "torch",
+  "torch.*",
+  "sentence_transformers",
+  "sentence_transformers.*",
+]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

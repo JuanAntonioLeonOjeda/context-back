@@ -8,6 +8,7 @@ HEAVY = ("setfit", "torch", "sentence_transformers", "transformers", "datasets")
 ADAPTERS = [
     Path("src/datos/classification/infrastructure/setfit_predictor.py"),
     Path("src/datos/classification/infrastructure/setfit_trainer.py"),
+    Path("src/datos/stories/infrastructure/sentence_encoder.py"),
 ]
 
 
@@ -41,7 +42,7 @@ def test_no_module_imports_the_heavy_libraries_at_the_top_level() -> None:
     assert offenders == []
 
 
-def test_only_the_two_setfit_adapters_import_them_at_all() -> None:
+def test_only_the_ml_adapters_import_them_at_all() -> None:
     pattern = re.compile(rf"^\s*(from|import)\s+({'|'.join(HEAVY)})\b", re.MULTILINE)
 
     importers = [
