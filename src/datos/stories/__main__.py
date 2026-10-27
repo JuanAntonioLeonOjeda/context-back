@@ -55,12 +55,11 @@ def main() -> None:
     settings = load_settings()
     configure_logging(settings.log_level, as_json=settings.log_json)
     engine = build_engine(str(settings.database_url))
-    since = datetime.combine(SystemClock().today(), time.min, tzinfo=SPAIN) - timedelta(
-        days=arguments.days
-    )
     if arguments.command == "embed":
         embed_new(
-            SentenceEncoder.load(arguments.encoder), PgEmbeddingRepository(engine), since=since
+            SentenceEncoder.load(arguments.encoder),
+            PgEmbeddingRepository(engine),
+            since=_days_ago(arguments.days),
         )
         return
     if arguments.command == "link":
@@ -77,11 +76,16 @@ def main() -> None:
             stories,
             stories,
             GroupingSettings(arguments.threshold, arguments.window_days),
-            since=since,
+            since=_days_ago(arguments.days),
         )
     except NoEmbeddingsError as error:
         log.error("stories_not_grouped", reason=str(error))
         raise SystemExit(1) from error
+
+
+def _days_ago(days: int) -> datetime:
+    """The start of the day `days` days before today in Spain."""
+    return datetime.combine(SystemClock().today(), time.min, tzinfo=SPAIN) - timedelta(days=days)
 
 
 if __name__ == "__main__":
