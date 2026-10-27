@@ -9,6 +9,7 @@ from datos.classification.application.composite_classifier import (
     EVIDENCE_PREFIX,
     CompositeClassifier,
     Family,
+    promoted_classifier,
 )
 from datos.classification.domain.labels import Evidence, Labels, Score
 from datos.classification.infrastructure.rules_classifier import load_rules_classifier
@@ -141,3 +142,19 @@ def test_the_rules_give_no_scores_and_the_composite_of_the_rules_neither() -> No
 
     assert RULES.classify("titular", None).scores == ()
     assert composite.classify("titular", None).scores == ()
+
+
+def test_promotion_gives_the_model_only_the_families_asked_for() -> None:
+    rules = Fixed(
+        "rules", Labels(frozenset({"ccaa-05"}), frozenset({"housing"}), frozenset({CCAA}))
+    )
+    model = Fixed("setfit", Labels(frozenset(), frozenset({"health"}), frozenset({STATE})))
+
+    classifier = promoted_classifier(rules, model, [Family.SECTORS])
+    labels = classifier.classify("headline", None)
+
+    assert labels.sectors == frozenset({"health"})  # from the model
+    assert labels.communities == frozenset({"ccaa-05"})  # from the rules
+    assert labels.levels == frozenset({CCAA})  # from the rules: levels were not promoted
+    assert classifier.model_id == "composite"
+    assert classifier.model_version == "communities=rules@v1;sectors=setfit@v1;levels=rules@v1"
