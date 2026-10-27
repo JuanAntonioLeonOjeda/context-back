@@ -1,6 +1,6 @@
 # ADR-0022: The promoted model classifies on the author's machine, on a schedule
 
-- **Status:** Proposed (the author chose option A on 2026-10-27; the reasoning is theirs to confirm)
+- **Status:** Accepted (by the author, 2026-10-27)
 - **Date:** 2026-10-27
 - **Phase:** news-live (left open by ADR-0016, "where the model classifies once promoted")
 
