@@ -45,6 +45,7 @@ def test_an_item_has_headline_link_date_classifier_and_never_a_party_or_the_lead
         "url",
         "published_at",
         "classified_by",
+        "tree_story_id",
     }  # no party, no lead (ADR-0018, sources audit)
     assert item["classified_by"] == {"model_id": "rules", "model_version": "216d8cbc0b67"}
     assert (body["territory_id"], body["sector_id"]) == ("ccaa-05", "health")
@@ -95,3 +96,23 @@ def test_the_description_points_to_the_governments_endpoint_by_its_path(
 
     assert "`/communities/{territory_id}/governments`" in operation["description"]
     assert "built-in" not in operation["description"]
+
+
+def test_an_item_says_which_story_has_the_tree_it_belongs_to_or_null(make_client: Client) -> None:
+    with_tree = ClassifiedArticle(
+        article_id=2,
+        outlet_id="outlet-b",
+        outlet_name="Outlet B",
+        headline="Headline",
+        url="https://outlet-b.example/2",
+        published_at=datetime(2026, 10, 12, 9, 0, tzinfo=UTC),
+        model_id="rules",
+        model_version="216d8cbc0b67",
+        tree_story_id=42,
+    )
+
+    body = (
+        make_client(articles=[with_tree, article()]).get("/communities/ccaa-05/news?sector=health")
+    ).json()
+
+    assert [item["tree_story_id"] for item in body["items"]] == [42, None]

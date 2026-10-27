@@ -26,6 +26,8 @@ class ClassifiedArticle:
     published_at: datetime
     model_id: str
     model_version: str
+    # The story of the article when it has a tree of related stories (phase history-trace).
+    tree_story_id: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

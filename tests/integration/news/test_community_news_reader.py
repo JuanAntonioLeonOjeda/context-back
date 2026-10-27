@@ -173,3 +173,70 @@ def test_lists_the_active_sectors_of_the_database(connection: Connection) -> Non
     )
 
     assert PgCommunityNewsReader(connection).sector_ids() == {"education", "health", "housing"}
+
+
+def add_story_with_article(db: Connection, run_id: int, article_id: int) -> int:
+    story_id = int(
+        db.execute(
+            text("INSERT INTO stories (run_id) VALUES (:run) RETURNING id"), {"run": run_id}
+        ).scalar_one()
+    )
+    db.execute(
+        text(
+            "INSERT INTO story_articles (run_id, story_id, article_id, similarity)"
+            " VALUES (:run, :story, :article, 0.9)"
+        ),
+        {"run": run_id, "story": story_id, "article": article_id},
+    )
+    return story_id
+
+
+def tree_story_ids(db: Connection) -> dict[int, int | None]:
+    articles = PgCommunityNewsReader(db).recent(
+        territory_id=CANARIAS, sector_id="health", since=SINCE, model_id="rules", per_outlet=5
+    )
+    return {a.article_id: a.tree_story_id for a in articles}
+
+
+def test_an_item_names_the_story_whose_tree_it_belongs_to_and_only_then(
+    connection: Connection,
+) -> None:
+    with_tree_child = add_article(connection, "outlet-a", DAY)
+    with_tree_parent = add_article(connection, "outlet-b", DAY + timedelta(hours=1))
+    lonely = add_article(connection, "outlet-a", DAY + timedelta(hours=2))
+    for article_id in (with_tree_child, with_tree_parent, lonely):
+        classify(connection, article_id, communities=[CANARIAS], sectors=["health"])
+    run_id = int(
+        connection.execute(
+            text(
+                "INSERT INTO story_runs (encoder_version, threshold, window_days)"
+                " VALUES ('v1', 0.88, 3) RETURNING id"
+            )
+        ).scalar_one()
+    )
+    child = add_story_with_article(connection, run_id, with_tree_child)
+    parent = add_story_with_article(connection, run_id, with_tree_parent)
+    add_story_with_article(connection, run_id, lonely)
+    assert set(tree_story_ids(connection).values()) == {None}  # no tree run yet
+    tree_run = int(
+        connection.execute(
+            text(
+                "INSERT INTO story_tree_runs (story_run_id, threshold, window_days)"
+                " VALUES (:run, 0.75, 14) RETURNING id"
+            ),
+            {"run": run_id},
+        ).scalar_one()
+    )
+    connection.execute(
+        text(
+            "INSERT INTO story_links (tree_run_id, story_run_id, story_id, parent_story_id,"
+            " similarity) VALUES (:tree, :run, :child, :parent, 0.8)"
+        ),
+        {"tree": tree_run, "run": run_id, "child": child, "parent": parent},
+    )
+
+    assert tree_story_ids(connection) == {
+        with_tree_child: child,
+        with_tree_parent: parent,
+        lonely: None,
+    }

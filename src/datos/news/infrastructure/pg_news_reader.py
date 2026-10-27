@@ -15,6 +15,8 @@ from datos.news.application.community_news import ClassifiedArticle
 #    is chosen, or an older one that still had them could win over the current one.
 # 3. `matching`: the community and sector asked for, numbered per outlet.
 # 4. At most `per_outlet` per outlet; the order never depends on the outlet's size or line.
+# 5. `tree_story_id`: the story of the article in the grouping run the latest tree run was made
+#    on, when that story has a link as child or as parent (a tree needs two stories).
 # The lead is never selected: the API must not be able to return it.
 _RECENT = text(
     """
@@ -43,9 +45,21 @@ _RECENT = text(
         WHERE :territory_id = ANY (l.communities)
           AND :sector_id = ANY (l.sectors)
     )
-    SELECT * FROM matching
-    WHERE rank_in_outlet <= :per_outlet
-    ORDER BY published_at DESC, outlet_id, id DESC
+    SELECT m.*, related.story_id AS tree_story_id
+    FROM matching m
+    LEFT JOIN LATERAL (
+        SELECT sa.story_id
+        FROM story_tree_runs t
+        JOIN story_articles sa ON sa.run_id = t.story_run_id AND sa.article_id = m.id
+        WHERE t.id = (SELECT id FROM story_tree_runs ORDER BY created_at DESC, id DESC LIMIT 1)
+          AND EXISTS (
+              SELECT 1 FROM story_links l
+              WHERE l.tree_run_id = t.id
+                AND sa.story_id IN (l.story_id, l.parent_story_id)
+          )
+    ) related ON true
+    WHERE m.rank_in_outlet <= :per_outlet
+    ORDER BY m.published_at DESC, m.outlet_id, m.id DESC
     """
 )
 # Active only: a planned sector has no news, so `?sector=` must not accept it.
@@ -88,6 +102,7 @@ class PgCommunityNewsReader:
                 published_at=row.published_at,
                 model_id=row.model_id,
                 model_version=row.model_version,
+                tree_story_id=row.tree_story_id,
             )
             for row in rows
         ]

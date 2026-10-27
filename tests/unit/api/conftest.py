@@ -1,6 +1,6 @@
 """Fakes of the API ports and a client factory, so router tests need no database."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
@@ -12,7 +12,9 @@ from datos.governments.domain.government_term import GovernmentTerm, PartyRole, 
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
 from datos.news.application.community_news import ClassifiedArticle
-from datos.stories.application.community_stories import CommunityStory, StoryRun
+from datos.stories.application.community_stories import CommunityStory, StoryArticle, StoryRun
+from datos.stories.application.story_tree import TreeRun
+from datos.stories.domain.tree import StoryLink
 from datos.territories.territory import Level, Territory
 
 TODAY = date(2026, 10, 13)
@@ -140,6 +142,26 @@ class FakeStories:
         return list(self.found)
 
 
+class FakeTrees:
+    """Serves one tree run, its links and the articles of its stories."""
+
+    def __init__(self) -> None:
+        self.run: TreeRun | None = None
+        self.link_rows: list[StoryLink] = []
+        self.articles: dict[int, tuple[StoryArticle, ...]] = {}
+
+    def latest_tree_run(self) -> TreeRun | None:
+        return self.run
+
+    def links(self, tree_run_id: int) -> list[StoryLink]:
+        return list(self.link_rows)
+
+    def story_articles(
+        self, story_run_id: int, story_ids: Sequence[int]
+    ) -> Mapping[int, tuple[StoryArticle, ...]]:
+        return {i: self.articles[i] for i in story_ids}
+
+
 GEOMETRY: dict[str, object] = {"type": "FeatureCollection", "attribution": "test", "features": []}
 
 TERRITORIES = [
@@ -206,7 +228,14 @@ def stories_reader() -> FakeStories:
 
 
 @pytest.fixture
-def make_client(news_reader: FakeNews, stories_reader: FakeStories) -> Callable[..., TestClient]:
+def trees_reader() -> FakeTrees:
+    return FakeTrees()
+
+
+@pytest.fixture
+def make_client(
+    news_reader: FakeNews, stories_reader: FakeStories, trees_reader: FakeTrees
+) -> Callable[..., TestClient]:
     def make(
         *,
         reachable: bool = True,
@@ -230,6 +259,7 @@ def make_client(news_reader: FakeNews, stories_reader: FakeStories) -> Callable[
                 indicators=lambda: indicators,
                 news=lambda: news_reader,
                 stories=lambda: stories_reader,
+                trees=lambda: trees_reader,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
                 classifier_id="rules",

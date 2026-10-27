@@ -73,3 +73,35 @@ def _beats(similarity: float, candidate: StoryStart, current: tuple[float, Story
     if similarity != current_similarity:
         return similarity > current_similarity
     return _order(candidate) < _order(current_parent)
+
+
+@dataclass(frozen=True, slots=True)
+class TreeShape:
+    root_story_id: int
+    links: tuple[StoryLink, ...]  # every link of the tree, sorted by story id
+
+
+def tree_shape(story_id: int, links: Iterable[StoryLink]) -> TreeShape | None:
+    """The tree a story belongs to: climb to its root, then take every descendant.
+
+    None when the story has no relations (it is neither a child nor a parent): a tree needs at
+    least two stories. Links are a forest by construction (one parent each, parents strictly
+    earlier), so the climb ends.
+    """
+    all_links = list(links)
+    parent_of = {link.story_id: link for link in all_links}
+    children: dict[int, list[StoryLink]] = {}
+    for link in all_links:
+        children.setdefault(link.parent_story_id, []).append(link)
+    if story_id not in parent_of and story_id not in children:
+        return None
+    root = story_id
+    while root in parent_of:
+        root = parent_of[root].parent_story_id
+    members: list[StoryLink] = []
+    pending = [root]
+    while pending:
+        for link in children.get(pending.pop(), []):
+            members.append(link)
+            pending.append(link.story_id)
+    return TreeShape(root, tuple(sorted(members, key=lambda link: link.story_id)))

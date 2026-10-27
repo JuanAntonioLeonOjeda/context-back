@@ -6,6 +6,7 @@ from datos.stories.domain.tree import (
     StoryStart,
     TreeSettings,
     choose_parents,
+    tree_shape,
 )
 
 SETTINGS = TreeSettings(threshold=0.75, window_days=14)
@@ -93,3 +94,25 @@ def test_the_result_does_not_depend_on_the_order_of_the_pairs() -> None:
     pairs = [pair(a, b), pair(b, c, 0.9), pair(a, c, 0.8), pair(c, d, 0.77)]
 
     assert choose_parents(pairs, SETTINGS) == choose_parents(list(reversed(pairs)), SETTINGS)
+
+
+def test_the_tree_of_a_story_is_found_from_any_of_its_members() -> None:
+    links = [StoryLink(2, 1, 0.8), StoryLink(3, 2, 0.8), StoryLink(4, 1, 0.8), StoryLink(9, 8, 0.8)]
+
+    for member in (1, 2, 3, 4):
+        shape = tree_shape(member, links)
+        assert shape is not None
+        assert shape.root_story_id == 1
+        assert [link.story_id for link in shape.links] == [2, 3, 4]
+
+
+def test_a_story_with_no_relations_has_no_tree() -> None:
+    assert tree_shape(5, [StoryLink(2, 1, 0.8)]) is None
+    assert tree_shape(5, []) is None
+
+
+def test_another_tree_of_the_same_run_is_left_out() -> None:
+    shape = tree_shape(8, [StoryLink(2, 1, 0.8), StoryLink(9, 8, 0.8)])
+
+    assert shape is not None
+    assert (shape.root_story_id, [link.story_id for link in shape.links]) == (8, [9])

@@ -18,6 +18,7 @@ from datos.indicators.infrastructure.pg_reader import PgIndicatorReader
 from datos.log_setup import configure_logging
 from datos.news.infrastructure.pg_news_reader import PgCommunityNewsReader
 from datos.stories.infrastructure.pg_stories_reader import PgCommunityStoriesReader
+from datos.stories.infrastructure.pg_story_tree_reader import PgStoryTreeReader
 from datos.territories.reader import PgTerritoryReader
 
 GEOMETRY = Path("data/geo/ccaa.geojson")
@@ -37,6 +38,7 @@ def app() -> FastAPI:
         indicators=built_on(connection, PgIndicatorReader),
         news=built_on(connection, PgCommunityNewsReader),
         stories=built_on(connection, PgCommunityStoriesReader),
+        trees=built_on(connection, PgStoryTreeReader),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
         classifier_id=settings.active_classifier_id,
