@@ -33,6 +33,9 @@
     <Choice value="Educación" alias="education"/>
     <Choice value="Sanidad" alias="health"/>
     <Choice value="Vivienda" alias="housing"/>
+    <Choice value="Justicia" alias="justice"/>
+    <Choice value="Trabajo" alias="work"/>
+    <Choice value="Impuestos" alias="taxes"/>
   </Choices>
   <Header value="Niveles de gobierno" size="5"/>
   <Choices name="government_levels" toName="lead" choice="multiple" showInline="true">
