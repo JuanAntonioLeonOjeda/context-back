@@ -60,3 +60,9 @@ What this changes:
   a check of the rest), and extra enriched samples are drawn for the new sectors.
 - The promotion criteria of ADR-0016 are measured again for the sectors family on the relabelled
   test set, which needs enough positives of each new sector (about 50) to mean anything.
+
+Deferred on 2026-11-05: **taxes** goes back to `is_active = false`. The first labelled sample held
+only 4 positives, and most articles first labelled `taxes` were general economy. Its competences
+stay in the data. Its rules and sampling terms were removed (the loaders refuse terms of an
+inactive sector) and are in the history of PR #35. Justice was defined as everything judicial and
+criminal (a topic, not only public policy) by the author on 2026-11-05; see the labelling guide.

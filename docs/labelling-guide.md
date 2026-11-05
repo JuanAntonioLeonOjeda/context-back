@@ -26,7 +26,7 @@ Each article gets three labels. Each one can have several values or none.
 | Label | Values | Empty means |
 |---|---|---|
 | `communities` | ids `ccaa-01` … `ccaa-19` (appendix) | no specific community is affected |
-| `sectors` | `education`, `health`, `housing`, `justice`, `work`, `taxes` | `none`: not about public policy in these sectors |
+| `sectors` | `education`, `health`, `housing`, `justice`, `work` | `none`: not about public policy in these sectors |
 | `government_levels` | `state`, `ccaa`, `local` | no government acts and none is addressed |
 
 The three labels are independent. An article about an investiture debate with no sector
@@ -58,20 +58,20 @@ Sector boundaries:
   medicines policy, health staff.
 - **housing**: public and protected housing, rent regulation and stressed areas, evictions
   policy, housing aid, land for housing.
-- **justice**: the administration of justice as a public service (courts, judges and prosecutors'
-  staffing, court resources, legal aid), changes to the procedural, criminal or judicial
-  norms, and court rulings **on a public norm or decision**. A trial of a crime with no
-  policy in it (a murder case, a celebrity) is **not** justice: the court is only the setting.
+- **justice**: everything judicial and criminal (decided by the author, 2026-11-05): courts and
+  judges, trials, sentences, investigations, arrests, search warrants and criminal cases, public
+  prosecutors, the judiciary's governing bodies, court resources and changes to procedural,
+  criminal or judicial norms. Unlike the other sectors it is a topic and not only public policy:
+  a robbery with an arrest or a criminal trial is `justice`. The country does not matter. A
+  crime with no judicial step yet (a fight, an accident, a missing person) is not.
 - **work**: labour law and policy: wages and the minimum wage, collective agreements, working
   hours, dismissals, employment and unemployment policy, labour inspection, public employment
   services and measures for the self-employed. A company's layoffs with no public measure, or a
   private hiring announcement, are not.
-- **taxes**: taxes and tax policy: creating, raising, lowering or exempting a tax, tax
-  deductions and allowances, tax collection and inspection by a public body. Prices, a
-  company's profits or a shop's rates with no public measure are not.
+- **taxes** is planned and **not labelled yet** (deferred on 2026-11-05: the first sample held 4
+  positives). Leave tax news without a sector.
 
-When two sectors fit, label both (a tax break for rented housing is `taxes` and `housing`; a
-court ruling on a labour reform is `justice` and `work`).
+When two sectors fit, label both (a court ruling on a labour reform is `justice` and `work`).
 
 An article can have more than one sector (a plan for housing for health workers is
 `housing` and `health`).

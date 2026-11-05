@@ -19,12 +19,12 @@ names are theirs, the ids ours). Chosen with the author (D15) so that the news a
 (parliament votes) speak of the same topics. Only the names are taken: that site does not say how
 it assigns topics to laws, and the topics of each law will be curated here (D17).
 
-- `is_active = true`: education, health and housing (the three of launch) and, since 2026-11-02, justice, work and taxes. Only active sectors are
+- `is_active = true`: education, health and housing (the three of launch) and, since 2026-11-02, justice and work (taxes is deferred, with its competences loaded). Only active sectors are
   read by the rules, the training sample, the own model and the news API (migration 0007).
 - `is_active = false`: planned. A sector is activated in its own batch, with its competences
   (sourced, BOE), its rules and enrichment terms and its labels; then its row turns `true` and the
   data is reloaded. Activating one changes the model's labels, so it needs a new training.
-- Justice, work and taxes were activated with the competences of `competences.csv` (CE arts. 133,
+- Justice and work were activated with the competences of `competences.csv`, and taxes has its rows there but stays inactive (CE arts. 133,
   148, 149 and 156; LOPJ art. 37.1; RDL 2/2015; Ley 3/2023; LOFCA; RDL 2/2004), checked against the
   BOE on 2026-11-02 except LOPJ art. 37.1 (read through a search result, to confirm in the
   consolidated text). Which communities have taken over the court means is not tabulated: only

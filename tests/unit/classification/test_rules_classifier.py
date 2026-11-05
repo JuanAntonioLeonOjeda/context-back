@@ -12,7 +12,7 @@ from datos.classification.infrastructure.rules_classifier import (
 from datos.governments.application.published import CompetenceLevel
 
 DATA = Path("data/classification")
-SECTORS = frozenset({"education", "health", "housing", "justice", "work", "taxes"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 CLASSIFIER = load_rules_classifier(DATA, sector_ids=SECTORS)
 STATE, CCAA, LOCAL = CompetenceLevel.STATE, CompetenceLevel.CCAA, CompetenceLevel.LOCAL
 

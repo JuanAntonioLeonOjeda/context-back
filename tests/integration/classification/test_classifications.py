@@ -19,7 +19,7 @@ from datos.territories.repository import PgTerritoryRepository
 
 pytestmark = pytest.mark.integration
 
-SECTORS = frozenset({"education", "health", "housing", "justice", "work", "taxes"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 _names = (f"classification_it_{n}" for n in itertools.count())
 HEADLINES = [
     ("El Cabildo de Lanzarote construye 200 viviendas públicas", None),
