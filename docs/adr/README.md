@@ -33,6 +33,7 @@ web and API were merged.
 | [0020](0020-story-grouping.md) | Grouping the articles of the same story with embeddings, a threshold and a window | Accepted |
 | [0021](0021-story-links.md) | Linking each story to the earlier story it continues, one parent per story | Accepted |
 | [0022](0022-model-classifies-on-the-author-machine.md) | The promoted model classifies on the author's machine, on a schedule | Accepted |
+| [0023](0023-public-deploy-on-hugging-face.md) | Public deploy on a Hugging Face Space, fed by a daily snapshot | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
