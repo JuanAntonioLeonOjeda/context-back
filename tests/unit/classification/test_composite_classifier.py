@@ -107,7 +107,8 @@ def test_every_family_has_an_evidence_prefix() -> None:
 
 def test_made_only_of_the_rules_it_says_exactly_what_the_rules_say() -> None:
     rules = load_rules_classifier(
-        Path("data/classification"), sector_ids=frozenset({"education", "health", "housing"})
+        Path("data/classification"),
+        sector_ids=frozenset({"education", "health", "housing", "justice", "work"}),
     )
     composite = CompositeClassifier(dict.fromkeys(Family, rules))
 

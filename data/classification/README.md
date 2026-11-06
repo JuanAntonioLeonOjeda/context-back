@@ -14,7 +14,7 @@ measured on the blind test set when it exists. Until then nothing here is a meas
 |---|---|---|
 | `places.csv` | `term, territory_id, level, kind, language` | a community; institutions (`kind = institution`) also give the level `ccaa`, parliaments (`kind = parliament`) do not |
 | `levels.csv` | `term, level, language` | a government level only: `state`, `ccaa` or `local` |
-| `sectors.csv` | `term, sector_id, language` | a sector: `education`, `health` or `housing` |
+| `sectors.csv` | `term, sector_id, language` | a sector: `education`, `health`, `housing`, `justice` or `work` |
 | `exclusions.csv` | `phrase, reason` | text removed before matching |
 
 ## How terms match

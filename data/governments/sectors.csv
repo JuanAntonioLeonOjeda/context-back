@@ -5,9 +5,9 @@ environment,Medio ambiente,false
 health,Sanidad,true
 housing,Vivienda,true
 institutional,Institucional,false
-justice,Justicia,false
+justice,Justicia,true
 migration,Migración,false
 pensions,Pensiones,false
 rights,Derechos,false
 taxes,Impuestos,false
-work,Trabajo,false
+work,Trabajo,true

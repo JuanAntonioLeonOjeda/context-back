@@ -30,3 +30,17 @@ housing,public-housing,Promotion and management of protected public housing,ccaa
 housing,public-housing,Promotion and management of protected public housing,local,execution,,LBRL art. 25.2.a,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a25
 housing,state-housing-aid,State funding of housing aid (Plan Estatal de Vivienda 2026-2030),state,execution,,RD 326/2026; Ley 12/2023 arts. 23-24,https://www.boe.es/buscar/act.php?id=BOE-A-2026-8872
 housing,state-housing-aid,Management of the state housing aid,ccaa,execution,,RD 326/2026,https://www.boe.es/buscar/act.php?id=BOE-A-2026-8872
+justice,justice-framework,Organisation and bases of the judiciary (Administración de Justicia),state,legislation,,CE art. 149.1.5ª,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a149
+justice,procedural-and-criminal-law,"Commercial, criminal, prison and procedural legislation",state,legislation,,CE art. 149.1.6ª,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a149
+justice,court-resources,Material and personnel means of courts and tribunals in communities that have taken the transferred competence,ccaa,execution,,LOPJ art. 37.1,https://www.boe.es/buscar/act.php?id=BOE-A-1985-12666#a37
+justice,court-resources,"Means of courts and tribunals in Ceuta, provided by the Ministry of Justice",state,execution,ccaa-18,LOPJ art. 37.1,https://www.boe.es/buscar/act.php?id=BOE-A-1985-12666#a37
+justice,court-resources,"Means of courts and tribunals in Melilla, provided by the Ministry of Justice",state,execution,ccaa-19,LOPJ art. 37.1,https://www.boe.es/buscar/act.php?id=BOE-A-1985-12666#a37
+work,labour-legislation,Labour legislation,state,legislation,,CE art. 149.1.7ª,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a149
+work,labour-legislation,"Execution of labour legislation (labour authority, inspection and administrative enforcement)",ccaa,execution,,CE art. 149.1.7ª,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a149
+work,employment-relations,Basic rights and duties of employment relationships (Estatuto de los Trabajadores),state,legislation,,RDL 2/2015,https://www.boe.es/buscar/act.php?id=BOE-A-2015-11430
+work,employment-policy,State employment policy and coordination of the National Employment System,state,execution,,Ley 3/2023 de Empleo art. 8,https://www.boe.es/buscar/act.php?id=BOE-A-2023-5365
+work,employment-policy,Regional employment policy and public employment services,ccaa,execution,,Ley 3/2023 de Empleo arts. 7.2 and 8,https://www.boe.es/buscar/act.php?id=BOE-A-2023-5365
+taxes,tax-system-framework,Original power to create taxes by law; general finance of the State (Hacienda general),state,legislation,,CE arts. 133.1 and 149.1.14ª,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a133
+taxes,regional-taxes,"Own regional taxes, within the law",ccaa,legislation,,CE arts. 133.2 and 156.1,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a133
+taxes,ceded-taxes,"Taxes set by the State whose revenue goes to the community, with the normative powers the law cedes",ccaa,development_legislation,,LOFCA arts. 10 and 11,https://www.boe.es/buscar/act.php?id=BOE-A-1980-21166
+taxes,local-taxes,Municipal taxes and rates within the local finance law,local,execution,,RDL 2/2004 art. 59; CE art. 133.2,https://www.boe.es/buscar/act.php?id=BOE-A-2004-4214
