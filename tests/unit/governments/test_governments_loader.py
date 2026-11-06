@@ -9,7 +9,7 @@ from datos.governments.application.load_governments import (
     dataset_problems,
     load_governments,
 )
-from datos.governments.domain.competence import Competence, Sector
+from datos.governments.domain.competence import Competence, Sector, sector_indicator_problems
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.governments.infrastructure.csv_source import (
@@ -18,6 +18,7 @@ from datos.governments.infrastructure.csv_source import (
     read_sectors,
     read_terms,
 )
+from datos.indicators.application.catalogue import INDICATOR_IDS
 
 SINCE = date(2020, 1, 1)
 TODAY = date(2026, 10, 13)
@@ -224,3 +225,37 @@ def test_rejects_an_is_active_that_is_not_a_boolean_with_the_line_number(tmp_pat
         read_sectors(
             _sectors(tmp_path, "id,name,is_active\nhousing,Vivienda,true\nwork,Trabajo,maybe\n")
         )
+
+
+def test_reads_the_indicator_of_a_sector_and_none_when_the_cell_is_empty(tmp_path: Path) -> None:
+    sectors = read_sectors(
+        _sectors(
+            tmp_path,
+            "id,name,is_active,indicator_id\nwork,Trabajo,true,unemployment_rate\n"
+            "health,Sanidad,true,\n",
+        )
+    )
+
+    assert [(s.id, s.indicator_id) for s in sectors] == [
+        ("work", "unemployment_rate"),
+        ("health", None),
+    ]
+
+
+def test_the_versioned_sectors_name_only_indicators_the_project_defines() -> None:
+    sectors = read_sectors(DATA / "sectors.csv")
+
+    assert sector_indicator_problems(sectors, INDICATOR_IDS) == []
+    assert {s.id: s.indicator_id for s in sectors if s.indicator_id} == {
+        "education": "higher_education_share_16plus",
+        "housing": "housing_price_index",
+        "work": "unemployment_rate",
+    }
+
+
+def test_reports_a_sector_that_names_an_unknown_indicator() -> None:
+    sectors = [Sector("work", "Trabajo", indicator_id="jobs"), Sector("health", "Sanidad")]
+
+    assert sector_indicator_problems(sectors, INDICATOR_IDS) == [
+        "sector work: unknown indicator jobs"
+    ]

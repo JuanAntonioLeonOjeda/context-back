@@ -13,6 +13,7 @@ from datos.governments.infrastructure.csv_source import (
     read_terms,
 )
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
+from datos.indicators.application.catalogue import INDICATOR_IDS
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
 
@@ -30,7 +31,10 @@ def _load(db: Connection) -> None:
     repository = PgGovernmentRepository(db)
     load_governments(repository, parties, terms, since=SINCE, today=TODAY)
     load_competences(
-        repository, read_sectors(DATA / "sectors.csv"), read_competences(DATA / "competences.csv")
+        repository,
+        read_sectors(DATA / "sectors.csv"),
+        read_competences(DATA / "competences.csv"),
+        indicator_ids=INDICATOR_IDS,
     )
 
 
@@ -160,3 +164,16 @@ def test_a_planned_sector_is_stored_as_inactive_and_a_later_load_can_change_it(
 
     repository.replace_competences([Sector("housing", "Vivienda")], housing_rows)
     assert _is_active(db, "housing")
+
+
+def test_stores_the_indicator_of_each_sector(db: Connection) -> None:
+    _load(db)
+
+    rows = db.execute(
+        text("SELECT id FROM sectors WHERE indicator_id = 'unemployment_rate'")
+    ).scalars()
+    assert list(rows) == ["work"]
+    assert (
+        db.execute(text("SELECT indicator_id FROM sectors WHERE id = 'health'")).scalar_one()
+        is None
+    )

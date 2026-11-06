@@ -16,6 +16,7 @@ from datos.governments.infrastructure.csv_source import (
 )
 from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
+from datos.indicators.application.catalogue import INDICATOR_IDS
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
 
@@ -88,7 +89,12 @@ def test_competences_are_stored_as_in_the_dataset(
     loaded must be what the CSV says, row by row. `reader` loads the territories and terms the
     competence rules check against."""
     expected = read_competences(DATA / "competences.csv")
-    load_competences(PgGovernmentRepository(db), read_sectors(DATA / "sectors.csv"), expected)
+    load_competences(
+        PgGovernmentRepository(db),
+        read_sectors(DATA / "sectors.csv"),
+        expected,
+        indicator_ids=INDICATOR_IDS,
+    )
 
     rows = db.execute(
         text(
