@@ -1,0 +1,86 @@
+# Deploys the Hugging Face Space (ADR-0023) on every push to main that changes what the Space runs,
+# and when the web app repo asks for it after its own push to main (its deploy-space.yml runs this
+# workflow through workflow_dispatch). The Space is built from both repos' main branches.
+# Only code: the data comes from the daily snapshot (scripts/publish-snapshot.sh).
+#
+# Needs the secret HF_TOKEN: a Hugging Face token with write access to the Space.
+# The variable SPACE_REPO changes the Space (default Juanan237/incontext).
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - pyproject.toml
+      - uv.lock
+      - alembic.ini
+      - migrations/**
+      - src/**
+      - data/**
+      - deploy/huggingface/**
+      - .github/workflows/deploy-space.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time; a push that arrives meanwhile is deployed afterwards.
+concurrency:
+  group: deploy-space
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SPACE_REPO: ${{ vars.SPACE_REPO || 'Juanan237/incontext' }}
+      HF_CLI: uvx --from huggingface_hub==2.4.0 hf
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/checkout@v5
+        with:
+          repository: JuanAntonioLeonOjeda/context-front
+          ref: main
+          path: front-repo
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Prepare the Space
+        run: FRONT_DIR=front-repo deploy/huggingface/build_space.sh "$RUNNER_TEMP/space"
+
+      # With no changes `hf upload` makes no commit and never uses the write permission, so an
+      # expired or mistyped token would go unnoticed until the next change.
+      - name: Check the token
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::error::The HF_TOKEN secret is missing"
+            exit 1
+          fi
+          $HF_CLI auth whoami
+
+      - name: Upload to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Files gone from the repos are deleted from the Space; the rest are replaced.
+          $HF_CLI upload "$SPACE_REPO" "$RUNNER_TEMP/space" . --repo-type space \
+            --commit-message "Deploy back ${GITHUB_SHA::7}, front $(git -C front-repo rev-parse --short HEAD)" \
+            --delete "back/**" --delete "front/**"
+
+      - name: Wait for the Space to start
+        run: |
+          for i in $(seq 1 60); do
+            stage=$(curl -fsS "https://huggingface.co/api/spaces/$SPACE_REPO" | jq -r '.runtime.stage')
+            echo "$(date +%T) $stage"
+            case $stage in
+              RUNNING) [ "$i" -gt 2 ] && exit 0 ;;
+              *ERROR) echo "::error::The Space failed ($stage); logs at https://huggingface.co/spaces/$SPACE_REPO"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "::error::The Space did not start in 15 minutes"
+          exit 1

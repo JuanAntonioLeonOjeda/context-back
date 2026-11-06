@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Runs scripts/publish-snapshot.sh every day at 07:30: the Hugging Face Space restarts with the
+  articles collected and classified up to then (ADR-0023). A run missed while the Mac sleeps happens
+  once on wake. Needs `hf auth login` once. Replace REPO with the absolute path of this repository, then:
+    cp scripts/launchd/es.datos.publish-snapshot.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/es.datos.publish-snapshot.plist
+  To stop it:
+    launchctl bootout gui/$(id -u)/es.datos.publish-snapshot
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>es.datos.publish-snapshot</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPO/scripts/publish-snapshot.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>7</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>REPO/var/log/publish-snapshot.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPO/var/log/publish-snapshot.log</string>
+</dict>
+</plist>
