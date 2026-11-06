@@ -1,0 +1,83 @@
+{
+  "name": "train-sample-v2",
+  "size": 100,
+  "seed": 2,
+  "until": "2026-10-23T11:38:00+01:00",
+  "enrichment_terms_version": "3b01dbd322bd",
+  "tag_stoplist_version": "5ce90a411d3a",
+  "quotas": {
+    "3cat": {
+      "random": 4,
+      "enriched": 4
+    },
+    "abc": {
+      "random": 4,
+      "enriched": 4
+    },
+    "canarias7": {
+      "random": 4,
+      "enriched": 3
+    },
+    "diario-de-avisos": {
+      "random": 4,
+      "enriched": 3
+    },
+    "el-confidencial": {
+      "random": 4,
+      "enriched": 3
+    },
+    "el-espanol": {
+      "random": 4,
+      "enriched": 3
+    },
+    "el-mundo": {
+      "random": 4,
+      "enriched": 3
+    },
+    "el-pais": {
+      "random": 4,
+      "enriched": 3
+    },
+    "la-razon": {
+      "random": 4,
+      "enriched": 3
+    },
+    "la-vanguardia": {
+      "random": 4,
+      "enriched": 3
+    },
+    "okdiario": {
+      "random": 4,
+      "enriched": 3
+    },
+    "rtvc": {
+      "random": 4,
+      "enriched": 3
+    },
+    "rtve": {
+      "random": 4,
+      "enriched": 3
+    },
+    "telemadrid": {
+      "random": 4,
+      "enriched": 3
+    }
+  },
+  "enriched_available": {
+    "3cat": 19,
+    "abc": 280,
+    "canarias7": 251,
+    "diario-de-avisos": 52,
+    "el-confidencial": 40,
+    "el-espanol": 87,
+    "el-mundo": 88,
+    "el-pais": 218,
+    "la-razon": 457,
+    "la-vanguardia": 222,
+    "okdiario": 308,
+    "rtvc": 68,
+    "rtve": 11,
+    "telemadrid": 28
+  },
+  "shortfalls": []
+}

@@ -54,3 +54,23 @@ The `selection` column records why each outlet is in the list.
   `article:published_time`); bodies are never stored.
 - RTVE's `og:description` often repeats the headline, so its articles carry little lead.
 
+## Tags from the page (`tags_in_page`, ADR-0019)
+
+Some outlets publish the tags of an article in its RSS feed; RTVE, 3Cat and Telemadrid do not, but
+their article pages carry them as `<meta property="article:tag">`: one per tag (RTVE, 3Cat) or all
+in one separated by commas (Telemadrid). `tags_in_page` in `feeds.csv` marks those feeds. The page
+of a new article is already read for its lead, so the tags cost no request; `python -m datos.news
+backfill-page-tags` reads the pages of the articles collected before (one request per second, at
+most `--limit` per outlet, in the last `--days`). `keywords` and `news_keywords` are never read:
+Telemadrid fills them with search-engine phrases. RTVC has no tags in its pages and is not marked.
+
+The tags of a page are read **only where the site allows it, checked on every run**
+(`infrastructure/read_policy.py`): its `robots.txt` lets our collector fetch the page and blocks no
+known AI crawler, and the page carries no `tdm-reservation`. A `robots.txt` that cannot be read means
+no. The lead is read as before. A test fails if an outlet that blocks AI crawlers
+(`external_llm_allowed = false`) is marked `tags_in_page`.
+
+Checked on 2026-10-16 against the real `robots.txt`: 7 of the 14 outlets block AI crawlers (El Mundo,
+El País, ABC, El Confidencial, La Razón, La Vanguardia, Canarias7: exactly the `false` ones) and 7 do
+not (El Español, OKdiario, Diario de Avisos, RTVE, RTVC, Telemadrid, 3Cat), with no reservation in the
+page and no `tdmrep.json` on a sample page of each.

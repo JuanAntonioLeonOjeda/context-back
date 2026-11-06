@@ -6,7 +6,7 @@ says which classifier, at which version, produced each family, so every stored l
 be traced to what made it (ADR-0015).
 """
 
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping, Sequence
 from enum import StrEnum
 
 from datos.classification.application.classifier import ArticleClassifier
@@ -45,7 +45,7 @@ class CompositeClassifier:
             for family, source in ((f, self._sources[f]) for f in Family)
         )
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
         # Each source runs once per article even if it supplies two families; sources are taken
         # in the order of the families they supply first.
         sources: list[ArticleClassifier] = []
@@ -56,7 +56,7 @@ class CompositeClassifier:
                 sources.append(source)
                 prefixes[id(source)] = ()
             prefixes[id(source)] += (EVIDENCE_PREFIX[family],)
-        results = {id(source): source.classify(headline, lead) for source in sources}
+        results = {id(source): source.classify(headline, lead, tags) for source in sources}
 
         def taken(family: Family) -> Labels:
             return results[id(self._sources[family])]
@@ -81,3 +81,12 @@ class CompositeClassifier:
                 if score.label.startswith(prefixes[id(source)])
             ),
         )
+
+
+def promoted_classifier(
+    rules: ArticleClassifier, model: ArticleClassifier, promoted: Collection[Family]
+) -> CompositeClassifier:
+    """The model in the families that were promoted (ADR-0016) and the rules in all the others."""
+    return CompositeClassifier(
+        {family: model if family in promoted else rules for family in Family}
+    )

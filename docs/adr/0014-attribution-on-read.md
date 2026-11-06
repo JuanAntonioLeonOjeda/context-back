@@ -1,6 +1,6 @@
 # ADR-0014: Attribution computed on read, with a three-value confidence
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0018 (2026-10-15)
 - **Date:** 2026-10-14
 - **Phase:** news-live
 

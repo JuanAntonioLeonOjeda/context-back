@@ -1,27 +1,18 @@
-"""Use case: the latest news of a community and sector, each with who is responsible.
+"""Use case: the latest news of a community and sector.
 
-Reads the stored classifications of the active classifier and computes the attribution on read
-(ADR-0014), so a correction of the curated governments or competences shows at once.
+Reads the stored classifications of the active classifier. No party is attached to an item
+(ADR-0018): who governs is shown apart, from the governments dataset.
 """
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from typing import Protocol
 
-from datos.attribution.application.published import AttributionEntry, attribute
 from datos.clock import SPAIN
-from datos.governments.application.published import (
-    Competence,
-    CompetenceLevel,
-    CompetencesReader,
-    GovernmentsReader,
-    GovernmentTerm,
-)
 
-STATE_TERRITORY_ID = "es"
-WINDOW_DAYS = 30  # today and the 29 days before it, in Spain
-PER_OUTLET = 5
+DEFAULT_DAYS = 7  # without dates: today and the 6 days before it, in Spain (the last week)
+MAX_RANGE_DAYS = 31  # the longest range one request may ask for
+PER_OUTLET_PER_DAY = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,23 +25,26 @@ class ClassifiedArticle:
     headline: str
     url: str
     published_at: datetime
-    levels: frozenset[CompetenceLevel]  # the government levels the classifier found
     model_id: str
     model_version: str
+    # The story of the article when it has a tree of related stories (phase history-trace).
+    tree_story_id: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
-class NewsItem:
-    article: ClassifiedArticle
-    attribution: tuple[AttributionEntry, ...]
+class CommunityTrees:
+    territory_id: str
+    sector_id: str
+    items: tuple[ClassifiedArticle, ...]  # one per tree; `tree_story_id` is always set
 
 
 @dataclass(frozen=True, slots=True)
 class CommunityNews:
     territory_id: str
     sector_id: str
-    since: date  # the first day of the window, in Spain
-    items: tuple[NewsItem, ...]
+    since: date  # the first day of the range, in Spain
+    until: date  # the last day of the range, in Spain
+    items: tuple[ClassifiedArticle, ...]
 
 
 class CommunityNewsReader(Protocol):
@@ -62,13 +56,27 @@ class CommunityNewsReader(Protocol):
         territory_id: str,
         sector_id: str,
         since: datetime,
+        until: datetime,
         model_id: str,
-        per_outlet: int,
+        per_outlet_per_day: int,
     ) -> list[ClassifiedArticle]:
-        """Articles published since `since` whose latest classification by `model_id` has this
-        community and sector; at most `per_outlet` per outlet (the newest); newest first, ties
-        by outlet id, then article id."""
+        """Articles published from `since` (included) to `until` (excluded) whose latest
+        classification by `model_id` has this community and sector; at most `per_outlet_per_day`
+        per outlet and day in Spain (the newest); newest first, ties by outlet id, then article
+        id."""
         ...
+
+    def latest_per_tree(
+        self, *, territory_id: str, sector_id: str, model_id: str
+    ) -> list[ClassifiedArticle]:
+        """For each tree of related stories (latest tree run) that has an article whose latest
+        classification by `model_id` has this community and sector: the newest of those articles,
+        whatever its day. Newest first, ties by outlet id, then article id."""
+        ...
+
+
+class InvalidRangeError(ValueError):
+    """The dates asked for are not a range this service answers."""
 
 
 def community_news(
@@ -76,41 +84,35 @@ def community_news(
     territory_id: str,
     sector_id: str,
     today: date,
+    date_from: date | None,
+    date_to: date | None,
     model_id: str,
     news: CommunityNewsReader,
-    governments: GovernmentsReader,
-    competences: CompetencesReader,
 ) -> CommunityNews:
-    since = today - timedelta(days=WINDOW_DAYS - 1)
+    """The news of a range of days in Spain: the last `DEFAULT_DAYS` ending today by default."""
+    until = date_to or today
+    since = date_from or until - timedelta(days=DEFAULT_DAYS - 1)
+    if since > until:
+        raise InvalidRangeError("the first day is after the last day")
+    if (until - since).days + 1 > MAX_RANGE_DAYS:
+        raise InvalidRangeError(f"a range is at most {MAX_RANGE_DAYS} days")
     articles = news.recent(
         territory_id=territory_id,
         sector_id=sector_id,
         since=datetime.combine(since, time.min, tzinfo=SPAIN),
+        until=datetime.combine(until + timedelta(days=1), time.min, tzinfo=SPAIN),
         model_id=model_id,
-        per_outlet=PER_OUTLET,
+        per_outlet_per_day=PER_OUTLET_PER_DAY,
     )
-    terms = [*governments.terms(territory_id), *governments.terms(STATE_TERRITORY_ID)]
-    table = competences.competences()
-    items = tuple(
-        NewsItem(a, _attribution(a, territory_id, sector_id, terms, table)) for a in articles
-    )
-    return CommunityNews(territory_id, sector_id, since, items)
+    return CommunityNews(territory_id, sector_id, since, until, tuple(articles))
 
 
-def _attribution(
-    article: ClassifiedArticle,
-    territory_id: str,
-    sector_id: str,
-    terms: Sequence[GovernmentTerm],
-    table: Sequence[Competence],
-) -> tuple[AttributionEntry, ...]:
-    entries = attribute(
-        community_id=territory_id,
-        sector_id=sector_id,
-        levels=article.levels,
-        # The day in Spain: a government changes on a Spanish calendar date (the BOE).
-        published_on=article.published_at.astimezone(SPAIN).date(),
-        terms=terms,
-        competences=table,
+def community_trees(
+    *, territory_id: str, sector_id: str, model_id: str, news: CommunityNewsReader
+) -> CommunityTrees:
+    """The trees of related stories that reach this community and sector, each by its newest
+    article there. No date filters them: a tree is as old as its stories."""
+    articles = news.latest_per_tree(
+        territory_id=territory_id, sector_id=sector_id, model_id=model_id
     )
-    return tuple(entries)
+    return CommunityTrees(territory_id, sector_id, tuple(articles))

@@ -2,16 +2,17 @@
 
 How to label the 200 articles of `data/eval/test-set-v1.jsonl`. The test set measures every
 classifier (rules, LLM, own model). Its labels must say **what the text is about**, not
-what we believe about who is responsible. Responsibility is computed later by the
-attribution module from competences and the government in force.
+what we believe about who is responsible. The site attributes no news item to a party
+(ADR-0018); the levels say which government acts, and in phase 7 which parliament's laws apply.
 
 Status: draft, pending the author's review (task 19).
 
 ## What you see and what you label
 
-- Label **only from the headline and the lead**, the same input the classifiers get. Do not
-  open the link. If the headline and the lead are not enough, the right answer is the
-  one they support, even if the full article says more.
+- Label **only from the headline, the tags and the lead**, the same input the classifiers get.
+  The tags are the ones the outlet published with the article, already filtered (`Etiquetas: …`,
+  at most eight; none when the outlet gives none). Do not open the link. If what you see is not
+  enough, the right answer is the one it supports, even if the full article says more.
 - No model proposal is shown. Label each article on its own, in the order given.
 - Articles in Catalan follow exactly the same rules.
 - If you hesitate for more than a minute, pick the best answer **and** tick `unsure`. Those
@@ -25,7 +26,7 @@ Each article gets three labels. Each one can have several values or none.
 | Label | Values | Empty means |
 |---|---|---|
 | `communities` | ids `ccaa-01` … `ccaa-19` (appendix) | no specific community is affected |
-| `sectors` | `education`, `health`, `housing` | `none`: not about public policy in these sectors |
+| `sectors` | `education`, `health`, `housing`, `justice`, `work` | `none`: not about public policy in these sectors |
 | `government_levels` | `state`, `ccaa`, `local` | no government acts and none is addressed |
 
 The three labels are independent. An article about an investiture debate with no sector
@@ -57,6 +58,20 @@ Sector boundaries:
   medicines policy, health staff.
 - **housing**: public and protected housing, rent regulation and stressed areas, evictions
   policy, housing aid, land for housing.
+- **justice**: everything judicial and criminal (decided by the author, 2026-11-05): courts and
+  judges, trials, sentences, investigations, arrests, search warrants and criminal cases, public
+  prosecutors, the judiciary's governing bodies, court resources and changes to procedural,
+  criminal or judicial norms. Unlike the other sectors it is a topic and not only public policy:
+  a robbery with an arrest or a criminal trial is `justice`. The country does not matter. A
+  crime with no judicial step yet (a fight, an accident, a missing person) is not.
+- **work**: labour law and policy: wages and the minimum wage, collective agreements, working
+  hours, dismissals, employment and unemployment policy, labour inspection, public employment
+  services and measures for the self-employed. A company's layoffs with no public measure, or a
+  private hiring announcement, are not.
+- **taxes** is planned and **not labelled yet** (deferred on 2026-11-05: the first sample held 4
+  positives). Leave tax news without a sector.
+
+When two sectors fit, label both (a court ruling on a labour reform is `justice` and `work`).
 
 An article can have more than one sector (a plan for housing for health workers is
 `housing` and `health`).
@@ -90,8 +105,8 @@ Rules:
 - Parties are not governments. A party's internal life (lists, primaries) has no level.
   A party's demand to a government gets the level of that government.
 - Label what the text says, not what the competence table says. If a protest asks for
-  "more housing" and names no government, the level is empty. Who is competent is the
-  attribution module's job.
+  "more housing" and names no government, the level is empty. Who is competent is not
+  a label.
 - Courts are not a level. A ruling on a regional decree gets `ccaa`.
 
 ## Edge cases

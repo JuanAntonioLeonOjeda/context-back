@@ -171,6 +171,15 @@ Decided by the author before writing the model's code (task 17):
   to any article has no F1 and is left out of the mean, and the report names it: there was nothing
   to get right or wrong. Counting it as 0, as scikit-learn's `zero_division=0` does, would punish a
   model for not inventing the label. The same code scores the learning curve and the evaluation.
+- **How the evaluation reads the criteria** (decided 2026-10-15, D18 = A, before any test-set
+  number exists): criterion 2 (per outlet) counts all the articles of the test set, not only its
+  random half; the random half is for criterion 1 alone, as written above. Every evaluation run
+  writes a versioned report (model version, test-set hash, every number), so how many times the
+  test set was looked at is on record.
+- **Criterion 3 is dropped** (decided by the author on 2026-10-15): the site stops attributing news
+  items to a responsible party (ADR-0018, which supersedes ADR-0005 and ADR-0014),
+  and shows instead which laws relate to a news item and how each group voted (phase 7). With no
+  attribution there is no "high" attribution to compare, so promotion rests on criteria 1 and 2.
 - **No MLflow for now**: a dozen trainings at most; the model's metadata and the versioned
   evaluation report are enough, and a model registry would be a second source of truth next to
   this ADR. The metadata keeps the fields MLflow would log, so adding it later is cheap. Revisit
@@ -186,3 +195,89 @@ Decided by the author before writing the model's code (task 17):
 - Where the rules are weak: `data/classification/README.md`, coverage of 2026-10-14.
 - The test set method and its strata: `specs/foundation/plan.md`, "Blind test set method".
 - The criteria are applied by the evaluation of task 18 (`specs/news-live/tasks.md`).
+
+## Amendment (2026-10-16): the input also carries the outlet's tags
+
+The input is no longer only the headline and the lead: it is the headline, the tags the outlet
+published with the article (filtered by `data/classification/tag-stoplist.csv`, at most 8, in the
+feed's order) and the lead, in that order and cut at the encoder's 128 tokens. Decided by the author
+and recorded in ADR-0019 (proposed), which also sets when the article body may be read.
+
+## Amendment (2026-10-21, proposed): what happens when a sector is added
+
+Skeleton drafted by the assistant; the options are proposals and the decision is the author's.
+
+### Context
+
+- The taxonomy has 12 topics and three are live (ADR-0007); `sectors.is_active` (migration 0007)
+  says which ones. The model's labels, the rules and the sampling terms come from the active sectors
+  only.
+- The model is one-vs-rest (one binary head per label, `multi_target_strategy="one-vs-rest"`). A
+  trained model has exactly the labels it was trained with; a new sector has no head in it.
+- The labelling guide says an article with no sector is `none`: "not about public policy in these
+  sectors". It does not tell an article out of every sector from one that belongs to a topic that is
+  planned but not active, and the Label Studio interface cannot record the difference.
+- So the 400 training labels (and the test set) hold, as negatives, articles that a future sector
+  would claim as positives (a transport plan, a court ruling on the environment).
+
+### Options considered
+
+**What to do with the labels already written**
+- **A — keep them and accept the noise.** Pros: no extra work. Cons: for the new sector, every one of
+  its articles in the old set is a false negative, and the model learns that the topic is "none".
+- **B — review only the articles that could belong to the new sector** (found by its enrichment
+  terms) before training it. Pros: the cost is proportional to the sector. Cons: needs the terms
+  first, and the review changes a set whose hash a model's card records.
+- **C — record "other topic" while labelling now** (a new choice, or reuse of `unsure`). Pros: the
+  trace exists from the start. Cons: it changes the interface and the guide before the first label,
+  and `unsure` has another job (the second pass).
+
+**What to do with the model**
+- **D — retrain on all the labels with the new head.** Pros: one model, one version. Cons: hours of
+  training and a new promotion run for every family that changes.
+- **E — train only the new head and keep the others.** Pros: cheaper. Cons: SetFit trains the body
+  and the heads together, so the old heads would not match a new body; not verified for this case.
+
+**What happens to the test set**
+- **F — a new blind test set (v2) for the new sector.** Pros: honest numbers. Cons: another round of
+  hand labelling, and the promotion criteria of this ADR are written for three sectors.
+
+### Decision
+
+_To be written by the author._
+
+### Questions to settle before deciding
+
+1. Does a sector added later start with the rules only, and does the model take it by the same
+   promotion criteria as today, in a later run?
+2. Is a new training set labelled from scratch for all sectors, or only extended?
+3. Does the test set stay frozen (v1) and a new one cover the new sector, or is v1 edited? (It must
+   not be, if it has already been looked at.)
+4. Does the guide change before the first label of the 400, or after?
+
+### Not verified
+
+- What `SetFitClassifier` does when the active sectors grow but the model keeps its old labels: its
+  `_check` rejects a label outside the vocabulary, but a label that is missing from the model's
+  output was not tested.
+
+## Amendment (2026-11-06): the model of train-set-v5 is promoted for sectors by exception
+
+Decided by the author on 2026-11-06.
+
+- **What was measured**: the model trained on `train-set-v5` (800 examples, five active sectors:
+  education, health, housing, justice, work) against the rules on `test-set-v2` (report
+  `data/eval/reports/20261106T100227+0000-053ae9eb0168.json`). Sector, criterion 1: rules 0.639,
+  model 0.671, +3.2 points, 95 % interval -9.4 to +20.6: **fails** (needs +5). Criterion 2: passes,
+  the model is right as often as the rules or more on all 14 outlets. Level fails both criteria and
+  stays with the rules.
+- **Why it is promoted anyway**: the gain points the same way on every outlet, and the model that
+  was promoted before (`train-set-v3`) only knows three sectors, so keeping it would leave justice
+  and work to the rules alone. The interval is wide because the random half of the test set has
+  102 articles and few of them are about justice or work; the result does not show the model is
+  worse either.
+- **What this is not**: a new threshold. Criteria 1 and 2 stay as written for every later model.
+- **What closes the exception**: more blind test articles, so the interval narrows, and a new
+  evaluation of the promoted model by the same criteria.
+- **Where it applies**: `scripts/classify-with-model.sh` uses this model by default (ADR-0022), with
+  the model giving sectors and the rules giving communities and levels.

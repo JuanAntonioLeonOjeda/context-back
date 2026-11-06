@@ -21,6 +21,7 @@ SETTINGS = CurveSettings(
     config=TrainingConfig(encoder="encoder", seed=42),
     folds=4,
     threshold=0.5,
+    tag_stoplist="list-v1",
 )
 SIZES = (10, 20, 30)
 # Even articles are about health, odd ones about nothing the model learns.

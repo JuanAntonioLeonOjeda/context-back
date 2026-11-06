@@ -30,6 +30,9 @@ class SetFitPredictor:
         """A model saved by the training job: the weights and the label names in one directory."""
         from setfit import SetFitModel  # lazy on purpose, see the module docstring
 
+        # Loading prints a warning about a "Mistral regex" and advises `fix_mistral_regex=True`.
+        # It is a false positive for this encoder, and following it would change the tokenization
+        # of most texts: see tests/ml/test_tokenizer_roundtrip.py. Do not set the flag.
         # Typed through a Protocol: SetFit ships no type information.
         model: ProbabilityModel = SetFitModel.from_pretrained(str(directory))
         return cls(model)

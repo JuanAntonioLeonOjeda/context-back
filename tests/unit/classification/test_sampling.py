@@ -20,7 +20,7 @@ from datos.classification.domain.sampling import (
 )
 from datos.classification.infrastructure.sample_files import read_enrichment_terms
 
-SECTORS = frozenset({"education", "health", "housing"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 TERMS = read_enrichment_terms(Path("data/sampling/enrichment-terms.csv"), sector_ids=SECTORS)
 PATTERN = enrichment_pattern(TERMS)
 UNTIL = datetime(2026, 10, 21, tzinfo=UTC)

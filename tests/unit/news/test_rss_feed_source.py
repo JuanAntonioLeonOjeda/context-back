@@ -39,6 +39,18 @@ def test_every_real_feed_gives_three_valid_articles(name: str) -> None:
     assert all(not isinstance(a, DropReason) for a in articles)
 
 
+def test_the_categories_of_a_feed_are_its_tags() -> None:
+    [first, *_] = _source(body=_fixture("el-pais")).read(FEED)
+
+    assert first.tags[:3] == ("España", "Crisis migratoria", "Ceuta")
+
+
+def test_a_feed_without_categories_has_no_tags() -> None:
+    items = _source(body=_fixture("canarias7")).read(FEED)
+
+    assert [item.tags for item in items] == [(), (), ()]
+
+
 def test_dates_are_utc_whatever_the_offset_of_the_feed() -> None:
     # La Vanguardia writes "13 Oct 2026 15:07:36 +0200" (no weekday); El País uses GMT.
     [first, *_] = _source(body=_fixture("la-vanguardia")).read(FEED)

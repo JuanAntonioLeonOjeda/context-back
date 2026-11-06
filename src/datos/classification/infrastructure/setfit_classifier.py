@@ -5,7 +5,7 @@ threshold and keeps their probability as a score. It never gives communities (th
 rules) and never sees the outlet. The version is given by the caller: a hash of the weights file.
 """
 
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 
 from datos.classification.application.probability_predictor import ProbabilityPredictor
 from datos.classification.domain.labels import NO_LABELS, Labels, Score
@@ -38,8 +38,8 @@ class SetFitClassifier:
         self._threshold = threshold
         self.model_version = model_version
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
-        text = article_text(headline, lead)
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
+        text = article_text(headline, lead, tags)
         if not text:
             return NO_LABELS  # nothing to read: the predictor is not asked
         probabilities = self._predictor.probabilities(text)

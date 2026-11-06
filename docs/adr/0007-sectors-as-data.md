@@ -43,3 +43,26 @@ three of launch are active. A planned sector is a row with `is_active = false` (
 chosen over a separate taxonomy file because the database then knows every topic; the cost is that
 every reader of the sectors must filter on it, and the two readers that exist do, with tests. The
 candidates listed in the Decision are superseded by this list.
+
+## Amendment (2026-11-02): justice, work and taxes are activated
+
+Decided with the author after the evaluation of 2026-10-26 (sector gain of +6.0 points with a 95 %
+interval from −5.6 to +22.2) and a check of the volume of the collected news (about 24,000 in the
+last 30 days; keyword probes put justice, taxes and work among the topics with the most news).
+Activation follows the rule above: a batch with competences, rules terms, sampling terms and
+labels. The three sectors are active in the data; the live database and the web take them after the
+loader runs, which waits for the retrained model (the old one labels only the first three, and
+the composite takes the sectors family from the model).
+
+What this changes:
+- The labelling interface and guide have the three new sectors; the 500 training and 200 test
+  articles labelled before have to be looked at again for them (every one that had no sector, plus
+  a check of the rest), and extra enriched samples are drawn for the new sectors.
+- The promotion criteria of ADR-0016 are measured again for the sectors family on the relabelled
+  test set, which needs enough positives of each new sector (about 50) to mean anything.
+
+Deferred on 2026-11-05: **taxes** goes back to `is_active = false`. The first labelled sample held
+only 4 positives, and most articles first labelled `taxes` were general economy. Its competences
+stay in the data. Its rules and sampling terms were removed (the loaders refuse terms of an
+inactive sector) and are in the history of PR #35. Justice was defined as everything judicial and
+criminal (a topic, not only public policy) by the author on 2026-11-05; see the labelling guide.

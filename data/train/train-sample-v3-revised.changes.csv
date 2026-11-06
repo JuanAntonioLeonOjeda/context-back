@@ -1,0 +1,50 @@
+article_id,field,before,after,reason
+20810,sectors,taxes,,"macro-economy (IMF), no tax measure"
+42536,sectors,,justice,court-ordered search of NGOs in Ceuta (judicial/criminal)
+49332,sectors,work,,"a worker injured in an accident (incident, no labour policy)"
+30608,sectors,justice|taxes,justice,"criminal investigation; bank data, not tax policy"
+12676,sectors,taxes,,"aid to the self-employed, no tax measure named"
+33631,government_levels,local,,"police/migration incident, no council acts"
+23290,sectors,,justice,Audiencia Nacional on the CNI report (judicial)
+10999,sectors,,justice,"free legal aid abroad, judicial (judicial)"
+41779,government_levels,local,,"police case, no council acts"
+42519,sectors,taxes,,"interview, no tax measure"
+49319,government_levels,local,,"court ruling, no council acts"
+47867,sectors,education|justice,justice,"political resignation, not education"
+38549,sectors,work,,"a worker injured in an accident (incident, no labour policy)"
+52105,government_levels,local,,"trial, no council acts"
+59635,sectors,taxes,,a water tariff is not a tax
+36027,sectors,,justice,court halts tree felling (judicial)
+51198,sectors,work,,private company layoffs with no public measure
+49050,sectors,,justice,police officers testify before a judge (judicial)
+62863,government_levels,local,,"national police arrest, no council acts"
+54652,government_levels,local,,"rescue and judicial authority, no council acts"
+21536,government_levels,local,,"arrests by police, no council acts"
+7731,government_levels,local,,"arrest, no council acts"
+60199,government_levels,local,,"court ruling, no council acts"
+21664,sectors,,justice,"constitutional court of Morocco, election challenges (judicial)"
+47933,sectors,work,,"political resignation, not labour"
+10427,sectors,work,,private company layoffs with no public measure
+52687,government_levels,local,,"labour court ruling on a private bar, no council acts"
+26385,sectors,taxes,,"income statistic by town, no tax measure"
+31921,government_levels,local,,"homicide investigation, no council acts"
+38581,sectors,taxes,,"Social Security benefit, not tax policy"
+35185,sectors,taxes,,"EU public debt statistic, no tax measure"
+43966,sectors,,justice,Government before the Supreme Court (judicial)
+62732,sectors,,justice,control of the Constitutional Court in Poland (judicial)
+9410,sectors,,justice,celebrities to testify before a judge (judicial)
+28877,sectors,work,,"robotaxi launch, no labour policy"
+46271,sectors,work,,"protests in Italy for an arrest, not labour policy"
+227,sectors,taxes,,Nobel prize in Economics
+42843,sectors,taxes,,criminal trial abroad (money laundering)
+42843,sectors,,justice,criminal trial in Argentina (judicial)
+53163,government_levels,local,,"trial, no council acts"
+43976,sectors,taxes,,personal story of a worker abroad
+51136,communities,ccaa-02,,"same story as 51197, which has none"
+44716,sectors,,justice,Supreme Court requirement on the grandchildren law (judicial)
+55298,government_levels,local,,"court sentence, no council acts"
+54152,sectors,work|taxes,work,"unemployment figures, no tax measure"
+43477,sectors,work|taxes,work,"taxes is deferred (ADR-0007 amendment, 2026-11-05)"
+47911,sectors,work|taxes,work,"taxes is deferred (ADR-0007 amendment, 2026-11-05)"
+34858,sectors,housing|taxes,housing,"taxes is deferred (ADR-0007 amendment, 2026-11-05)"
+191,sectors,taxes,,"taxes is deferred (ADR-0007 amendment, 2026-11-05)"

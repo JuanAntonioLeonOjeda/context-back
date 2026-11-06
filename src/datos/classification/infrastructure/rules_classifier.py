@@ -2,6 +2,7 @@
 
 import csv
 import hashlib
+from collections.abc import Sequence
 from pathlib import Path
 
 from pydantic import BaseModel, ValidationError, field_validator
@@ -36,7 +37,9 @@ class RulesClassifier:
     def model_version(self) -> str:
         return self._version
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
+        # The rules read the text of the article, not its tags: their version is the files they
+        # are built from, and they must say the same whatever the tags (ADR-0019).
         return classify_text(f"{headline}. {lead or ''}", self._rules)
 
 

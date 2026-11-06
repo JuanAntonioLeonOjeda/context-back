@@ -1,6 +1,6 @@
 """Fakes of the API ports and a client factory, so router tests need no database."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
@@ -8,11 +8,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from datos.api.app import create_app
-from datos.governments.domain.competence import Competence
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
 from datos.news.application.community_news import ClassifiedArticle
+from datos.stories.application.community_stories import CommunityStory, StoryArticle, StoryRun
+from datos.stories.application.story_tree import TreeRun
+from datos.stories.domain.tree import StoryLink
 from datos.territories.territory import Level, Territory
 
 TODAY = date(2026, 10, 13)
@@ -78,14 +80,6 @@ class FakeGovernments:
         return list(self._parties)
 
 
-class FakeCompetences:
-    def __init__(self, competences: list[Competence]) -> None:
-        self._competences = competences
-
-    def competences(self) -> list[Competence]:
-        return list(self._competences)
-
-
 class FakeNews:
     """Returns its articles as stored; records the last query so tests can check it."""
 
@@ -102,17 +96,82 @@ class FakeNews:
         territory_id: str,
         sector_id: str,
         since: datetime,
+        until: datetime,
         model_id: str,
-        per_outlet: int,
+        per_outlet_per_day: int,
     ) -> list[ClassifiedArticle]:
         self.last_query = {
             "territory_id": territory_id,
             "sector_id": sector_id,
             "since": since,
+            "until": until,
             "model_id": model_id,
-            "per_outlet": per_outlet,
+            "per_outlet_per_day": per_outlet_per_day,
         }
         return list(self.articles)
+
+    def latest_per_tree(
+        self, *, territory_id: str, sector_id: str, model_id: str
+    ) -> list[ClassifiedArticle]:
+        self.last_query = {
+            "territory_id": territory_id,
+            "sector_id": sector_id,
+            "model_id": model_id,
+        }
+        return list(self.articles)
+
+
+class FakeStories:
+    """Returns its stories as stored; records the last query so tests can check it."""
+
+    def __init__(self) -> None:
+        self.run: StoryRun | None = None
+        self.found: list[CommunityStory] = []
+        self.last_query: dict[str, object] = {}
+
+    def sector_ids(self) -> frozenset[str]:
+        return frozenset({"education", "health", "housing"})
+
+    def latest_run(self) -> StoryRun | None:
+        return self.run
+
+    def stories(
+        self,
+        *,
+        run_id: int,
+        territory_id: str,
+        sector_id: str | None,
+        since: datetime,
+        model_id: str,
+    ) -> list[CommunityStory]:
+        self.last_query = {
+            "run_id": run_id,
+            "territory_id": territory_id,
+            "sector_id": sector_id,
+            "since": since,
+            "model_id": model_id,
+        }
+        return list(self.found)
+
+
+class FakeTrees:
+    """Serves one tree run, its links and the articles of its stories."""
+
+    def __init__(self) -> None:
+        self.run: TreeRun | None = None
+        self.link_rows: list[StoryLink] = []
+        self.articles: dict[int, tuple[StoryArticle, ...]] = {}
+
+    def latest_tree_run(self) -> TreeRun | None:
+        return self.run
+
+    def links(self, tree_run_id: int) -> list[StoryLink]:
+        return list(self.link_rows)
+
+    def story_articles(
+        self, story_run_id: int, story_ids: Sequence[int]
+    ) -> Mapping[int, tuple[StoryArticle, ...]]:
+        return {i: self.articles[i] for i in story_ids}
 
 
 GEOMETRY: dict[str, object] = {"type": "FeatureCollection", "attribution": "test", "features": []}
@@ -176,28 +235,43 @@ def news_reader() -> FakeNews:
 
 
 @pytest.fixture
-def make_client(news_reader: FakeNews) -> Callable[..., TestClient]:
+def stories_reader() -> FakeStories:
+    return FakeStories()
+
+
+@pytest.fixture
+def trees_reader() -> FakeTrees:
+    return FakeTrees()
+
+
+@pytest.fixture
+def make_client(
+    news_reader: FakeNews, stories_reader: FakeStories, trees_reader: FakeTrees
+) -> Callable[..., TestClient]:
     def make(
         *,
         reachable: bool = True,
         terms: list[GovernmentTerm] = TERMS,
         today: date = TODAY,
         articles: list[ClassifiedArticle] | None = None,
-        competences: list[Competence] | None = None,
+        run: StoryRun | None = None,
+        stories: list[CommunityStory] | None = None,
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
         indicators = FakeIndicators(INDICATORS, VALUES)
-        competence_table = FakeCompetences(competences or [])
         news_reader.articles = articles or []
+        stories_reader.run = run
+        stories_reader.found = stories or []
         return TestClient(
             create_app(
                 FixedProbe(reachable=reachable),
                 governments=lambda: governments,
                 territories=lambda: territories,
                 indicators=lambda: indicators,
-                competences=lambda: competence_table,
                 news=lambda: news_reader,
+                stories=lambda: stories_reader,
+                trees=lambda: trees_reader,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
                 classifier_id="rules",

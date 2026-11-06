@@ -7,7 +7,7 @@ description: Backend layout, module boundaries, ports & adapters, and the depend
 ## Data flow
 
 ```
-RSS / GDELT / sitemaps ─► news (ingestion) ─► classification ─► attribution ─► stories ─► PostgreSQL ─► api ─► front
+RSS / GDELT / sitemaps ─► news (ingestion) ─► classification ─► stories ─► PostgreSQL ─► api ─► front
 INE / ministries / CIS / election results ─► indicators, voters (ETL) ───────────────────────┘
 curated data/governments ─► governments ────────────────────────────────────────────────────┘
 ```
@@ -26,7 +26,7 @@ curated data/governments ─► governments ────────────
 ## Layout
 
 ```
-src/datos/<module>/       # territories, governments, attribution, news, classification,
+src/datos/<module>/       # territories, governments, news, classification,
                           # stories, indicators, voters, api
   domain/          # pure Python: entities, value objects, rules. No I/O, no FastAPI,
                    # no SQLAlchemy, no HTTP, no datetime.now()
@@ -58,7 +58,7 @@ interface → application → domain ← infrastructure
 - Port: `Protocol` with a role name — `ArticleRepository`, `Clock`, `ArticleClassifier`.
 - Adapter: technology + role — `PgArticleRepository`, `SystemClock`,
   `SetFitArticleClassifier`, `RssFeedReader`.
-- Use case: verb phrase — `ClassifyArticle`, `LinkStories`, `AttributeResponsibleParty`.
+- Use case: verb phrase — `ClassifyArticle`, `LinkStories`, `TrainModel`.
   Avoid `XxxService` god-classes.
 
 ## Reproducibility

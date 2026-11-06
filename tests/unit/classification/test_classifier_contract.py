@@ -79,8 +79,31 @@ def test_is_deterministic(classifier: ArticleClassifier) -> None:
 
 
 def test_never_takes_the_outlet_as_an_input(classifier: ArticleClassifier) -> None:
-    # Neutrality: the same text gets the same labels whoever published it.
-    assert list(inspect.signature(classifier.classify).parameters) == ["headline", "lead"]
+    # Neutrality: the same text gets the same labels whoever published it. The tags are part of
+    # the text of the article (ADR-0019), and the outlet is not.
+    assert list(inspect.signature(classifier.classify).parameters) == ["headline", "lead", "tags"]
+
+
+def test_the_tags_are_optional(classifier: ArticleClassifier) -> None:
+    for headline, lead in TEXTS:
+        assert classifier.classify(headline, lead) == classifier.classify(headline, lead, ())
+
+
+def test_the_rules_say_the_same_whatever_the_tags() -> None:
+    rules = load_rules_classifier(Path("data/classification"), sector_ids=SECTORS)
+    for headline, lead in TEXTS:
+        assert rules.classify(headline, lead, ("Sanidad", "Vivienda")) == rules.classify(
+            headline, lead
+        )
+
+
+def test_the_own_model_reads_the_tags() -> None:
+    model = SetFitClassifier(_FakePredictor(), model_version="w1", sector_ids=SECTORS)
+
+    plain = model.classify("Una noticia sin pistas", None)
+    tagged = model.classify("Una noticia sin pistas", None, ("Hospital",))
+
+    assert "health" not in plain.sectors and "health" in tagged.sectors
 
 
 def test_every_evidence_term_is_in_the_text(classifier: ArticleClassifier) -> None:

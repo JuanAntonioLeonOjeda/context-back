@@ -7,12 +7,16 @@ from fastapi import FastAPI
 from datos.api.health import DatabaseProbe, build_health_router
 from datos.api.provider import Provider
 from datos.clock import Clock
-from datos.governments.application.read_governments import CompetencesReader, GovernmentsReader
+from datos.governments.application.read_governments import GovernmentsReader
 from datos.governments.interface.routes import build_governments_router
 from datos.indicators.application.read_indicators import IndicatorReader
 from datos.indicators.interface.routes import build_indicators_router
 from datos.news.application.community_news import CommunityNewsReader
 from datos.news.interface.routes import build_news_router
+from datos.stories.application.community_stories import CommunityStoriesReader
+from datos.stories.application.story_tree import StoryTreeReader
+from datos.stories.interface.routes import build_stories_router
+from datos.stories.interface.tree_routes import build_tree_router
 from datos.territories.routes import TerritoryReader, build_territories_router
 
 
@@ -22,8 +26,9 @@ def create_app(
     governments: Provider[GovernmentsReader],
     territories: Provider[TerritoryReader],
     indicators: Provider[IndicatorReader],
-    competences: Provider[CompetencesReader],
     news: Provider[CommunityNewsReader],
+    stories: Provider[CommunityStoriesReader],
+    trees: Provider[StoryTreeReader],
     clock: Clock,
     geometry: Mapping[str, object],
     classifier_id: str,
@@ -40,11 +45,18 @@ def create_app(
     app.include_router(
         build_news_router(
             news=news,
-            governments=governments,
-            competences=competences,
             territories=territories,
             clock=clock,
             classifier_id=classifier_id,
         )
     )
+    app.include_router(
+        build_stories_router(
+            stories=stories,
+            territories=territories,
+            clock=clock,
+            classifier_id=classifier_id,
+        )
+    )
+    app.include_router(build_tree_router(trees=trees))
     return app

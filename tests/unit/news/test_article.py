@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import UTC, datetime
 
 import pytest
@@ -7,6 +8,7 @@ from datos.news.domain.article import (
     DropReason,
     FeedItem,
     clean_lead,
+    complete_with_page,
     normalise_url,
     to_article,
 )
@@ -116,3 +118,11 @@ def test_an_item_without_lead_is_still_an_article() -> None:
 
     assert not isinstance(article, DropReason)
     assert article.lead is None
+
+
+def test_a_page_adds_the_tags_the_listing_lacks_and_never_replaces_the_listings() -> None:
+    bare = FeedItem("T", "https://a.example/1", WHEN, None)
+    page = FeedItem("T", "https://a.example/1", WHEN, "Lead", tags=("Página",))
+
+    assert complete_with_page(bare, page).tags == ("Página",)
+    assert complete_with_page(replace(bare, tags=("Feed",)), page).tags == ("Feed",)

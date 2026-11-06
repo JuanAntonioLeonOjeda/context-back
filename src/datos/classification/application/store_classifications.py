@@ -26,6 +26,7 @@ class ArticleText:
     article_id: int
     headline: str
     lead: str | None
+    tags: tuple[str, ...] = ()  # the tags the model may read, in the order of the feed
 
 
 class ClassificationRepository(Protocol):
@@ -47,7 +48,7 @@ def classify_new(classifier: ArticleClassifier, repository: ClassificationReposi
         )
         if not batch:
             break
-        results = [(a.article_id, classifier.classify(a.headline, a.lead)) for a in batch]
+        results = [(a.article_id, classifier.classify(a.headline, a.lead, a.tags)) for a in batch]
         stored += repository.add(classifier.model_id, classifier.model_version, results)
     log.info(
         "classification_finished",

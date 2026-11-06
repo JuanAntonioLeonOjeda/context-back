@@ -94,7 +94,8 @@ honest user agent (`datos-portfolio-audit/0.1; research`); no bot protection was
 
 ## 7. Intellectual property and text and data mining (checked 2026-10-13)
 
-Not legal advice; to be reviewed by a lawyer before any public launch.
+Not legal advice, and none will be sought: a personal, non-commercial project that stays within what
+each site allows (ADR-0019). Where a site does not allow something, it is not done.
 
 - **LPI art. 129 bis** (press publishers' right): exclusive right over reproduction and
   making available online of press publications. Free uses include **hyperlinks** and

@@ -1,9 +1,10 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 
 from datos.news.application.collect_articles import Sources, collect_articles
 from datos.news.domain.article import Article, DropReason, FeedItem
 from datos.news.domain.outlet import Feed, FeedKind, Outlet
+from datos.news.domain.tag import Tag
 
 WHEN = datetime(2026, 10, 13, 14, 0, tzinfo=UTC)
 OUTLET = Outlet("outlet-a", "Outlet A", "https://a.example", "national", None, True)
@@ -43,6 +44,7 @@ class FakeRepository:
     def __init__(self) -> None:
         self.outlets: list[Outlet] = []
         self.stored: dict[tuple[str, str], Article] = {}
+        self.tagged: dict[tuple[str, str], set[str]] = {}
 
     def upsert_outlets(self, outlets: Sequence[Outlet]) -> None:
         self.outlets = list(outlets)
@@ -54,6 +56,17 @@ class FakeRepository:
 
     def known_urls(self, outlet_id: str, urls: Sequence[str]) -> set[str]:
         return {url for url in urls if (outlet_id, url) in self.stored}
+
+    def add_tags(self, outlet_id: str, tags_by_url: Mapping[str, Sequence[Tag]]) -> int:
+        """Like the database: only stored articles carry tags, and a link is new once."""
+        added = 0
+        for url, tags in tags_by_url.items():
+            if (outlet_id, url) not in self.stored:
+                continue
+            carried = self.tagged.setdefault((outlet_id, url), set())
+            added += len({tag.key for tag in tags} - carried)
+            carried.update(tag.key for tag in tags)
+        return added
 
 
 class FakePages:
@@ -254,3 +267,96 @@ def test_a_listed_item_without_link_is_counted_not_requested() -> None:
 
     assert result.dropped == {DropReason.NO_LINK: 1}
     assert pages.requested == ["https://a.example/news/1"]
+
+
+def test_the_tags_of_a_new_article_are_linked_once_it_is_stored() -> None:
+    repository = FakeRepository()
+    items: dict[str, list[FeedItem] | Exception] = {
+        "https://a.example/rss": [_item(1, tags=("Sanidad", "sanidad", "Madrid"))]
+    }
+
+    [result] = collect_articles([_feed()], [OUTLET], _sources(items), repository)
+
+    assert result.tags_linked == 2
+    assert repository.tagged[("outlet-a", "https://a.example/news/1")] == {"sanidad", "madrid"}
+
+
+def test_an_article_stored_before_tags_existed_is_completed_by_the_next_read() -> None:
+    repository = FakeRepository()
+
+    def read_with(tags: tuple[str, ...]) -> Sources:
+        return _sources({"https://a.example/rss": [_item(1, tags=tags)]})
+
+    collect_articles([_feed()], [OUTLET], read_with(()), repository)
+
+    [again] = collect_articles([_feed()], [OUTLET], read_with(("Sanidad",)), repository)
+    [third] = collect_articles([_feed()], [OUTLET], read_with(("Sanidad",)), repository)
+
+    assert again.inserted == 0 and again.tags_linked == 1
+    assert third.tags_linked == 0
+
+
+def test_a_page_read_feed_tags_its_known_articles_without_reading_their_pages() -> None:
+    pages = FakePages()
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+    first = _sources({feed.url: [_item(1)]}, pages)
+    collect_articles([feed], [OUTLET], first, repository)
+    pages.requested.clear()
+
+    second = _sources({feed.url: [_item(1, tags=("Metro",))]}, pages)
+    [result] = collect_articles([feed], [OUTLET], second, repository)
+
+    assert pages.requested == []
+    assert result.tags_linked == 1
+
+
+def test_an_item_with_a_link_but_no_valid_tag_links_nothing() -> None:
+    repository = FakeRepository()
+    items: dict[str, list[FeedItem] | Exception] = {
+        "https://a.example/rss": [_item(1, tags=("", "  "))]
+    }
+
+    [result] = collect_articles([_feed()], [OUTLET], _sources(items), repository)
+
+    assert result.inserted == 1 and result.tags_linked == 0
+
+
+def test_a_page_read_for_the_lead_brings_the_tags_the_listing_lacks() -> None:
+    page = FeedItem("T", "https://a.example/news/1", WHEN, "Lead", tags=("Metro", "Madrid"))
+    pages = FakePages({"https://a.example/news/1": page})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    [result] = collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, summary=None)]}, pages), repository
+    )
+
+    assert result.tags_linked == 2
+    assert repository.tagged[("outlet-a", "https://a.example/news/1")] == {"metro", "madrid"}
+
+
+def test_the_tags_of_the_listing_come_before_the_ones_of_the_page() -> None:
+    page = FeedItem("T", "https://a.example/news/1", WHEN, "Lead", tags=("De la página",))
+    pages = FakePages({"https://a.example/news/1": page})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, tags=("Del listado",))]}, pages), repository
+    )
+
+    assert repository.tagged[("outlet-a", "https://a.example/news/1")] == {"del listado"}
+
+
+def test_a_page_that_gave_no_tag_because_the_site_does_not_allow_it_links_nothing() -> None:
+    # The page reader returns no tags where the policy says no: the lead is still read.
+    pages = FakePages({"https://a.example/news/1": FeedItem("T", "u", WHEN, "Lead")})
+    repository = FakeRepository()
+    feed = _feed(kind=FeedKind.NEWS_SITEMAP, needs_page_fetch=True)
+
+    [result] = collect_articles(
+        [feed], [OUTLET], _sources({feed.url: [_item(1, summary=None)]}, pages), repository
+    )
+
+    assert result.inserted == 1 and result.tags_linked == 0

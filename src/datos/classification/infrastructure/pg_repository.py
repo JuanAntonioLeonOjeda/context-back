@@ -7,6 +7,11 @@ from sqlalchemy import Engine, text
 
 from datos.classification.application.store_classifications import ArticleText
 from datos.classification.domain.labels import Labels
+from datos.classification.domain.tag_stoplist import StoplistEntry
+from datos.classification.infrastructure.pg_article_tags import (
+    default_stoplist,
+    readable_tags_by_article,
+)
 
 _UNCLASSIFIED = text(
     """
@@ -39,8 +44,9 @@ _SECTOR_IDS = text("SELECT id FROM sectors WHERE is_active ORDER BY id")
 class PgClassificationRepository:
     """Each call is its own transaction: a batch is stored whole or not at all."""
 
-    def __init__(self, engine: Engine) -> None:
+    def __init__(self, engine: Engine, stoplist: Sequence[StoplistEntry] | None = None) -> None:
         self._engine = engine
+        self._stoplist = default_stoplist(stoplist)
 
     def sector_ids(self) -> frozenset[str]:
         """The active sectors: what the rules, the sample and the own model may label."""
@@ -53,7 +59,14 @@ class PgClassificationRepository:
                 _UNCLASSIFIED,
                 {"model_id": model_id, "model_version": model_version, "limit": limit},
             )
-            return [ArticleText(row.id, row.headline, row.lead) for row in rows]
+            articles = list(rows)
+            tags = readable_tags_by_article(
+                connection, [row.id for row in articles], self._stoplist
+            )
+            return [
+                ArticleText(row.id, row.headline, row.lead, tags.get(row.id, ()))
+                for row in articles
+            ]
 
     def add(self, model_id: str, model_version: str, results: Sequence[tuple[int, Labels]]) -> int:
         stored = 0

@@ -2,7 +2,6 @@
 paths:
   - "data/governments/**"
   - "src/datos/governments/**"
-  - "src/datos/attribution/**"
   - "src/datos/classification/**"
   - "src/datos/stories/**"
   - "src/datos/indicators/**"

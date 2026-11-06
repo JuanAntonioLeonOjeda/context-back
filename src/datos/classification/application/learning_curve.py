@@ -50,6 +50,7 @@ class CurveSettings:
     config: TrainingConfig
     folds: int
     threshold: float
+    tag_stoplist: str  # the list the texts were built with: other list, other inputs
 
     def key(self) -> dict[str, object]:
         """What a stored point must share with this run to be reused: the labels, the training,
@@ -59,6 +60,7 @@ class CurveSettings:
             "training": asdict(self.config),
             "folds": self.folds,
             "threshold": self.threshold,
+            "tag_stoplist": self.tag_stoplist,
         }
 
 
@@ -191,4 +193,4 @@ def _model_inputs(examples: Sequence[LabelledExample], reader: ArticleTextReader
     missing = [i for i in ids if i not in found]
     if missing:
         raise TrainingSetError(f"articles not in the database: {missing[:5]}")
-    return {i: article_text(found[i].headline, found[i].lead) for i in ids}
+    return {i: article_text(found[i].headline, found[i].lead, found[i].tags) for i in ids}

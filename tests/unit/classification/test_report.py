@@ -53,3 +53,36 @@ def test_the_summary_says_when_it_cannot_tell_yet() -> None:
 
     assert "cannot be told, no fold has both sizes" in text
     assert "Decision: cannot be told yet" in text
+
+
+def test_the_verdicts_say_the_decision_both_criteria_and_the_outlets_behind() -> None:
+    from datos.classification.domain.bootstrap import Interval
+    from datos.classification.domain.promotion import (
+        FamilyVerdict,
+        GainResult,
+        OutletResult,
+        OutletsResult,
+    )
+    from datos.classification.report import format_verdicts
+
+    promoted = FamilyVerdict(
+        "sector",
+        GainResult(0.61, 0.70, 0.09, Interval(0.03, 0.15, 2000), 100, True),
+        OutletsResult((OutletResult("outlet-a", 14, 10, 11),), True),
+    )
+    kept = FamilyVerdict(
+        "level",
+        GainResult(0.50, 0.58, 0.08, None, 100, True),
+        OutletsResult(
+            (OutletResult("outlet-a", 14, 12, 12), OutletResult("outlet-b", 14, 11, 8)), False
+        ),
+    )
+
+    text = format_verdicts([promoted, kept])
+
+    assert "sector: PROMOTED, the model takes it" in text
+    assert "rules 0.610, model 0.700, +9.0 points (95 % interval +3.0 to +15.0): passes" in text
+    assert "level: stays with the rules" in text
+    assert "2. Outlets (2): fails" in text
+    assert "outlet-b: 8 vs 11 of 14 right" in text
+    assert "outlet-a: 12 vs 12" not in text  # only the outlets left behind are listed

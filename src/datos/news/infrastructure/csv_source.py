@@ -34,6 +34,7 @@ class _FeedRow(BaseModel):
     section: str
     needs_page_fetch: bool
     article_url_pattern: str | None = None
+    tags_in_page: bool = False
 
     @field_validator("article_url_pattern", mode="before")
     @classmethod
@@ -100,6 +101,7 @@ def read_feeds(path: Path, outlets: list[Outlet]) -> list[Feed]:
                 row.section,
                 row.needs_page_fetch,
                 row.article_url_pattern,
+                row.tags_in_page,
             )
         )
     return feeds

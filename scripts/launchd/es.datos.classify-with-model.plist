@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Runs scripts/classify-with-model.sh every hour: the collector in Docker brings new articles every
+  3 hours with the rules only, and this gives them the own model's sectors. A run missed while the
+  Mac sleeps happens once on wake. Replace REPO with the absolute path of this repository, then:
+    cp scripts/launchd/es.datos.classify-with-model.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/es.datos.classify-with-model.plist
+  To stop it:
+    launchctl bootout gui/$(id -u)/es.datos.classify-with-model
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>es.datos.classify-with-model</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPO/scripts/classify-with-model.sh</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>REPO/var/log/classify-with-model.launchd.log</string>
+</dict>
+</plist>

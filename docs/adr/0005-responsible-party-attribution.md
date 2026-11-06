@@ -1,6 +1,6 @@
 # ADR-0005: Responsible party from competences and government in force
 
-- **Status:** Accepted
+- **Status:** Superseded by ADR-0018 (2026-10-15)
 - **Date:** 2026-10-13
 - **Phase:** foundation
 

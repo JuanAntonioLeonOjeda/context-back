@@ -77,6 +77,9 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
       LOG_JSON: "true"
+      # Whose stored labels the news API reads (ADR-0015, ADR-0022): the own model's composite;
+      # `rules` goes back to the rules alone.
+      ACTIVE_CLASSIFIER_ID: ${ACTIVE_CLASSIFIER_ID:-composite}
     depends_on:
       db:
         condition: service_healthy

@@ -1,5 +1,6 @@
-"""`GET /communities/{id}/news`: the latest news of a community and sector, with who is
-responsible (ADR-0014). Headline, link and date only: never the lead (sources audit, section 7).
+"""`GET /communities/{id}/news` and `/trees`: the latest news of a community and sector, and its
+trees. Headline, link and date only: never the lead (sources audit, section 7), and no party
+(ADR-0018).
 """
 
 from datetime import date, datetime
@@ -9,54 +10,44 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
 from datos.api.provider import Provider
-from datos.attribution.application.published import AttributionEntry, Confidence, Reason
 from datos.clock import Clock
-from datos.governments.application.published import (
-    Competence,
-    CompetenceFunction,
-    CompetenceLevel,
-    CompetencesReader,
-    GovernmentsReader,
-)
 from datos.news.application.community_news import (
-    PER_OUTLET,
-    WINDOW_DAYS,
+    DEFAULT_DAYS,
+    MAX_RANGE_DAYS,
+    PER_OUTLET_PER_DAY,
+    ClassifiedArticle,
     CommunityNewsReader,
-    NewsItem,
+    InvalidRangeError,
     community_news,
+    community_trees,
 )
 from datos.territories.routes import TerritoryReader
 from datos.territories.territory import Level
 
+TREES_DESCRIPTION = """
+The trees of related stories that reach this community and sector, one item per tree: the newest
+news of the tree that the active classifier placed there. No dates filter them. `tree_story_id` of
+each item is the story to ask `/stories/{story_id}/tree` for, which answers the whole tree.
+
+**Order:** publication time of that news, newest first; ties by outlet id. The order never depends
+on an outlet's size, audience or line. No item names a party (ADR-0018).
+"""
+
 DESCRIPTION = f"""
-The news of the last {WINDOW_DAYS} days (today included, Spain time) that the active classifier
-placed in this community and sector, at most {PER_OUTLET} per outlet (its newest).
+The news of a range of days (Spain time) that the active classifier placed in this community and
+sector. Without dates: the last {DEFAULT_DAYS} days, today included. With `date_from` and/or
+`date_to` (ISO dates, both included): that range, of at most {MAX_RANGE_DAYS} days. At most
+{PER_OUTLET_PER_DAY} per outlet and day (its newest).
+
+Nothing is deleted: any day the collector ran can be asked for. A day it did not run, or before the
+portal began collecting, answers an empty list, not an error.
 
 **Order:** publication time, newest first; ties by outlet id. The order never depends on an
 outlet's size, audience or line.
 
-Each item carries its attribution, computed on read from the competence table and the
-government in force on the publication date in Spain (ADR-0014): one entry per government
-level the article names, or a single `not_determined` entry with its reason.
+No item names a party (ADR-0018): who governs the community is in
+`/communities/{{territory_id}}/governments`.
 """
-
-
-class CompetenceOut(BaseModel):
-    activity: str
-    description: str
-    function: CompetenceFunction
-    legal_basis: str
-    source_url: str
-
-
-class AttributionOut(BaseModel):
-    level: CompetenceLevel | None
-    territory_id: str | None
-    confidence: Confidence
-    party_ids: list[str]  # alphabetical; empty unless the confidence is high
-    is_caretaker: bool
-    competences: list[CompetenceOut]
-    reason: Reason | None
 
 
 class ClassifierOut(BaseModel):
@@ -71,21 +62,28 @@ class NewsItemOut(BaseModel):
     url: str
     published_at: datetime
     classified_by: ClassifierOut
-    attribution: list[AttributionOut]
+    # The story of the item when it has a tree of related stories; the tree is at
+    # `/stories/{tree_story_id}/tree`.
+    tree_story_id: int | None
+
+
+class CommunityTreesOut(BaseModel):
+    territory_id: str
+    sector_id: str
+    items: list[NewsItemOut]
 
 
 class CommunityNewsOut(BaseModel):
     territory_id: str
     sector_id: str
     since: date
+    until: date
     items: list[NewsItemOut]
 
 
 def build_news_router(
     *,
     news: Provider[CommunityNewsReader],
-    governments: Provider[GovernmentsReader],
-    competences: Provider[CompetencesReader],
     territories: Provider[TerritoryReader],
     clock: Clock,
     classifier_id: str,
@@ -101,35 +99,65 @@ def build_news_router(
         territory_id: str,
         sector: Annotated[str, Query(description="A sector id: education, health or housing")],
         news_reader: Annotated[CommunityNewsReader, Depends(news)],
-        governments_reader: Annotated[GovernmentsReader, Depends(governments)],
-        competences_reader: Annotated[CompetencesReader, Depends(competences)],
         territory_reader: Annotated[TerritoryReader, Depends(territories)],
+        date_from: Annotated[date | None, Query(description="First day, ISO date")] = None,
+        date_to: Annotated[date | None, Query(description="Last day, ISO date")] = None,
     ) -> CommunityNewsOut:
         if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
         if sector not in news_reader.sector_ids():
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"unknown sector {sector}")
-        result = community_news(
-            territory_id=territory_id,
-            sector_id=sector,
-            today=clock.today(),
-            model_id=classifier_id,
-            news=news_reader,
-            governments=governments_reader,
-            competences=competences_reader,
-        )
+        try:
+            result = community_news(
+                territory_id=territory_id,
+                sector_id=sector,
+                today=clock.today(),
+                date_from=date_from,
+                date_to=date_to,
+                model_id=classifier_id,
+                news=news_reader,
+            )
+        except InvalidRangeError as error:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(error)) from error
         return CommunityNewsOut(
             territory_id=result.territory_id,
             sector_id=result.sector_id,
             since=result.since,
+            until=result.until,
+            items=[_item(item) for item in result.items],
+        )
+
+    @router.get(
+        "/communities/{territory_id}/trees",
+        response_model=CommunityTreesOut,
+        description=TREES_DESCRIPTION,
+    )
+    def trees(
+        territory_id: str,
+        sector: Annotated[str, Query(description="A sector id: education, health or housing")],
+        news_reader: Annotated[CommunityNewsReader, Depends(news)],
+        territory_reader: Annotated[TerritoryReader, Depends(territories)],
+    ) -> CommunityTreesOut:
+        if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
+        if sector not in news_reader.sector_ids():
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"unknown sector {sector}")
+        result = community_trees(
+            territory_id=territory_id,
+            sector_id=sector,
+            model_id=classifier_id,
+            news=news_reader,
+        )
+        return CommunityTreesOut(
+            territory_id=result.territory_id,
+            sector_id=result.sector_id,
             items=[_item(item) for item in result.items],
         )
 
     return router
 
 
-def _item(item: NewsItem) -> NewsItemOut:
-    article = item.article
+def _item(article: ClassifiedArticle) -> NewsItemOut:
     return NewsItemOut(
         outlet_id=article.outlet_id,
         outlet_name=article.outlet_name,
@@ -137,27 +165,5 @@ def _item(item: NewsItem) -> NewsItemOut:
         url=article.url,
         published_at=article.published_at,
         classified_by=ClassifierOut(model_id=article.model_id, model_version=article.model_version),
-        attribution=[_attribution(entry) for entry in item.attribution],
-    )
-
-
-def _attribution(entry: AttributionEntry) -> AttributionOut:
-    return AttributionOut(
-        level=entry.level,
-        territory_id=entry.territory_id,
-        confidence=entry.confidence,
-        party_ids=list(entry.party_ids),
-        is_caretaker=entry.is_caretaker,
-        competences=[_competence(c) for c in entry.competences],
-        reason=entry.reason,
-    )
-
-
-def _competence(competence: Competence) -> CompetenceOut:
-    return CompetenceOut(
-        activity=competence.activity,
-        description=competence.description,
-        function=competence.function,
-        legal_basis=competence.legal_basis,
-        source_url=competence.source_url,
+        tree_story_id=article.tree_story_id,
     )

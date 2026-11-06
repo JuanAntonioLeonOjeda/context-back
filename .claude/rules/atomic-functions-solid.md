@@ -10,7 +10,7 @@ description: Atomic functions and the practical SOLID that applies to this Pytho
   (`classify_and_store()`), it is two functions.
 - No hidden side effects: a function that computes something does not also write to the
   database, call the LLM or log business events. Split into a pure function that decides
-  and a thin one that applies the decision. Responsibility attribution, similarity
+  and a thin one that applies the decision. Classification rules, similarity
   scoring and indicator calculations **must** be pure.
 - Practical limit: past ~25 lines or 2–3 levels of nesting, extract sub-functions whose
   names explain each step. The name replaces the comment you were about to write.

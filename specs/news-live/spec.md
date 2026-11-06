@@ -1,5 +1,11 @@
 # Phase 2 — news-live: spec
 
+> **Amendment, 2026-10-15 (ADR-0018).** The author decided that no news item is attributed to a
+> party. The attribution described below (AC1, and the attribution in the API and the web) was
+> built, reviewed and then removed; this spec keeps it as the record of what the phase did. The
+> promotion of the own model drops its per-party criterion. Who governs is still shown (map and
+> panel); laws and votes come in phase 7.
+
 ## What it solves
 
 The collector already stores the headline, link, date and a short lead of every article of

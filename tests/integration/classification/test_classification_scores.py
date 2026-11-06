@@ -1,7 +1,7 @@
 """The scores of a model's classifications are stored with them, append-only (ADR-0016, 0006)."""
 
 import itertools
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from pathlib import Path
 
 import pytest
@@ -19,7 +19,7 @@ from datos.governments.application.published import CompetenceLevel
 
 pytestmark = pytest.mark.integration
 
-SECTORS = frozenset({"education", "health", "housing"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 _names = (f"classification_scores_it_{n}" for n in itertools.count())
 
 
@@ -71,7 +71,7 @@ class FakeModel:
     model_id = "fake-model"
     model_version = "w1"
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
         return Labels(
             communities=frozenset(),
             sectors=frozenset({"health"}),

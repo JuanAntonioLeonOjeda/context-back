@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -19,7 +19,7 @@ from datos.territories.repository import PgTerritoryRepository
 
 pytestmark = pytest.mark.integration
 
-SECTORS = frozenset({"education", "health", "housing"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 _names = (f"classification_it_{n}" for n in itertools.count())
 HEADLINES = [
     ("El Cabildo de Lanzarote construye 200 viviendas públicas", None),
@@ -109,7 +109,7 @@ def test_a_new_version_classifies_everything_again_and_keeps_the_old_rows(engine
         model_id = classifier.model_id
         model_version = "next"
 
-        def classify(self, headline: str, lead: str | None) -> Labels:
+        def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
             return classifier.classify(headline, lead)
 
     classify_new(NextVersion(), repository)

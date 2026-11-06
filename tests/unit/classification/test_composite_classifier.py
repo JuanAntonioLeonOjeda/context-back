@@ -1,5 +1,6 @@
 """The composite classifier of ADR-0016: each family of labels from its assigned classifier."""
 
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ from datos.classification.application.composite_classifier import (
     EVIDENCE_PREFIX,
     CompositeClassifier,
     Family,
+    promoted_classifier,
 )
 from datos.classification.domain.labels import Evidence, Labels, Score
 from datos.classification.infrastructure.rules_classifier import load_rules_classifier
@@ -25,7 +27,7 @@ class Fixed:
         self._labels = labels
         self.calls = 0
 
-    def classify(self, headline: str, lead: str | None) -> Labels:
+    def classify(self, headline: str, lead: str | None, tags: Sequence[str] = ()) -> Labels:
         self.calls += 1
         return self._labels
 
@@ -105,7 +107,8 @@ def test_every_family_has_an_evidence_prefix() -> None:
 
 def test_made_only_of_the_rules_it_says_exactly_what_the_rules_say() -> None:
     rules = load_rules_classifier(
-        Path("data/classification"), sector_ids=frozenset({"education", "health", "housing"})
+        Path("data/classification"),
+        sector_ids=frozenset({"education", "health", "housing", "justice", "work"}),
     )
     composite = CompositeClassifier(dict.fromkeys(Family, rules))
 
@@ -140,3 +143,19 @@ def test_the_rules_give_no_scores_and_the_composite_of_the_rules_neither() -> No
 
     assert RULES.classify("titular", None).scores == ()
     assert composite.classify("titular", None).scores == ()
+
+
+def test_promotion_gives_the_model_only_the_families_asked_for() -> None:
+    rules = Fixed(
+        "rules", Labels(frozenset({"ccaa-05"}), frozenset({"housing"}), frozenset({CCAA}))
+    )
+    model = Fixed("setfit", Labels(frozenset(), frozenset({"health"}), frozenset({STATE})))
+
+    classifier = promoted_classifier(rules, model, [Family.SECTORS])
+    labels = classifier.classify("headline", None)
+
+    assert labels.sectors == frozenset({"health"})  # from the model
+    assert labels.communities == frozenset({"ccaa-05"})  # from the rules
+    assert labels.levels == frozenset({CCAA})  # from the rules: levels were not promoted
+    assert classifier.model_id == "composite"
+    assert classifier.model_version == "communities=rules@v1;sectors=setfit@v1;levels=rules@v1"

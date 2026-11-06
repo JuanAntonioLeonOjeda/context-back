@@ -11,7 +11,7 @@ without the assistant. Every rule below serves that goal. When a rule here confl
 
 ## 1. The author designs, the assistant implements with them
 
-- Architecture, data model, attribution rules, similarity thresholds and indicator
+- Architecture, data model, classification rules, similarity thresholds and indicator
   definitions are decided by the author. The assistant **proposes options with trade-offs
   and a recommendation**, then waits. It does not pick silently and move on.
 - Before each phase: a short plan, then **stop and wait for confirmation** (see
@@ -28,7 +28,6 @@ author can follow and, ideally, types or rewrites themselves**:
 | Core zone | Where |
 |---|---|
 | Competence table and government dataset | `data/governments/`, `src/datos/governments/` |
-| Responsible-party attribution rule | `src/datos/attribution/` |
 | Classifier port, prompts and promotion of the own model | `src/datos/classification/` |
 | Story similarity, thresholds and linking | `src/datos/stories/` |
 | Indicator calculations (deflators, per-capita, breaks) | `src/datos/indicators/` |
@@ -92,7 +91,7 @@ against a real Postgres. Prefer one more well-measured edge case over one more f
 
 Some interviews ban AI. When the author asks for "practice mode" (or `/defend` reveals a
 gap), the assistant **does not write the code**: it states the task, gives hints only on
-request and reviews the result afterwards. Good candidates: an attribution test case, a
+request and reviews the result afterwards. Good candidates: a classification rule test case, a
 similarity query, an indicator calculation, a migration.
 
 ## Language

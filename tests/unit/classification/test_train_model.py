@@ -66,7 +66,9 @@ class FakeTrainer:
 
 class FakeTexts:
     def __init__(self, articles: Mapping[int, tuple[str, str | None]]) -> None:
-        self._articles = {i: ArticleText(i, h, lead) for i, (h, lead) in articles.items()}
+        self._articles = {
+            i: ArticleText(i, h, lead, TAGS.get(i, ())) for i, (h, lead) in articles.items()
+        }
 
     def texts(self, article_ids: Collection[int]) -> Mapping[int, ArticleText]:
         return {i: self._articles[i] for i in article_ids if i in self._articles}
@@ -81,6 +83,7 @@ EXAMPLES = [
     example(10, {"health"}, {STATE}),
     example(20, set(), set()),
 ]
+TAGS = {10: ("Sanidad",)}
 ARTICLES = {10: ("Sanidad amplía", "Hospitales."), 20: ("Un partido", None), 30: ("Alquiler", "")}
 
 
@@ -99,6 +102,7 @@ def run(
         sector_ids=SECTORS,
         test_ids=test_ids,
         texts=FakeTexts(articles),
+        tag_stoplist="list-v1",
         trainer=trainer,
         store=LocalModelStore(tmp_path),
         config=CONFIG,
@@ -113,7 +117,11 @@ def test_trains_on_the_texts_and_labels_in_article_id_order(tmp_path: Path) -> N
     _, trainer = run(tmp_path)
 
     [call] = trainer.calls
-    assert call["texts"] == ["Sanidad amplía Hospitales.", "Un partido", "Alquiler"]
+    assert call["texts"] == [
+        "Sanidad amplía Etiquetas: Sanidad. Hospitales.",
+        "Un partido",
+        "Alquiler",
+    ]
     assert call["labels"] == [
         "sector:education",
         "sector:health",
@@ -190,6 +198,7 @@ def test_the_card_says_what_is_needed_to_repeat_the_training(tmp_path: Path) -> 
     assert card["training_set"] == {
         "name": "train-set-v1",
         "file_hash": "abc123def456",
+        "tag_stoplist": "list-v1",
         "size": 3,
         "unsure": 0,
         "no_label": 1,
@@ -240,12 +249,18 @@ def test_a_plan_is_made_without_training_or_storing_anything(tmp_path: Path) -> 
         sector_ids=SECTORS,
         test_ids=(),
         texts=FakeTexts(ARTICLES),
+        tag_stoplist="list-v1",
         store=LocalModelStore(tmp_path),
         config=CONFIG,
     )
 
     assert plan.name == model_name(INFO, CONFIG)
-    assert plan.texts == ("Sanidad amplía Hospitales.", "Un partido", "Alquiler")
+    # The tags the reader gives are part of the text the model learns from.
+    assert plan.texts == (
+        "Sanidad amplía Etiquetas: Sanidad. Hospitales.",
+        "Un partido",
+        "Alquiler",
+    )
     assert plan.targets[0] == (0, 1, 0, 1, 0, 0)
     assert plan.description["size"] == 3
     assert trainer.calls == []
@@ -260,6 +275,7 @@ def test_a_plan_makes_the_same_checks_as_a_training(tmp_path: Path) -> None:
             sector_ids=SECTORS,
             test_ids={10},
             texts=FakeTexts(ARTICLES),
+            tag_stoplist="list-v1",
             store=LocalModelStore(tmp_path),
             config=CONFIG,
         )

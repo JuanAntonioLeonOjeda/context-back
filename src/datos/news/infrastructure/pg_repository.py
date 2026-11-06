@@ -1,11 +1,13 @@
 """PostgreSQL storage of outlets and article metadata."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
+from datetime import datetime
 
 from sqlalchemy import Engine, text
 
 from datos.news.domain.article import Article
 from datos.news.domain.outlet import Outlet
+from datos.news.domain.tag import Tag
 
 _UPSERT_OUTLET = text(
     """
@@ -25,6 +27,38 @@ _INSERT_ARTICLE = text(
     """
 )
 
+
+# A tag is stored once, whoever carries it: the key is its identity.
+_INSERT_TAG = text(
+    """
+    INSERT INTO tags (key, label) VALUES (:key, :label)
+    ON CONFLICT (key) DO NOTHING
+    """
+)
+# Joins by (outlet, URL) and key, so a URL the outlet has not stored yet links nothing. A link made
+# before tags had a place gets it now; one that has it is left alone.
+_LINK_TAG = text(
+    """
+    INSERT INTO article_tags (article_id, tag_id, source, position)
+    SELECT a.id, t.id, 'feed', :position
+    FROM articles a, tags t
+    WHERE a.outlet_id = :outlet_id AND a.url = :url AND t.key = :key
+    ON CONFLICT (article_id, tag_id, source) DO UPDATE SET position = EXCLUDED.position
+    WHERE article_tags.position IS NULL
+    """
+)
+
+# The newest first: the ones a labelling sample is most likely to draw. Served by the unique index
+# on (outlet_id, url) for the outlet, then a filter: an outlet holds thousands of articles at most.
+_UNTAGGED_URLS = text(
+    """
+    SELECT a.url FROM articles a
+    WHERE a.outlet_id = :outlet_id AND a.fetched_at >= :since
+      AND NOT EXISTS (SELECT 1 FROM article_tags at WHERE at.article_id = a.id)
+    ORDER BY a.id DESC
+    LIMIT :limit
+    """
+)
 
 _KNOWN_URLS = text("SELECT url FROM articles WHERE outlet_id = :outlet_id AND url = ANY(:urls)")
 
@@ -67,6 +101,13 @@ class PgNewsRepository:
                 inserted += result.rowcount
         return inserted
 
+    def untagged_urls(self, outlet_id: str, *, since: datetime, limit: int) -> list[str]:
+        with self._engine.connect() as connection:
+            rows = connection.execute(
+                _UNTAGGED_URLS, {"outlet_id": outlet_id, "since": since, "limit": limit}
+            )
+            return list(rows.scalars())
+
     def known_urls(self, outlet_id: str, urls: Sequence[str]) -> set[str]:
         if not urls:
             return set()
@@ -74,3 +115,25 @@ class PgNewsRepository:
         with self._engine.connect() as connection:
             rows = connection.execute(_KNOWN_URLS, {"outlet_id": outlet_id, "urls": list(urls)})
             return {row.url for row in rows}
+
+    def add_tags(self, outlet_id: str, tags_by_url: Mapping[str, Sequence[Tag]]) -> int:
+        """Link the feed's tags to stored articles, in the order the feed gave them; return how
+        many links were new or got their place.
+
+        Safe to repeat: a link already there is left alone, so a feed read again completes the
+        articles stored before tags existed and adds nothing twice.
+        """
+        links = [
+            {"outlet_id": outlet_id, "url": url, "key": tag.key, "position": position}
+            for url, tags in tags_by_url.items()
+            for position, tag in enumerate(tags)
+        ]
+        if not links:
+            return 0
+        distinct = {tag.key: tag for tags in tags_by_url.values() for tag in tags}
+        with self._engine.begin() as connection:
+            connection.execute(
+                _INSERT_TAG, [{"key": tag.key, "label": tag.label} for tag in distinct.values()]
+            )
+            result = connection.execute(_LINK_TAG, links)
+        return max(result.rowcount, 0)

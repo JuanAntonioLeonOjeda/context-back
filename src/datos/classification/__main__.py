@@ -1,8 +1,11 @@
 """Command line: uv run python -m datos.classification <command>
 
-- `classify-new [--rules-dir PATH]`: classifies the articles the rules classifier has not seen yet
-  (a new version of the rules, that is, any change in data/classification/, classifies everything
-  again). Run it after each collection.
+- `classify-new [--rules-dir PATH] [--model DIR [--promote FAMILY ...]]`: classifies the articles
+  the classifier has not seen yet (a new version of the rules, that is, any change in
+  data/classification/, classifies everything again). Run it after each collection. With `--model`
+  the own model (needs the `ml` group, so it runs on the author's machine) takes the promoted
+  families (`sectors` by default, as the evaluation of 2026-10-26 decided) and the rules the rest;
+  the result is stored as the `composite` classifier, beside the rules' rows, which stay.
 - `sample --set train|eval --name NAME --size N --seed S --until ISO-DATETIME [--dry-run]`: draws a
   sample for hand labelling (data/sampling/README.md). Refuses to overwrite a sample: a sample is
   frozen, a new one gets a new name.
@@ -13,6 +16,9 @@
   JSON export into the labelled set (`data/train/train-set-v1.jsonl` or
   `data/eval/test-set-v1.jsonl`): ids and labels only. Names the articles not answered yet and
   refuses anything outside the sample or the vocabulary.
+- `evaluate --model DIR [--test-set PATH] [--seed S]`: the own model against the rules on the blind
+  test set, per family (ADR-0016, task 18). Labels in memory, stores nothing in the database, and
+  writes a new report in `data/eval/reports/` every run (D18).
 - `learning-curve --seed S [--training-set PATH] [--run-folds 0 1] [--dry-run]`: the learning curve
   inside the training set (ADR-0016, D11 and D12). Writes each point as it ends and carries on from
   the file if run again.
@@ -28,6 +34,9 @@ from pathlib import Path
 import structlog
 from sqlalchemy import Engine
 
+from datos.classification.application.classifier import ArticleClassifier
+from datos.classification.application.composite_classifier import Family, promoted_classifier
+from datos.classification.application.evaluate_model import evaluate_model
 from datos.classification.application.learning_curve import (
     CurvePlan,
     CurvePoint,
@@ -38,6 +47,7 @@ from datos.classification.application.learning_curve import (
 from datos.classification.application.sample_for_labelling import Sample, sample_for_labelling
 from datos.classification.application.store_classifications import classify_new
 from datos.classification.application.train_model import (
+    CARD_FILE,
     ModelCard,
     TrainingConfig,
     TrainingPlan,
@@ -48,12 +58,18 @@ from datos.classification.application.train_model import (
 from datos.classification.domain.labelled_export import Assembly, assemble
 from datos.classification.domain.training_set import TrainingSetError
 from datos.classification.infrastructure.curve_file import JsonlCurveStore
+from datos.classification.infrastructure.evaluation_report import (
+    REPORTS_DIR,
+    RunInfo,
+    write_report,
+)
 from datos.classification.infrastructure.label_studio_export import read_label_studio_export
 from datos.classification.infrastructure.labelled_set_file import (
     read_sample_strata,
     write_labelled_set,
 )
 from datos.classification.infrastructure.local_model_store import LocalModelStore
+from datos.classification.infrastructure.pg_article_outlet_reader import PgArticleOutletReader
 from datos.classification.infrastructure.pg_article_text_reader import PgArticleTextReader
 from datos.classification.infrastructure.pg_candidate_reader import PgCandidateReader
 from datos.classification.infrastructure.pg_repository import PgClassificationRepository
@@ -68,14 +84,24 @@ from datos.classification.infrastructure.sample_files import (
     read_enrichment_terms,
     write_sample,
 )
-from datos.classification.infrastructure.setfit_classifier import DEFAULT_THRESHOLD
+from datos.classification.infrastructure.setfit_classifier import (
+    DEFAULT_THRESHOLD,
+    SetFitClassifier,
+)
+from datos.classification.infrastructure.setfit_predictor import SetFitPredictor
 from datos.classification.infrastructure.setfit_trainer import (
     SetFitModelTrainer,
     count_pairs,
     device_name,
 )
+from datos.classification.infrastructure.tag_stoplist_file import tag_stoplist_version
 from datos.classification.infrastructure.training_set_file import read_training_set
-from datos.classification.report import duration, format_point, format_summary
+from datos.classification.report import (
+    duration,
+    format_point,
+    format_summary,
+    format_verdicts,
+)
 from datos.config import load_settings
 from datos.db import build_engine
 from datos.log_setup import configure_logging
@@ -83,6 +109,7 @@ from datos.log_setup import configure_logging
 DEFAULT_RULES_DIR = Path("data/classification")
 DEFAULT_TERMS = Path("data/sampling/enrichment-terms.csv")
 DEFAULT_TRAINING_SET = Path("data/train/train-set-v1.jsonl")
+DEFAULT_TEST_SET = Path("data/eval/test-set-v1.jsonl")
 DEFAULT_ENCODER = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"  # ADR-0016
 MODELS_DIR = Path("models")
 SET_DIRS = {"train": Path("data/train"), "eval": Path("data/eval")}
@@ -102,6 +129,14 @@ def main() -> None:
     commands = parser.add_subparsers(dest="command", required=True)
     classify = commands.add_parser("classify-new", help="classify the articles not seen yet")
     classify.add_argument("--rules-dir", type=Path, default=DEFAULT_RULES_DIR)
+    classify.add_argument("--model", type=Path, default=None, help="a model directory in models/")
+    classify.add_argument(
+        "--promote",
+        nargs="+",
+        choices=[family.value for family in Family],
+        default=[Family.SECTORS.value],
+        help="the families the model gives (default: sectors); the rules give the rest",
+    )
     sample = commands.add_parser("sample", help="draw a sample for hand labelling")
     sample.add_argument("--set", choices=sorted(SET_DIRS), required=True)
     sample.add_argument("--name", required=True, help="e.g. train-sample-v1")
@@ -129,6 +164,10 @@ def main() -> None:
     export.add_argument("--sample", required=True, help="the sample the tasks came from")
     export.add_argument("--export", type=Path, required=True, help="Label Studio's JSON export")
     export.add_argument("--name", default=None, help="default: train-set-v1 or test-set-v1")
+    evaluate = commands.add_parser("evaluate", help="the own model against the rules, test set")
+    evaluate.add_argument("--model", type=Path, required=True, help="a model directory in models/")
+    evaluate.add_argument("--test-set", type=Path, default=DEFAULT_TEST_SET)
+    evaluate.add_argument("--seed", type=int, default=20261105, help="of the bootstrap intervals")
     curve = commands.add_parser(
         "learning-curve", help="the learning curve inside the training set (folds, 3 sizes)"
     )
@@ -150,7 +189,7 @@ def main() -> None:
     engine = build_engine(str(settings.database_url))
     repository = PgClassificationRepository(engine)
     if arguments.command == "sample":
-        _sample(arguments, repository, PgCandidateReader(engine))
+        _sample(arguments, repository, PgCandidateReader(engine), PgArticleTextReader(engine))
         return
     if arguments.command == "train":
         _train(arguments, repository, engine)
@@ -158,12 +197,24 @@ def main() -> None:
     if arguments.command == "export-labels":
         _export_labels(arguments, repository)
         return
+    if arguments.command == "evaluate":
+        _evaluate(arguments, repository, engine)
+        return
     if arguments.command == "learning-curve":
         _learning_curve(arguments, repository, engine)
         return
     try:
-        classifier = load_rules_classifier(arguments.rules_dir, sector_ids=repository.sector_ids())
-    except InvalidRulesFileError as error:
+        sector_ids = repository.sector_ids()
+        classifier: ArticleClassifier = load_rules_classifier(
+            arguments.rules_dir, sector_ids=sector_ids
+        )
+        if arguments.model is not None:
+            classifier = promoted_classifier(
+                classifier,
+                _load_model(arguments.model, sector_ids),
+                [Family(name) for name in arguments.promote],
+            )
+    except (InvalidRulesFileError, FileNotFoundError) as error:
         log.error("articles_not_classified", reason=str(error))
         raise SystemExit(1) from error
     classify_new(classifier, repository)
@@ -184,6 +235,7 @@ def _train(
             sector_ids=sector_ids,
             test_ids=labelled_ids([Path("data/eval")]),
             texts=PgArticleTextReader(engine),
+            tag_stoplist=tag_stoplist_version(),
             store=store,
             config=config,
         )
@@ -236,6 +288,60 @@ def _show_export(assembly: Assembly, sample_size: int, target: Path, *, replaced
     print(f"Written      : {target}{' (replaced)' if replaced else ''}")
 
 
+def _load_model(model_dir: Path, sector_ids: frozenset[str]) -> SetFitClassifier:
+    """The trained model of a directory, as a classifier of sectors and levels."""
+    card = json.loads((model_dir / CARD_FILE).read_text(encoding="utf-8"))
+    return SetFitClassifier(
+        SetFitPredictor.load(model_dir),
+        model_version=card["model_version"],
+        sector_ids=sector_ids,
+        threshold=card["threshold"],
+    )
+
+
+def _evaluate(
+    arguments: argparse.Namespace, repository: PgClassificationRepository, engine: Engine
+) -> None:
+    model_dir: Path = arguments.model
+    test_set: Path = arguments.test_set
+    sector_ids = repository.sector_ids()
+    try:
+        card = json.loads((model_dir / CARD_FILE).read_text(encoding="utf-8"))
+        rules = load_rules_classifier(DEFAULT_RULES_DIR, sector_ids=sector_ids)
+        candidate = _load_model(model_dir, sector_ids)
+        examples = read_training_set(test_set, sector_ids=sector_ids)
+        family_verdicts = evaluate_model(
+            examples,
+            sector_ids=sector_ids,
+            texts=PgArticleTextReader(engine),
+            outlets=PgArticleOutletReader(engine),
+            rules=rules,
+            candidate=candidate,
+            seed=arguments.seed,
+        )
+    except (TrainingSetError, InvalidRulesFileError, FileNotFoundError) as error:
+        log.error("model_not_evaluated", reason=str(error))
+        raise SystemExit(1) from error
+    info = RunInfo(
+        test_set={
+            "name": test_set.stem,
+            "file_hash": file_version(test_set),
+            "size": len(examples),
+        },
+        rules_version=rules.model_version,
+        tag_stoplist=tag_stoplist_version(),
+        model={"name": card["name"], "version": card["model_version"]},
+        seed=arguments.seed,
+        run_at=datetime.now(UTC),
+    )
+    path = write_report(REPORTS_DIR, info, family_verdicts)
+    print(f"Model    : {card['name']} ({card['model_version']})")
+    print(f"Rules    : {rules.model_version}")
+    print(f"Test set : {test_set} ({len(examples)} articles)")
+    print(format_verdicts(family_verdicts))
+    print(f"\nReport   : {path} (one per run, never replaced)")
+
+
 def _learning_curve(
     arguments: argparse.Namespace, repository: PgClassificationRepository, engine: Engine
 ) -> None:
@@ -247,6 +353,7 @@ def _learning_curve(
         config=config,
         folds=arguments.folds,
         threshold=DEFAULT_THRESHOLD,
+        tag_stoplist=tag_stoplist_version(),
     )
     results = (
         arguments.models_dir / f"{path.stem}-{_encoder_name(config)}-seed{config.seed}-curve.jsonl"
@@ -361,6 +468,7 @@ def _sample(
     arguments: argparse.Namespace,
     repository: PgClassificationRepository,
     reader: PgCandidateReader,
+    texts: PgArticleTextReader,
 ) -> None:
     until: datetime = arguments.until
     if until.tzinfo is None:
@@ -396,6 +504,10 @@ def _sample(
         seed=arguments.seed,
         until=until,
         terms_version=file_version(arguments.terms),
+        tags_by_id={
+            i: t.tags for i, t in texts.texts([a.article_id for a in drawn.articles]).items()
+        },
+        tag_stoplist=tag_stoplist_version(),
     )
     log.info("sample_drawn", size=len(drawn.articles), files=[str(p) for p in paths])
 
