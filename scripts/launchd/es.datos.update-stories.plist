@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Runs scripts/update-stories.sh every day at 07:00, half an hour before the daily snapshot
+  (es.datos.publish-snapshot.plist), so the public site gets the stories of the day before.
+  A run missed while the Mac sleeps happens once on wake. Replace REPO with the absolute path of
+  this repository, then:
+    cp scripts/launchd/es.datos.update-stories.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/es.datos.update-stories.plist
+  To stop it:
+    launchctl bootout gui/$(id -u)/es.datos.update-stories
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>es.datos.update-stories</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPO/scripts/update-stories.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>7</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>REPO/var/log/update-stories.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPO/var/log/update-stories.log</string>
+</dict>
+</plist>
