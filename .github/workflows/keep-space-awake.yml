@@ -1,0 +1,33 @@
+# Visits the Hugging Face Space once a day so it does not sleep for inactivity on days the daily
+# snapshot (which restarts it) does not arrive, e.g. while the author's Mac is off (ADR-0023).
+# The variable SPACE_URL changes the address.
+name: Keep Space awake
+
+on:
+  schedule:
+    - cron: "41 12 * * *"   # every day at 12:41 UTC (an uncommon minute: shorter GitHub queues)
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Ping /api/health
+        env:
+          SPACE_URL: ${{ vars.SPACE_URL || 'https://juanan237-incontext.hf.space' }}
+        run: |
+          # A sleeping Space takes a few minutes to start (and to restore the snapshot): retry for 10 minutes.
+          for i in $(seq 1 20); do
+            if curl -fsS --max-time 30 "$SPACE_URL/api/health"; then
+              echo
+              echo "Space awake"
+              exit 0
+            fi
+            echo "Attempt $i: no answer yet, retrying in 30 s"
+            sleep 30
+          done
+          echo "::error::The Space did not answer at $SPACE_URL/api/health"
+          exit 1
