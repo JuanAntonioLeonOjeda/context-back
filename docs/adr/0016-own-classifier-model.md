@@ -260,3 +260,24 @@ _To be written by the author._
 - What `SetFitClassifier` does when the active sectors grow but the model keeps its old labels: its
   `_check` rejects a label outside the vocabulary, but a label that is missing from the model's
   output was not tested.
+
+## Amendment (2026-11-06): the model of train-set-v5 is promoted for sectors by exception
+
+Decided by the author on 2026-11-06.
+
+- **What was measured**: the model trained on `train-set-v5` (800 examples, five active sectors:
+  education, health, housing, justice, work) against the rules on `test-set-v2` (report
+  `data/eval/reports/20261106T100227+0000-053ae9eb0168.json`). Sector, criterion 1: rules 0.639,
+  model 0.671, +3.2 points, 95 % interval -9.4 to +20.6: **fails** (needs +5). Criterion 2: passes,
+  the model is right as often as the rules or more on all 14 outlets. Level fails both criteria and
+  stays with the rules.
+- **Why it is promoted anyway**: the gain points the same way on every outlet, and the model that
+  was promoted before (`train-set-v3`) only knows three sectors, so keeping it would leave justice
+  and work to the rules alone. The interval is wide because the random half of the test set has
+  102 articles and few of them are about justice or work; the result does not show the model is
+  worse either.
+- **What this is not**: a new threshold. Criteria 1 and 2 stay as written for every later model.
+- **What closes the exception**: more blind test articles, so the interval narrows, and a new
+  evaluation of the promoted model by the same criteria.
+- **Where it applies**: `scripts/classify-with-model.sh` uses this model by default (ADR-0022), with
+  the model giving sectors and the rules giving communities and levels.
