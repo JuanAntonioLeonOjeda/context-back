@@ -38,6 +38,10 @@ Priority is the project's: neutrality and traceability over features.
 6. **Candidatures to parties through a curated table** with its source (e.g. PSC-PSOE and PSdeG-PSOE
    to PSOE), so names and colours come from the party table; a candidature not in it counts as
    "Otras".
+   *Amended 2026-11-06 by the author*: a candidature without a party in the table that reaches the
+   3 % threshold is shown with its acronym from the file and a neutral colour, not folded into
+   "Otras" (in 2023: UPN in Navarra, 15.3 %, absent from the party table because it has not
+   governed since 2020).
 7. **Parties shown**: those with at least 3 % of the community's valid votes; the rest add up to
    "Otras". The same threshold for every party.
 8. **Income of the election's year** (2023 for the 2023 election), not the latest published.
