@@ -1,4 +1,4 @@
-"""Governments API: the government of a community on a date, and the party table."""
+"""Governments API: the government of a community on a date, the party table and the sectors."""
 
 from datetime import date
 from typing import Annotated
@@ -55,6 +55,14 @@ class PartyOut(BaseModel):
     colour_hex: str
 
 
+class SectorOut(BaseModel):
+    id: str
+    name: str
+    # The id of the indicator in `/communities/{id}/indicators` this sector is measured by; null
+    # when it has none, and then the web app shows no figure next to its news.
+    indicator_id: str | None
+
+
 def build_governments_router(
     governments: Provider[GovernmentsReader],
     territories: Provider[TerritoryReader],
@@ -108,6 +116,17 @@ def build_governments_router(
         return [
             PartyOut(id=p.id, name=p.name, short_name=p.short_name, colour_hex=p.colour_hex)
             for p in reader.parties()
+        ]
+
+    @router.get(
+        "/sectors",
+        response_model=list[SectorOut],
+        description="The sectors in use, ordered by id, with the indicator each is measured by.",
+    )
+    def sectors(reader: Annotated[GovernmentsReader, Depends(governments)]) -> list[SectorOut]:
+        return [
+            SectorOut(id=s.id, name=s.name, indicator_id=s.indicator_id)
+            for s in reader.active_sectors()
         ]
 
     return router

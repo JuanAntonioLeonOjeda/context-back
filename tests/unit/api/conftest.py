@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from datos.api.app import create_app
+from datos.governments.domain.competence import Sector
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
@@ -68,6 +69,12 @@ VALUES = [
 ]
 
 
+SECTORS = [
+    Sector("education", "Educación", indicator_id="higher_education_share_16plus"),
+    Sector("health", "Sanidad"),
+]
+
+
 class FakeGovernments:
     def __init__(self, terms: list[GovernmentTerm], parties: list[Party]) -> None:
         self._terms = terms
@@ -78,6 +85,9 @@ class FakeGovernments:
 
     def parties(self) -> list[Party]:
         return list(self._parties)
+
+    def active_sectors(self) -> list[Sector]:
+        return list(SECTORS)
 
 
 class FakeNews:

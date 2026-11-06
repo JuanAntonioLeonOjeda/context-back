@@ -118,3 +118,18 @@ def test_the_geometry_is_served_as_geojson_and_cacheable(make_client: Client) ->
     assert response.headers["content-type"].startswith("application/geo+json")
     assert "max-age" in response.headers["cache-control"]
     assert response.json()["type"] == "FeatureCollection"
+
+
+def test_sectors_lists_the_active_sectors_with_their_indicator_or_null(
+    make_client: Client,
+) -> None:
+    body = make_client().get("/sectors").json()
+
+    assert body == [
+        {
+            "id": "education",
+            "name": "Educación",
+            "indicator_id": "higher_education_share_16plus",
+        },
+        {"id": "health", "name": "Sanidad", "indicator_id": None},
+    ]
