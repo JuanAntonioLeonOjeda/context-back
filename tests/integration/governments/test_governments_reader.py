@@ -110,4 +110,4 @@ def test_competences_are_stored_as_in_the_dataset(
         )
         for c in expected
     )
-    assert len(rows) == 31
+    assert len(rows) == 45

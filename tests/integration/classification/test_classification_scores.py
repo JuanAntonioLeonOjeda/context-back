@@ -19,7 +19,7 @@ from datos.governments.application.published import CompetenceLevel
 
 pytestmark = pytest.mark.integration
 
-SECTORS = frozenset({"education", "health", "housing"})
+SECTORS = frozenset({"education", "health", "housing", "justice", "work"})
 _names = (f"classification_scores_it_{n}" for n in itertools.count())
 
 

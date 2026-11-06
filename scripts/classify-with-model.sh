@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 export PATH="$HOME/.docker/bin:$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 mkdir -p var/log
 log=var/log/classify-with-model.log
-model_dir="${MODEL_DIR:-models/train-set-v3-paraphrase-multilingual-mpnet-base-v2-seed42}"
+model_dir="${MODEL_DIR:-models/train-set-v5-paraphrase-multilingual-mpnet-base-v2-seed42}"
 
 fail() {
   printf '{"event": "classification_not_run", "reason": "%s", "at": "%s"}\n' \

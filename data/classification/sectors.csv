@@ -144,3 +144,98 @@ zones tensionades,housing,ca
 pisos turístics,housing,ca
 habitatge protegit,housing,ca
 habitatge públic,housing,ca
+Administración de Justicia,justice,es
+Poder Judicial,justice,es
+Consejo General del Poder Judicial,justice,es
+CGPJ,justice,es
+Tribunal Supremo,justice,es
+Tribunal Constitucional,justice,es
+Tribunal Superior de Justicia,justice,es
+TSJ,justice,es
+Audiencia Nacional,justice,es
+Audiencia Provincial,justice,es
+juzgado,justice,es
+juzgados,justice,es
+tribunal,justice,es
+tribunales,justice,es
+juez,justice,es
+jueza,justice,es
+jueces,justice,es
+magistrado,justice,es
+magistrada,justice,es
+fiscalía,justice,es
+Fiscalía,justice,es
+fiscal,justice,es
+sentencia,justice,es
+sentencias,justice,es
+condena,justice,es
+condenado,justice,es
+juicio,justice,es
+juicios,justice,es
+imputado,justice,es
+ley de enjuiciamiento,justice,es
+Administració de Justícia,justice,ca
+jutjat,justice,ca
+jutjats,justice,ca
+tribunals,justice,ca
+jutge,justice,ca
+jutgessa,justice,ca
+jutges,justice,ca
+magistrat,justice,ca
+fiscalia,justice,ca
+Fiscalia,justice,ca
+sentència,justice,ca
+sentències,justice,ca
+condemna,justice,ca
+judici,justice,ca
+judicis,justice,ca
+Audiència Provincial,justice,ca
+Tribunal Superior de Justícia,justice,ca
+paro,work,es
+desempleo,work,es
+empleo,work,es
+empleos,work,es
+trabajadores,work,es
+trabajadoras,work,es
+salario,work,es
+salarios,work,es
+salario mínimo,work,es
+SMI,work,es
+convenio colectivo,work,es
+convenios colectivos,work,es
+sindicato,work,es
+sindicatos,work,es
+huelga,work,es
+huelgas,work,es
+despido,work,es
+despidos,work,es
+jornada laboral,work,es
+reducción de jornada,work,es
+ERE,work,es
+ERTE,work,es
+Inspección de Trabajo,work,es
+contrato indefinido,work,es
+contratos indefinidos,work,es
+afiliación,work,es
+afiliados,work,es
+reforma laboral,work,es
+mercado laboral,work,es
+autónomos,work,es
+atur,work,ca
+ocupació,work,ca
+treballadors,work,ca
+treballadores,work,ca
+salari,work,ca
+salaris,work,ca
+salari mínim,work,ca
+conveni col·lectiu,work,ca
+sindicat,work,ca
+sindicats,work,ca
+vaga,work,ca
+vagues,work,ca
+acomiadament,work,ca
+acomiadaments,work,ca
+reducció de jornada,work,ca
+Inspecció de Treball,work,ca
+mercat laboral,work,ca
+autònoms,work,ca
