@@ -54,8 +54,8 @@ the census, with the file's name and SHA-256; running it twice stores nothing ne
 totals it stores match the official ones published with the file.
 
 **AC2 — income loaded.** Given the ADRH tables, when the loader runs, then each municipality gets its
-mean net income per person for a year, with the INE table and the download it came from; a
-municipality without a value has no row.
+mean net income per person for a year, with the INE series and the download it came from; a
+municipality without a value (some small ones are hidden by statistical secrecy) has no row.
 
 **AC3 — profile.** Given a community and an election, when the profile is read, then its
 municipalities are split into income bands, and for each band the API gives the number of

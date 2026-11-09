@@ -49,10 +49,19 @@ Core zones (`[core]`, collaborative): `src/datos/voters/`, the migrations and th
 ## 3. Income by municipality (AC2)
 
 - **Source**: INE ADRH (operation 353), one table per province ("Indicadores de renta media y
-  mediana"), series "Renta neta media por persona", municipal level, through the existing Tempus
-  client of `indicators` (its `application` API, not its internals).
-- **Schema**: in `0015`: `municipal_income` (municipality, year, euros per person, INE table, series
-  code, download id). Append-only like the observations; a municipality without a value has no row.
+  mediana"), series "Renta neta media por persona", municipal level.
+  *Changed 2026-11-06, while writing it*: the Tempus client of `indicators` reads one series per
+  request (8,131 requests here) and is that module's infrastructure, which `voters` may not
+  import; and the provincial tables are too big for the API ("No puede mostrarse por
+  restricciones de volumen", table 30824), even filtered by concept, because they carry every
+  census section. `voters` gets its own small reader over the shared `datos.http` client and makes
+  **one** request: `DATOS_METADATAOPERACION/353?p=12&g1=19:&g2=482:284048&date={year}0101&tip=AM`
+  (variable 19 "Municipios", every value; 482:284048 "Renta neta media por persona"). For 2023 it
+  answered 8,139 series in 4.6 MB after about six minutes, so that request has a 15-minute read
+  timeout (`datos.http.download` gained an optional `timeout`). The INE hides some small
+  municipalities' values (statistical secrecy): they have no row.
+- **Schema**: in `0015`: `municipal_income` (municipality, year, euros per person, series code,
+  download id). Append-only like the observations; a municipality without a value has no row.
 - **Command**: `python -m datos.voters load-income --year 2023`.
 
 ## 4. Profiles (AC3, AC4) `[core]`
