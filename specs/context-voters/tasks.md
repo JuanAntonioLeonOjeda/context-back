@@ -10,7 +10,7 @@ reviewed by the author before the next (decided 2026-11-06).
 - [x] 5. `load_election` use case, repository and `python -m datos.voters load-election`; checks (sums, known municipalities, same hash twice) `[core]`
 - [x] 6. `data/voters/candidature-parties.csv` for the 2023 Congreso, with sources
 - [x] 7. ADRH income loader (`python -m datos.voters load-income --year 2023`), one request for the whole country (plan, section 3)
-- [ ] 8. Pure income bands by census and party shares with the 3 % rule, unit tests with hand-computed cases `[core]`
+- [x] 8. Pure income bands by census and party shares with the 3 % rule, unit tests with hand-computed cases `[core]`
 - [ ] 9. Profile reader and `GET /communities/{id}/voters` `[core]`
 - [ ] 10. ADR-0024 (voter profile method), drafted for the author
 - [ ] 11. Front: the sector's indicator next to the news
