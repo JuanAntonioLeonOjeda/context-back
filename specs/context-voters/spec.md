@@ -45,6 +45,11 @@ Priority is the project's: neutrality and traceability over features.
 7. **Parties shown**: those with at least 3 % of the community's valid votes; the rest add up to
    "Otras". The same threshold for every party.
 8. **Income of the election's year** (2023 for the 2023 election), not the latest published.
+9. **A municipality is never split** (decided 2026-11-06 after measuring 2023): it goes whole to
+   the band where the midpoint of its census falls, so a capital with half of its community's
+   census leaves the bands uneven (Madrid 20·20·2·49·9 %, Zaragoza, Logroño). The web shows each
+   band's share of the census so it is visible. A community of one municipality (Ceuta, Melilla)
+   has no profile, and the page says why.
 
 ## Acceptance criteria
 
