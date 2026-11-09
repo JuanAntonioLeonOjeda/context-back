@@ -181,7 +181,7 @@ def test_income_is_append_only_and_keeps_its_download(seeded: Connection) -> Non
     download = seeded.execute(
         text(
             "INSERT INTO downloads (source, url, sha256) VALUES"
-            " ('ine', 'https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/30656', :sha)"
+            " ('ine', 'https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353', :sha)"
             " RETURNING id"
         ),
         {"sha": SHA},
@@ -189,8 +189,8 @@ def test_income_is_append_only_and_keeps_its_download(seeded: Connection) -> Non
     seeded.execute(
         text(
             "INSERT INTO municipal_income (municipality_code, year, euros_per_person,"
-            " source_table_id, series_code, download_id)"
-            " VALUES ('35016', 2023, 12345.67, '30656', 'ADRH1', :d)"
+            " series_code, download_id)"
+            " VALUES ('35016', 2023, 12345.67, 'ADRH1', :d)"
         ),
         {"d": download},
     )
@@ -199,8 +199,7 @@ def test_income_is_append_only_and_keeps_its_download(seeded: Connection) -> Non
     _fails(
         seeded,
         "INSERT INTO municipal_income (municipality_code, year, euros_per_person,"
-        " source_table_id, series_code, download_id) VALUES ('35016', 2023, 0, '30656', 'ADRH1',"
-        " :d)",
+        " series_code, download_id) VALUES ('35016', 2023, 0, 'ADRH1', :d)",
         "municipal_income_positive",
         d=download,
     )

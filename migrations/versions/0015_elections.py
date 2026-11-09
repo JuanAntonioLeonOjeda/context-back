@@ -126,8 +126,7 @@ def _income() -> None:
                               STORED NOT NULL REFERENCES territories (id),
             year              smallint NOT NULL,
             euros_per_person  numeric(10, 2) NOT NULL,  -- ADRH, mean net income per person
-            source_table_id   text NOT NULL,            -- INE table, one per province
-            series_code       text NOT NULL,
+            series_code       text NOT NULL,            -- the INE series of the municipality
             download_id       bigint NOT NULL REFERENCES downloads (id),
 
             CONSTRAINT municipal_income_code_5_digits CHECK (municipality_code ~ '^[0-9]{5}$'),
