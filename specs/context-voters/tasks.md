@@ -12,7 +12,7 @@ reviewed by the author before the next (decided 2026-11-06).
 - [x] 7. ADRH income loader (`python -m datos.voters load-income --year 2023`), one request for the whole country (plan, section 3)
 - [x] 8. Pure income bands by census and party shares with the 3 % rule, unit tests with hand-computed cases `[core]`
 - [x] 9. Profile reader and `GET /communities/{id}/voters` `[core]`
-- [ ] 10. ADR-0024 (voter profile method), drafted for the author
+- [x] 10. ADR-0024 (voter profile method), drafted for the author (Proposed: the author writes the reasons and accepts it)
 - [ ] 11. Front: the sector's indicator next to the news
 - [ ] 12. Front: "Perfil de voto por renta" section with bars, table and method note (core zone of the front)
 - [ ] 13. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, PRs into `develop`
