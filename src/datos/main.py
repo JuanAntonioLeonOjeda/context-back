@@ -20,8 +20,11 @@ from datos.news.infrastructure.pg_news_reader import PgCommunityNewsReader
 from datos.stories.infrastructure.pg_stories_reader import PgCommunityStoriesReader
 from datos.stories.infrastructure.pg_story_tree_reader import PgStoryTreeReader
 from datos.territories.reader import PgTerritoryReader
+from datos.voters.infrastructure.candidature_parties import read_candidature_parties
+from datos.voters.infrastructure.pg_voters_reader import PgVotersReader
 
 GEOMETRY = Path("data/geo/ccaa.geojson")
+CANDIDATURE_PARTIES = Path("data/voters/candidature-parties.csv")
 
 
 def app() -> FastAPI:
@@ -39,6 +42,8 @@ def app() -> FastAPI:
         news=built_on(connection, PgCommunityNewsReader),
         stories=built_on(connection, PgCommunityStoriesReader),
         trees=built_on(connection, PgStoryTreeReader),
+        voters=built_on(connection, PgVotersReader),
+        party_by_head=read_candidature_parties(CANDIDATURE_PARTIES),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
         classifier_id=settings.active_classifier_id,
