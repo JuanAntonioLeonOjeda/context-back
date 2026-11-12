@@ -94,6 +94,25 @@ def test_counts_add_up_by_national_head_and_match_the_municipal_total(
     assert all(code != "000033" for code, _ in heads)
 
 
+def test_a_municipality_where_no_candidature_got_a_vote_still_comes(
+    reader: PgVotersReader, db: Connection
+) -> None:
+    db.execute(
+        text(
+            "INSERT INTO municipal_results (election_id, municipality_code, municipality_name,"
+            " census, blank_votes, null_votes, candidature_votes)"
+            " VALUES ('congreso-2023-07', '35001', 'Only blank votes', 10, 2, 0, 0)"
+        )
+    )
+
+    by_code = {r.code: r for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)}
+
+    assert set(by_code) == {"35001", "35016", "38038"}
+    empty = by_code["35001"]
+    assert (empty.census, empty.blank_votes, empty.income, empty.counts) == (10, 2, None, ())
+    assert by_code["35016"].counts  # the others keep their counts
+
+
 def test_another_community_has_no_rows(reader: PgVotersReader) -> None:
     assert reader.municipal_rows("ccaa-13", "congreso-2023-07", 2023) == []
 

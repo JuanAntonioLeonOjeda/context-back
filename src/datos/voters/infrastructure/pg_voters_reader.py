@@ -14,18 +14,20 @@ from datos.voters.application.community_voters import (
 _ELECTIONS = text("SELECT id, held_on, source_file FROM elections ORDER BY held_on DESC, id")
 # One row per municipality and national head. A municipality reaches its community through its
 # province (`province_id` is generated from the INE code). Its income is the latest download of the
-# year: a revision of the INE is a newer row.
+# year: a revision of the INE is a newer row. A municipality where no candidature got a vote has
+# no vote rows: it still comes, once and without a head, because its census and its blank votes
+# count in its band.
 _ROWS = text(
     """
     SELECT r.municipality_code, r.census, r.blank_votes, i.euros_per_person AS income,
            h.code AS head_code, h.acronym AS head_acronym, sum(v.votes) AS votes
     FROM municipal_results r
     JOIN territories p ON p.id = r.province_id
-    JOIN municipal_candidature_votes v
+    LEFT JOIN municipal_candidature_votes v
       ON v.election_id = r.election_id AND v.municipality_code = r.municipality_code
-    JOIN election_candidatures c
+    LEFT JOIN election_candidatures c
       ON c.election_id = v.election_id AND c.code = v.candidature_code
-    JOIN election_candidatures h
+    LEFT JOIN election_candidatures h
       ON h.election_id = c.election_id AND h.code = c.national_head_code
     LEFT JOIN LATERAL (
         SELECT euros_per_person FROM municipal_income mi
@@ -62,9 +64,10 @@ class PgVotersReader:
         counts: dict[str, list[CandidatureCount]] = defaultdict(list)
         first: dict[str, MunicipalRow] = {}
         for r in rows:
-            counts[r.municipality_code].append(
-                CandidatureCount(r.head_code, r.head_acronym, int(r.votes))
-            )
+            if r.head_code is not None:
+                counts[r.municipality_code].append(
+                    CandidatureCount(r.head_code, r.head_acronym, int(r.votes))
+                )
             first.setdefault(
                 r.municipality_code,
                 MunicipalRow(r.municipality_code, r.census, r.blank_votes, r.income, ()),
