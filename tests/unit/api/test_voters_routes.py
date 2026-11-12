@@ -21,19 +21,21 @@ def test_names_the_election_and_the_income_with_their_sources(make_client: Clien
     assert body["election"]["id"] == "congreso-2023-07"
     assert body["election"]["source_url"].startswith("https://infoelectoral.interior.gob.es/")
     assert body["income"]["year"] == 2023
-    assert "DATOS_METADATAOPERACION/353" in body["income"]["source_url"]
+    # The statistic's page, which a reader can open; not the request the loader made.
+    assert body["income"]["source_url"].startswith("https://www.ine.es/dyngs/INEbase/")
+    assert "wstempus" not in body["income"]["source_url"]
     assert body["municipalities"] == 2
     assert body["no_profile_reason"] is None
 
 
-def test_groups_are_ordered_by_label_with_a_list_by_its_acronym_and_others_last(
+def test_groups_are_ordered_by_label_with_a_candidature_by_its_acronym_and_others_last(
     make_client: Client,
 ) -> None:
     groups = make_client().get("/communities/ccaa-05/voters").json()["profile"]["groups"]
 
     assert [(g["id"], g["kind"], g["label"]) for g in groups] == [
         ("coalicion-canaria", "party", "CC"),
-        ("lista:LISTA X", "list", "LISTA X"),
+        ("lista:LISTA X", "candidature", "LISTA X"),
         ("pp", "party", "PP"),
         ("otras", "others", None),
     ]
@@ -91,7 +93,27 @@ def test_unknown_community_or_election_is_404(make_client: Client) -> None:
     client = make_client()
 
     assert client.get("/communities/ccaa-99/voters").status_code == 404
-    assert client.get("/communities/ccaa-05/voters?election=congreso-2019-11").status_code == 404
+    missing = client.get("/communities/ccaa-05/voters?election=congreso-2019-11")
+    assert missing.status_code == 404
+    assert missing.json() == {"detail": "no election congreso-2019-11"}
+
+
+def test_the_contract_declares_the_404_and_its_body(make_client: Client) -> None:
+    contract = make_client().get("/openapi.json").json()
+
+    not_found = contract["paths"]["/communities/{territory_id}/voters"]["get"]["responses"]["404"]
+    schema = not_found["content"]["application/json"]["schema"]
+    assert schema == {"$ref": "#/components/schemas/NotFoundOut"}
+    assert set(contract["components"]["schemas"]["NotFoundOut"]["properties"]) == {"detail"}
+
+
+def test_says_from_which_share_a_group_is_shown_with_or_without_a_profile(
+    make_client: Client,
+) -> None:
+    client = make_client()
+
+    assert client.get("/communities/ccaa-05/voters").json()["shown_from_percent"] == 3
+    assert client.get("/communities/ccaa-13/voters").json()["shown_from_percent"] == 3
 
 
 def test_groups_follow_the_label_a_reader_sees_not_their_ids(make_client: Client) -> None:

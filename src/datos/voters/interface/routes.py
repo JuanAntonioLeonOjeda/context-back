@@ -21,10 +21,23 @@ from datos.voters.application.community_voters import (
     VotersReader,
     community_voters,
 )
-from datos.voters.domain.profile import LIST_PREFIX, OTHERS, Band, VoterProfile
+from datos.voters.domain.profile import (
+    LIST_PREFIX,
+    OTHERS,
+    SHOWN_FROM_PERCENT,
+    Band,
+    VoterProfile,
+)
 
 INFOELECTORAL_URL = (
     "https://infoelectoral.interior.gob.es/es/elecciones-celebradas/area-de-descargas/"
+)
+# The statistic's page at the INE (Atlas de distribución de renta de los hogares): where a reader
+# can check a figure. The request the loader made is a filter of the whole operation that takes
+# minutes to answer; it stays in `downloads`, not in the answer.
+INE_INCOME_URL = (
+    "https://www.ine.es/dyngs/INEbase/es/operacion.htm"
+    "?c=Estadistica_C&cid=1254736177088&menu=ultiDatos&idp=1254735976608"
 )
 
 DESCRIPTION = """How the municipalities of a community voted in a general election, grouped in
@@ -32,9 +45,10 @@ five income bands of about the same census (each municipality whole, in the band
 midpoint of its census falls; a big city can leave a band almost empty). Income: the INE's mean net
 income per person of the election's year. It describes areas, not people.
 
-Without `election`, the latest loaded one. Groups: the parties with at least 3 % of the
-community's valid votes (and a list without a party, by its acronym), then "others".
-`profile` is null when fewer than two municipalities have income (Ceuta, Melilla)."""
+Without `election`, the latest loaded one. Groups: the parties with at least
+`shown_from_percent` % of the community's valid votes (and a candidature that is not in the party
+table, by its acronym), then "others". `profile` is null when fewer than two municipalities have
+income (Ceuta, Melilla). 404: the community does not exist, or no such election is loaded."""
 
 
 class ElectionOut(BaseModel):
@@ -46,14 +60,15 @@ class ElectionOut(BaseModel):
 
 class IncomeOut(BaseModel):
     year: int
-    source_url: str
+    source_url: str  # the statistic's page at the INE
     fetched_at: datetime
 
 
 class GroupOut(BaseModel):
     id: str
-    kind: Literal["party", "list", "others"]
-    # The party's short name, or the list's acronym from the file; null for "others".
+    # "candidature": one that is not in the party table, shown by its acronym from the file.
+    kind: Literal["party", "candidature", "others"]
+    # The party's short name, or the candidature's acronym; null for "others".
     label: str | None
 
 
@@ -88,8 +103,14 @@ class VotersOut(BaseModel):
     election: ElectionOut
     income: IncomeOut | None
     municipalities: int
+    # A group is shown from this percentage of the community's valid votes; the rest is "others".
+    shown_from_percent: int
     profile: ProfileOut | None
     no_profile_reason: Literal["no_results", "too_few_municipalities"] | None
+
+
+class NotFoundOut(BaseModel):
+    detail: str
 
 
 def build_voters_router(
@@ -101,7 +122,10 @@ def build_voters_router(
     router = APIRouter(tags=["voters"])
 
     @router.get(
-        "/communities/{territory_id}/voters", response_model=VotersOut, description=DESCRIPTION
+        "/communities/{territory_id}/voters",
+        response_model=VotersOut,
+        description=DESCRIPTION,
+        responses={status.HTTP_404_NOT_FOUND: {"model": NotFoundOut}},
     )
     def community(
         territory_id: str,
@@ -136,9 +160,10 @@ def _out(territory_id: str, found: CommunityVoters, labels: dict[str, str]) -> V
         income=None
         if found.income is None
         else IncomeOut(
-            year=found.income.year, source_url=found.income.url, fetched_at=found.income.fetched_at
+            year=found.income.year, source_url=INE_INCOME_URL, fetched_at=found.income.fetched_at
         ),
         municipalities=found.municipalities,
+        shown_from_percent=SHOWN_FROM_PERCENT,
         profile=None if found.profile is None else _profile(found.profile, labels),
         no_profile_reason=reason,
     )
@@ -163,7 +188,7 @@ def _groups(profile: VoterProfile, labels: dict[str, str]) -> list[GroupOut]:
 
 def _group(group_id: str, labels: dict[str, str]) -> GroupOut:
     if group_id.startswith(LIST_PREFIX):
-        return GroupOut(id=group_id, kind="list", label=group_id.removeprefix(LIST_PREFIX))
+        return GroupOut(id=group_id, kind="candidature", label=group_id.removeprefix(LIST_PREFIX))
     return GroupOut(id=group_id, kind="party", label=labels.get(group_id, group_id))
 
 
