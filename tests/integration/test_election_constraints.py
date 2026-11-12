@@ -165,41 +165,68 @@ def test_the_same_file_cannot_be_two_elections(seeded: Connection) -> None:
     )
 
 
-@pytest.mark.parametrize(
-    "statement",
-    [
-        "UPDATE municipal_results SET census = 1",
-        "DELETE FROM municipal_results",
-        "TRUNCATE municipal_candidature_votes, municipal_results CASCADE",
-    ],
-)
-def test_results_are_append_only(seeded: Connection, statement: str) -> None:
-    _fails(seeded, statement, "append-only")
+# Each append-only table with a column an UPDATE can name.
+APPEND_ONLY = {
+    "elections": "kind",
+    "election_candidatures": "acronym",
+    "municipal_results": "census",
+    "municipal_candidature_votes": "votes",
+    "municipal_income": "year",
+}
 
 
-def test_income_is_append_only_and_keeps_its_download(seeded: Connection) -> None:
-    download = seeded.execute(
+@pytest.fixture
+def stored(seeded: Connection) -> Connection:
+    """`seeded` plus one row of votes and one of income: a row in each of the five tables."""
+    _votes(seeded, "35016", "000002")
+    _income(seeded, "35016", euros="12345.67")
+    # The deferred check of the national head is still pending and PostgreSQL refuses a TRUNCATE
+    # for that reason before any trigger runs; checking it now leaves only the trigger to refuse.
+    seeded.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
+    return seeded
+
+
+def _income(db: Connection, municipality: str, *, euros: str) -> None:
+    download = db.execute(
         text(
             "INSERT INTO downloads (source, url, sha256) VALUES"
             " ('ine', 'https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353', :sha)"
-            " RETURNING id"
+            " ON CONFLICT DO NOTHING RETURNING id"
         ),
         {"sha": SHA},
     ).scalar_one()
-    seeded.execute(
+    db.execute(
         text(
             "INSERT INTO municipal_income (municipality_code, year, euros_per_person,"
             " series_code, download_id)"
-            " VALUES ('35016', 2023, 12345.67, 'ADRH1', :d)"
+            " VALUES (:m, 2023, :euros, 'ADRH1', :d)"
         ),
-        {"d": download},
+        {"m": municipality, "euros": euros, "d": download},
     )
 
-    _fails(seeded, "UPDATE municipal_income SET euros_per_person = 1", "append-only")
+
+@pytest.mark.parametrize("table", APPEND_ONLY)
+@pytest.mark.parametrize(
+    ("statement", "operation"),
+    [
+        ("UPDATE {table} SET {column} = {column}", "UPDATE"),
+        ("DELETE FROM {table}", "DELETE"),
+        ("TRUNCATE {table} CASCADE", "TRUNCATE"),
+    ],
+)
+def test_nothing_stored_can_be_changed_or_removed(
+    stored: Connection, table: str, statement: str, operation: str
+) -> None:
+    # The message names the table, so each table is refused by its own trigger and not by one of
+    # a table that depends on it.
     _fails(
-        seeded,
-        "INSERT INTO municipal_income (municipality_code, year, euros_per_person,"
-        " series_code, download_id) VALUES ('35016', 2023, 0, 'ADRH1', :d)",
-        "municipal_income_positive",
-        d=download,
+        stored,
+        statement.format(table=table, column=APPEND_ONLY[table]),
+        f"{table} is append-only: {operation} is not allowed",
     )
+
+
+def test_an_income_that_is_not_positive_is_refused(seeded: Connection) -> None:
+    with pytest.raises(DBAPIError) as error, seeded.begin_nested():
+        _income(seeded, "35016", euros="0")
+    assert "municipal_income_positive" in str(error.value)

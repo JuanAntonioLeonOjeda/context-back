@@ -12,7 +12,13 @@ down_revision: str | None = "0014"
 branch_labels: str | None = None
 depends_on: str | None = None
 
-_APPEND_ONLY = ("municipal_results", "municipal_candidature_votes", "municipal_income")
+_APPEND_ONLY = (
+    "elections",
+    "election_candidatures",
+    "municipal_results",
+    "municipal_candidature_votes",
+    "municipal_income",
+)
 
 
 def upgrade() -> None:
