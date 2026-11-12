@@ -152,3 +152,20 @@ def test_a_municipality_with_no_census_at_the_top_stays_in_the_last_band() -> No
     municipalities = [_m("01001", 100, "10000"), _m("01002", 0, "20000", {})]
 
     assert _members(municipalities)[-1] == ("01002",)
+
+
+def test_municipalities_without_any_census_have_no_profile() -> None:
+    # No population to split into bands; it must not fail dividing by a total census of 0.
+    municipalities = [_m("01001", 0, "10000"), _m("01002", 0, "11000"), _m("01003", 50, None)]
+
+    assert voter_profile(municipalities) is None
+
+
+def test_the_smallest_census_there_can_be_still_has_a_profile() -> None:
+    assert _members([_m("01001", 1, "10000"), _m("01002", 0, "11000")]) == [
+        (),
+        (),
+        ("01001",),
+        (),
+        ("01002",),
+    ]

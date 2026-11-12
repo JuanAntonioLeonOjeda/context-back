@@ -58,21 +58,24 @@ class VoterProfile:
 def band_index(census_before: int, census: int, total: int) -> int:
     """The band of a municipality whose census starts at `census_before` of `total`: where its
     midpoint falls, floor(BANDS · (before + census / 2) / total), in integers so no rounding
-    decides a border; the last municipality cannot fall past the last band."""
+    decides a border; the last municipality cannot fall past the last band. `total` is not 0."""
     return min(BANDS - 1, (2 * census_before + census) * BANDS // (2 * total))
 
 
 def voter_profile(municipalities: Sequence[MunicipalVotes]) -> VoterProfile | None:
     """The profile of a community's municipalities, or None when fewer than two have income
-    (one municipality cannot be split into bands: Ceuta, Melilla)."""
+    (one municipality cannot be split into bands: Ceuta, Melilla) or when those with income
+    have no census at all (there is no population to split)."""
     placed = sorted(
         (m for m in municipalities if m.income is not None),
         key=lambda m: (m.income, m.code),  # ties in income: by INE code, so it is deterministic
     )
     if len(placed) < 2:
         return None
-    shown = _shown_groups(municipalities)
     total = sum(m.census for m in placed)
+    if total == 0:
+        return None
+    shown = _shown_groups(municipalities)
     members: list[list[MunicipalVotes]] = [[] for _ in range(BANDS)]
     before = 0
     for m in placed:

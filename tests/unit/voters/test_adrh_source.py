@@ -74,3 +74,21 @@ def test_a_value_of_another_year_is_not_taken_for_the_year_asked() -> None:
     incomes = _source(json.dumps(series).encode()).incomes(2023).incomes
 
     assert "02003" not in {i.municipality_code for i in incomes}
+
+
+def test_an_income_is_kept_in_cents_as_the_database_stores_it() -> None:
+    answer = json.loads(ANSWER.read_bytes())
+    values = {"38038": 15110.445, "35016": 14968.444, "02003": 14611.0}
+    for series in answer:
+        code = next(m["Codigo"] for m in series["MetaData"] if m["T3_Variable"] == "Municipios")
+        if code in values:
+            series["Data"][0]["Valor"] = values[code]
+
+    incomes = _source(json.dumps(answer).encode()).incomes(2023).incomes
+
+    # Compared as text: Decimal("14611.0") == Decimal("14611.00"), and the cents are the point.
+    assert {i.municipality_code: str(i.euros_per_person) for i in incomes} == {
+        "38038": "15110.45",  # a half goes up, as PostgreSQL rounds a numeric
+        "35016": "14968.44",
+        "02003": "14611.00",
+    }

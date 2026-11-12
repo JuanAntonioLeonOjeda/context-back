@@ -11,7 +11,7 @@ read timeout of this one request.
 """
 
 import hashlib
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 import httpx
 from pydantic import BaseModel, TypeAdapter, ValidationError
@@ -71,6 +71,9 @@ class AdrhSource:
         return IncomeDownload(url, hashlib.sha256(body).hexdigest(), incomes)
 
 
+_CENT = Decimal("0.01")
+
+
 def _municipal_income(series: _Series, year: int) -> MunicipalIncome | None:
     """The series' value for `year`, or None when the INE hides it (statistical secrecy)."""
     by_variable = {m.T3_Variable: m for m in series.MetaData if m.T3_Variable}
@@ -89,8 +92,11 @@ def _municipal_income(series: _Series, year: int) -> MunicipalIncome | None:
     value = next((d.Valor for d in series.Data if d.Anyo == year), None)
     if value is None:
         return None
-    # The INE writes whole euros as floats (14611.0); str() keeps them exact for Decimal.
-    return MunicipalIncome(code, year, Decimal(str(value)), series.COD)
+    # The INE writes whole euros as floats (14611.0); str() keeps them exact for Decimal. Cents,
+    # as the column stores them (numeric(10, 2), which rounds halves up too): a value with more
+    # decimals would otherwise never equal its stored self and be stored again on every load.
+    euros = Decimal(str(value)).quantize(_CENT, rounding=ROUND_HALF_UP)
+    return MunicipalIncome(code, year, euros, series.COD)
 
 
 def _parse(body: bytes) -> list[_Series]:
