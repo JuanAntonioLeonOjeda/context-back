@@ -9,7 +9,7 @@ from datos.voters.infrastructure.candidature_parties import (
     read_candidature_parties,
 )
 
-HEADER = "election_id,national_head_code,acronym_in_file,party_id\n"
+HEADER = "election_id,candidature_code,acronym_in_file,party_id\n"
 
 
 def _file(tmp_path: Path, *rows: str) -> Path:
@@ -18,7 +18,7 @@ def _file(tmp_path: Path, *rows: str) -> Path:
     return path
 
 
-def test_gives_the_party_of_each_national_head_by_election(tmp_path: Path) -> None:
+def test_gives_the_party_of_each_candidature_by_election(tmp_path: Path) -> None:
     path = _file(
         tmp_path,
         "congreso-2023-07,000002,PSOE,psoe",
@@ -38,7 +38,7 @@ def test_the_real_file_reads() -> None:
     assert table["congreso-2023-07"]["000002"] == "psoe"
 
 
-def test_a_national_head_written_twice_stops_the_load_with_its_line(tmp_path: Path) -> None:
+def test_a_candidature_written_twice_stops_the_load_with_its_line(tmp_path: Path) -> None:
     path = _file(
         tmp_path,
         "congreso-2023-07,000002,PSOE,psoe",
@@ -46,7 +46,7 @@ def test_a_national_head_written_twice_stops_the_load_with_its_line(tmp_path: Pa
         "congreso-2023-07,000002,PSOE,pp",
     )
 
-    with pytest.raises(InvalidCandidaturePartiesError, match=r"\.csv:4: national head 000002"):
+    with pytest.raises(InvalidCandidaturePartiesError, match=r"\.csv:4: candidature 000002"):
         read_candidature_parties(path)
 
 

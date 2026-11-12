@@ -77,7 +77,7 @@ def test_gives_each_municipality_of_the_community_with_its_latest_income(
     assert by_code["38038"].income is None  # no income loaded for it
 
 
-def test_counts_add_up_by_national_head_and_match_the_municipal_total(
+def test_counts_come_by_candidature_and_match_the_municipal_total(
     reader: PgVotersReader, db: Connection
 ) -> None:
     rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)
@@ -88,10 +88,11 @@ def test_counts_add_up_by_national_head_and_match_the_municipal_total(
             {"c": row.code},
         ).scalar_one()
         assert sum(c.votes for c in row.counts) == stored
-    # Sumar's list in the Canaries (000033) adds up to Sumar's head (000010).
-    heads = {(c.head_code, c.head_acronym) for r in rows for c in r.counts}
-    assert ("000010", "SUMAR") in heads
-    assert all(code != "000033" for code, _ in heads)
+    # Sumar's list in the Canaries (000033) comes as itself, not as its national head (000010):
+    # whether it counts as Sumar is the curated table's to say.
+    candidatures = {(c.code, c.acronym) for r in rows for c in r.counts}
+    assert ("000033", "SUMAR") in candidatures
+    assert all(code != "000010" for code, _ in candidatures)
 
 
 def test_a_municipality_where_no_candidature_got_a_vote_still_comes(

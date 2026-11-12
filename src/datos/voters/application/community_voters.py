@@ -26,10 +26,10 @@ class IncomeDownloadInfo:
 
 @dataclass(frozen=True, slots=True)
 class CandidatureCount:
-    """A candidature's votes in a municipality, with its national head (from file 03)."""
+    """A candidature's votes in a municipality, with its code and acronym from file 03."""
 
-    head_code: str
-    head_acronym: str
+    code: str
+    acronym: str
     votes: int
 
 
@@ -66,13 +66,13 @@ class CommunityVoters:
     profile: VoterProfile | None  # None: fewer than two municipalities with income
 
 
-# The curated table: election id → national head code → party id (data/voters/).
-type PartyByHead = Mapping[str, Mapping[str, str]]
+# The curated table: election id → candidature code → party id (data/voters/).
+type PartyByCandidature = Mapping[str, Mapping[str, str]]
 
 
 def community_voters(
     reader: VotersReader,
-    party_by_head: PartyByHead,
+    party_by_candidature: PartyByCandidature,
     *,
     territory_id: str,
     election_id: str | None,
@@ -87,7 +87,7 @@ def community_voters(
     # were when they voted.
     year = election.held_on.year
     rows = reader.municipal_rows(territory_id, election.id, year)
-    parties = party_by_head.get(election.id, {})
+    parties = party_by_candidature.get(election.id, {})
     municipalities = [_municipal_votes(row, parties) for row in rows]
     return CommunityVoters(
         election=election,
@@ -100,5 +100,5 @@ def community_voters(
 def _municipal_votes(row: MunicipalRow, parties: Mapping[str, str]) -> MunicipalVotes:
     votes: dict[str, int] = defaultdict(int)
     for count in row.counts:
-        votes[vote_group(count.head_code, count.head_acronym, parties)] += count.votes
+        votes[vote_group(count.code, count.acronym, parties)] += count.votes
     return MunicipalVotes(row.code, row.census, row.income, row.blank_votes, dict(votes))

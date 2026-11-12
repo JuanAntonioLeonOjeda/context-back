@@ -209,8 +209,8 @@ INCOME = IncomeDownloadInfo(
     "https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?date=20230101",
     datetime(2026, 11, 9, 8, 23, tzinfo=UTC),
 )
-# Two municipalities of Canarias with hand-picked counts: 000031 is CC's head (mapped), 000005
-# PP's (mapped), 000099 a list with no party in the table.
+# Two municipalities of Canarias with hand-picked counts: 000031 is CC (mapped), 000005
+# PP (mapped), 000099 a candidature that is not in the table.
 VOTER_ROWS = [
     MunicipalRow(
         "35016",
@@ -231,7 +231,7 @@ VOTER_ROWS = [
         (CandidatureCount("000005", "PP", 120), CandidatureCount("000031", "CCa", 80)),
     ),
 ]
-PARTY_BY_HEAD = {"congreso-2023-07": {"000005": "pp", "000031": "coalicion-canaria"}}
+PARTY_BY_CANDIDATURE = {"congreso-2023-07": {"000005": "pp", "000031": "coalicion-canaria"}}
 
 
 class FakeVoters:
@@ -336,7 +336,7 @@ def make_client(
                 stories=lambda: stories_reader,
                 trees=lambda: trees_reader,
                 voters=lambda: FakeVoters(voter_rows),
-                party_by_head=PARTY_BY_HEAD,
+                party_by_candidature=PARTY_BY_CANDIDATURE,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
                 classifier_id="rules",

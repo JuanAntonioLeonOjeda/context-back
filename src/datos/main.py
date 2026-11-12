@@ -43,7 +43,7 @@ def app() -> FastAPI:
         stories=built_on(connection, PgCommunityStoriesReader),
         trees=built_on(connection, PgStoryTreeReader),
         voters=built_on(connection, PgVotersReader),
-        party_by_head=read_candidature_parties(CANDIDATURE_PARTIES),
+        party_by_candidature=read_candidature_parties(CANDIDATURE_PARTIES),
         clock=SystemClock(),
         geometry=json.loads(GEOMETRY.read_text(encoding="utf-8")),
         classifier_id=settings.active_classifier_id,

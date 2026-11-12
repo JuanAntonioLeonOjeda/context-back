@@ -135,15 +135,19 @@ def test_an_empty_band_has_no_income_range() -> None:
 
 
 @pytest.mark.parametrize(
-    ("head", "acronym", "group"),
-    [("000047", "PSC", "psoe"), ("000074", "U.P.N.", "lista:U.P.N.")],
+    ("code", "acronym", "group"),
+    [
+        ("000047", "PSC", "psc"),  # its own row, although its national head is PSOE's
+        ("000051", "SUMAR - ECP", "lista:SUMAR - ECP"),  # a coalition: no row, its acronym
+        ("000074", "U.P.N.", "lista:U.P.N."),  # a party that is not in the party table
+    ],
 )
 def test_a_candidature_counts_for_its_party_or_for_its_own_acronym(
-    head: str, acronym: str, group: str
+    code: str, acronym: str, group: str
 ) -> None:
-    party_by_head = {"000047": "psoe"}  # PSC's head would be PSOE's code; a direct row here
+    party_by_candidature = {"000047": "psc", "000010": "sumar"}
 
-    assert vote_group(head, acronym, party_by_head) == group
+    assert vote_group(code, acronym, party_by_candidature) == group
 
 
 def test_a_municipality_with_no_census_at_the_top_stays_in_the_last_band() -> None:

@@ -17,7 +17,7 @@ from datos.territories.routes import TerritoryReader
 from datos.territories.territory import Level
 from datos.voters.application.community_voters import (
     CommunityVoters,
-    PartyByHead,
+    PartyByCandidature,
     VotersReader,
     community_voters,
 )
@@ -117,7 +117,7 @@ def build_voters_router(
     voters: Provider[VotersReader],
     governments: Provider[GovernmentsReader],
     territories: Provider[TerritoryReader],
-    party_by_head: PartyByHead,
+    party_by_candidature: PartyByCandidature,
 ) -> APIRouter:
     router = APIRouter(tags=["voters"])
 
@@ -137,7 +137,7 @@ def build_voters_router(
         if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
         found = community_voters(
-            reader, party_by_head, territory_id=territory_id, election_id=election
+            reader, party_by_candidature, territory_id=territory_id, election_id=election
         )
         if found is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"no election {election or 'loaded'}")

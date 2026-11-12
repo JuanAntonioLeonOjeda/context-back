@@ -16,10 +16,12 @@ OTHERS = "otras"  # every group below the threshold, added up
 LIST_PREFIX = "lista:"  # a candidature without a party in the table, by its acronym (decision 6)
 
 
-def vote_group(national_head_code: str, acronym: str, party_by_head: Mapping[str, str]) -> str:
+def vote_group(code: str, acronym: str, party_by_candidature: Mapping[str, str]) -> str:
     """The group a candidature's votes count for: its party, or its own acronym when the curated
-    table (data/voters/candidature-parties.csv) gives it none."""
-    return party_by_head.get(national_head_code, f"{LIST_PREFIX}{acronym}")
+    table (data/voters/candidature-parties.csv) gives it none (a coalition, a party that is not
+    in the party table). The candidature itself decides, never the list it adds up to
+    nationally: PSC is PSC although the Ministerio adds its votes to PSOE's."""
+    return party_by_candidature.get(code, f"{LIST_PREFIX}{acronym}")
 
 
 @dataclass(frozen=True, slots=True)

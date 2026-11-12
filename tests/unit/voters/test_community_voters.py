@@ -58,10 +58,10 @@ def test_an_unknown_election_gives_nothing() -> None:
 
 
 def test_candidatures_become_their_party_or_their_own_list() -> None:
-    party_by_head = {"congreso-2023-07": {"000005": "pp"}}
+    party_by_candidature = {"congreso-2023-07": {"000005": "pp"}}
 
     found = community_voters(
-        _Reader(), party_by_head, territory_id="ccaa-05", election_id="congreso-2023-07"
+        _Reader(), party_by_candidature, territory_id="ccaa-05", election_id="congreso-2023-07"
     )
 
     assert found is not None and found.profile is not None

@@ -18,7 +18,7 @@ from datos.stories.application.story_tree import StoryTreeReader
 from datos.stories.interface.routes import build_stories_router
 from datos.stories.interface.tree_routes import build_tree_router
 from datos.territories.routes import TerritoryReader, build_territories_router
-from datos.voters.application.community_voters import PartyByHead, VotersReader
+from datos.voters.application.community_voters import PartyByCandidature, VotersReader
 from datos.voters.interface.routes import build_voters_router
 
 
@@ -32,7 +32,7 @@ def create_app(
     stories: Provider[CommunityStoriesReader],
     trees: Provider[StoryTreeReader],
     voters: Provider[VotersReader],
-    party_by_head: PartyByHead,
+    party_by_candidature: PartyByCandidature,
     clock: Clock,
     geometry: Mapping[str, object],
     classifier_id: str,
@@ -40,8 +40,8 @@ def create_app(
     """`governments` and `territories` are FastAPI dependencies that give one reader per
     request (the composition root opens a database connection for each). `geometry` is
     the GeoJSON of the communities (`data/geo/ccaa.geojson`); `classifier_id`, the classifier
-    whose labels the news API reads; `party_by_head`, the curated candidature → party table of
-    the voter profiles (data/voters/candidature-parties.csv)."""
+    whose labels the news API reads; `party_by_candidature`, the curated candidature → party
+    table of the voter profiles (data/voters/candidature-parties.csv)."""
     app = FastAPI(title="datos", version="0.1.0")
     app.include_router(build_health_router(database_probe))
     app.include_router(build_territories_router(territories, geometry))
@@ -64,5 +64,5 @@ def create_app(
         )
     )
     app.include_router(build_tree_router(trees=trees))
-    app.include_router(build_voters_router(voters, governments, territories, party_by_head))
+    app.include_router(build_voters_router(voters, governments, territories, party_by_candidature))
     return app
