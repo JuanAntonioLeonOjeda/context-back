@@ -58,8 +58,8 @@ class PartyOut(BaseModel):
 class SectorOut(BaseModel):
     id: str
     name: str
-    # The id of the indicator in `/communities/{id}/indicators` this sector is measured by; null
-    # when it has none, and then the web app shows no figure next to its news.
+    # The id of the indicator in `/communities/{id}/indicators` shown next to this sector's
+    # news; null when it has none, and then the web app shows no figure there.
     indicator_id: str | None
 
 
@@ -121,7 +121,7 @@ def build_governments_router(
     @router.get(
         "/sectors",
         response_model=list[SectorOut],
-        description="The sectors in use, ordered by id, with the indicator each is measured by.",
+        description="The sectors in use, by id, each with the indicator shown next to its news.",
     )
     def sectors(reader: Annotated[GovernmentsReader, Depends(governments)]) -> list[SectorOut]:
         return [

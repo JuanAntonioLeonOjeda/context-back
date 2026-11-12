@@ -28,7 +28,7 @@ class Sector:
     id: str
     name: str
     is_active: bool = True  # a planned sector of the taxonomy is false until its batch
-    # The indicator a sector is measured by (context-voters, decision 3); None when it has none.
+    # The indicator shown next to the sector's news (context-voters, decision 3); None: none.
     indicator_id: str | None = None
 
 
