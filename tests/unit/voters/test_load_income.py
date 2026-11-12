@@ -85,3 +85,11 @@ def test_an_unsound_answer_writes_nothing(incomes: list[MunicipalIncome], proble
     with pytest.raises(InvalidIncomeError, match=problem):
         load_income(_Source(incomes), repository, year=2023)
     assert repository.recorded == []
+
+
+def test_a_year_without_any_income_is_an_error_and_not_an_empty_load() -> None:
+    repository = _Repository(stored={"02003": Decimal("14611")})
+
+    with pytest.raises(InvalidIncomeError, match="no income of any municipality for 2031"):
+        load_income(_Source([]), repository, year=2031)
+    assert repository.recorded == []

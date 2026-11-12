@@ -45,6 +45,10 @@ def load_income(source: IncomeSource, repository: IncomeRepository, *, year: int
     An unchanged value is not stored again, and a download with nothing new is not recorded.
     """
     download = source.incomes(year)
+    if not download.incomes:
+        # A year the INE has not published (or a mistyped one) is not "nothing new": saying
+        # "0 stored" would read as a load that went well.
+        raise InvalidIncomeError([f"the source has no income of any municipality for {year}"])
     problems = income_problems(download.incomes, repository.province_ids())
     if problems:
         raise InvalidIncomeError(problems)
