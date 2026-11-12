@@ -52,6 +52,16 @@ when the data does not fit the plan. The sources were checked on 2026-11-06
   *Amended by the author on 2026-11-06*: a candidature with no party in the table that reaches
   3 % is shown with its acronym from the file and a neutral colour (UPN in Navarra, 15.3 % in 2023),
   instead of disappearing into "Otras".
+  *Amended by the author on 2026-11-12, after the phase's reviews*: the table is by candidature
+  and no longer follows the national accumulation head. The head made PSC count as PSOE although
+  PSC has its own row in the party table, and the table had no single rule for coalitions (CUP-PR
+  and NC-bc counted as their main party, Sumar's coalitions as Sumar, EXISTE as nothing). The
+  rule now: a candidature counts as a party only when it is that party. A party of the party
+  table is itself (PSC); a territorial federation counts as its party (PSdeG-PSOE, PSE-EE,
+  PSN-PSOE and PSIB-PSOE as PSOE, as the governments dataset does); a coalition is never folded
+  into its main party and is shown apart by its acronym when it reaches 3 % (Sumar-ECP in
+  Cataluña, Sumar-Compromís in the Comunitat Valenciana, the Més lists with Sumar in the Illes
+  Balears, CUP-PR, NC-bc).
 - **B — The candidature names as published.** No curation, but no party colours and regional
   variants of one party apart.
 

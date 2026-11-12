@@ -40,6 +40,7 @@ Core zones (`[core]`, collaborative): `src/datos/voters/`, the migrations and th
 - **Candidature → party**: `data/voters/candidature-parties.csv` (election, national head code,
   `party_id`, source). Starts from the file's own national accumulation head, so PSC, PSdeG-PSOE
   and PSE-EE map through PSOE's head. A head not in the table counts as "Otras".
+  (Changed on 2026-11-12: the table is by candidature code, see decision 6 of the spec.)
 - **Checks on load**: the sum of `06` per municipality equals the "votes to candidatures" of `05`
   (verified on 2023: 24,284,335 both), every municipality code exists in `territories` (provinces
   and their community come from the INE code, not from Interior's own community numbering, which

@@ -42,6 +42,12 @@ Priority is the project's: neutrality and traceability over features.
    3 % threshold is shown with its acronym from the file and a neutral colour, not folded into
    "Otras" (in 2023: UPN in Navarra, 15.3 %, absent from the party table because it has neither
    governed nor given external support since 2020).
+   *Amended 2026-11-12 by the author, after the phase's reviews*: the table is by candidature, not
+   by the national head the Ministerio adds it up to. A candidature counts as a party only when
+   it is that party: a party with its own row in the party table is itself (PSC is PSC, not
+   PSOE), a territorial federation counts as its party (PSdeG-PSOE, PSE-EE, PSN-PSOE and
+   PSIB-PSOE as PSOE) and a coalition is never folded into its main party: it is shown apart by
+   its acronym when it reaches the threshold (Sumar-ECP, Sumar-Compromís, CUP-PR, NC-bc).
 7. **Parties shown**: those with at least 3 % of the community's valid votes; the rest add up to
    "Otras". The same threshold for every party.
 8. **Income of the election's year** (2023 for the 2023 election), not the latest published.
