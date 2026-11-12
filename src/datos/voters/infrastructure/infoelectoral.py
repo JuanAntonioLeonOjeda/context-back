@@ -10,6 +10,7 @@ the total of a big city split by district and would count it twice.
 """
 
 import hashlib
+import io
 import zipfile
 from collections.abc import Iterator
 from datetime import date
@@ -37,18 +38,25 @@ class InvalidElectionFileError(Exception):
 
 def read_election_zip(path: Path) -> ElectionFile:
     """Read the identification, candidatures, municipal totals and votes of one zip."""
-    data = path.read_bytes()
-    with zipfile.ZipFile(path) as archive:
-        kind_code, year_month = _name_parts(path.name)
-        records = _Records(archive, kind_code, year_month)
-        return ElectionFile(
-            source_file=path.name,
-            sha256=hashlib.sha256(data).hexdigest(),
-            election=parse_identification(_only(records.lines("02"))),
-            candidatures=tuple(parse_candidature(r) for r in records.lines("03")),
-            results=tuple(m for r in records.lines("05") if (m := parse_municipal_result(r))),
-            votes=tuple(v for r in records.lines("06") if (v := parse_candidature_votes(r))),
-        )
+    kind_code, year_month = _name_parts(path.name)
+    try:
+        data = path.read_bytes()
+    except OSError as error:
+        raise InvalidElectionFileError(f"{path}: cannot be read ({error.strerror})") from error
+    # The zip is opened from the bytes that were hashed: the hash is of what was read.
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            records = _Records(archive, kind_code, year_month)
+            return ElectionFile(
+                source_file=path.name,
+                sha256=hashlib.sha256(data).hexdigest(),
+                election=parse_identification(_only(records.lines("02"))),
+                candidatures=tuple(parse_candidature(r) for r in records.lines("03")),
+                results=tuple(m for r in records.lines("05") if (m := parse_municipal_result(r))),
+                votes=tuple(v for r in records.lines("06") if (v := parse_candidature_votes(r))),
+            )
+    except zipfile.BadZipFile as error:
+        raise InvalidElectionFileError(f"{path}: not a zip, or a damaged one ({error})") from error
 
 
 Record = tuple[str, str]  # the line and where it is ("05022307.DAT line 3"), for errors
@@ -115,7 +123,13 @@ class _Records:
             raw = self._archive.read(name)
         except KeyError as error:
             raise InvalidElectionFileError(f"{name} is not in the zip") from error
-        for number, line in enumerate(raw.decode("cp1252").splitlines(), start=1):
+        try:
+            text = raw.decode("cp1252")
+        except UnicodeDecodeError as error:
+            raise InvalidElectionFileError(
+                f"{name}: byte {error.start + 1} is not cp1252 text"
+            ) from error
+        for number, line in enumerate(text.splitlines(), start=1):
             where = f"{name} line {number}"
             record = (line, where)
             if len(line) != _LENGTHS[file_type]:

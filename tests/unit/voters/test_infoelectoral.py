@@ -128,3 +128,37 @@ def test_refuses_a_count_that_is_not_a_number(tmp_path: Path) -> None:
 def test_refuses_an_election_kind_it_does_not_load(tmp_path: Path) -> None:
     with pytest.raises(InvalidElectionFileError, match="not a supported Infoelectoral file name"):
         read_election_zip(_zip(tmp_path, name="04202305_MUNI.zip"))
+
+
+def test_a_file_that_is_not_there_is_reported_as_such(tmp_path: Path) -> None:
+    with pytest.raises(InvalidElectionFileError, match=r"02202307_MUNI\.zip: cannot be read"):
+        read_election_zip(tmp_path / "02202307_MUNI.zip")
+
+
+def test_a_file_that_is_not_a_zip_is_refused(tmp_path: Path) -> None:
+    path = tmp_path / "02202307_MUNI.zip"
+    path.write_bytes(b"<html>Just a moment...</html>")  # what a bot challenge saves
+
+    with pytest.raises(InvalidElectionFileError, match="not a zip"):
+        read_election_zip(path)
+
+
+def test_a_zip_damaged_inside_is_refused(tmp_path: Path) -> None:
+    path = _zip(tmp_path)
+    data = bytearray(path.read_bytes())
+    stored = (FIXTURE / "05022307.DAT").read_bytes()
+    at = data.index(stored) + 150  # inside the census of the first municipality
+    data[at] = ord("9") if data[at] != ord("9") else ord("8")
+    path.write_bytes(bytes(data))
+
+    with pytest.raises(InvalidElectionFileError, match="damaged"):
+        read_election_zip(path)
+
+
+def test_bytes_that_are_not_cp1252_text_are_refused_with_their_file(tmp_path: Path) -> None:
+    content = bytearray((FIXTURE / "03022307.DAT").read_bytes())
+    content[20] = 0x81  # one of the five bytes cp1252 does not define
+    path = _zip(tmp_path, replace={"03022307.DAT": bytes(content)})
+
+    with pytest.raises(InvalidElectionFileError, match=r"03022307\.DAT: byte 21 is not cp1252"):
+        read_election_zip(path)
