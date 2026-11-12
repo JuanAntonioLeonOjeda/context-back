@@ -28,7 +28,7 @@ when the data does not fit the plan. The sources were checked on 2026-11-06
 - **B — Five bands of the same number of municipalities.** Easier to explain, but in a community of
   many small villages a band can have almost no voters.
 - **C — Thresholds of income fixed for the whole country.** Comparable across communities, but a
-  poor community could have no municipality in the top band.
+  community with lower incomes could have no municipality in the top band.
 
 ### What to do with a municipality bigger than a band
 - **A — Never split it: it goes whole to the band where the midpoint of its census falls**
@@ -68,7 +68,7 @@ Option A in each question, decided by the author on 2026-11-06:
 2. Five bands of about the same census; a municipality is never split and goes to the band of the
    midpoint of its census, computed in integers; empty bands stay empty and are shown as such.
 3. Parties from 3 % of the community's valid votes (every municipality counted, with or without
-   income); a list without a party, by its acronym; the rest, "Otras".
+   income); a candidature that is not in the party table, by its acronym; the rest, "Otras".
 4. The income of the election's year.
 5. No profile for a community with fewer than two municipalities with income (Ceuta, Melilla); the
    page says why.

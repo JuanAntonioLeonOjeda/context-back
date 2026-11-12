@@ -6,7 +6,7 @@ A news item says what happened; it does not say what the place is like. This pha
 context, both from official sources and both descriptive:
 
 1. **The sector's indicator next to the news**: on a community's news for a sector, the official
-   figure that sector is measured by, when there is one.
+   figure paired with that sector, when there is one.
 2. **Voter profiles of a community**: how the municipalities of a community voted in an election,
    grouped by the income of the municipality. It describes **areas, not people**: a municipality
    with a higher mean income voting more for a party does not mean that its richer residents did
@@ -40,8 +40,8 @@ Priority is the project's: neutrality and traceability over features.
    "Otras".
    *Amended 2026-11-06 by the author*: a candidature without a party in the table that reaches the
    3 % threshold is shown with its acronym from the file and a neutral colour, not folded into
-   "Otras" (in 2023: UPN in Navarra, 15.3 %, absent from the party table because it has not
-   governed since 2020).
+   "Otras" (in 2023: UPN in Navarra, 15.3 %, absent from the party table because it has neither
+   governed nor given external support since 2020).
 7. **Parties shown**: those with at least 3 % of the community's valid votes; the rest add up to
    "Otras". The same threshold for every party.
 8. **Income of the election's year** (2023 for the 2023 election), not the latest published.
