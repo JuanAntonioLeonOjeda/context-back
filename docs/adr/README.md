@@ -35,6 +35,7 @@ web and API were merged.
 | [0022](0022-model-classifies-on-the-author-machine.md) | The promoted model classifies on the author's machine, on a schedule | Accepted |
 | [0023](0023-public-deploy-on-hugging-face.md) | Public deploy on a Hugging Face Space, fed by a daily snapshot | Proposed |
 | [0024](0024-voter-profile-by-income-band.md) | The voter profile of a community, by income band (amends 0006) | Accepted |
+| [0025](0025-organisation-charts.md) | Organisation charts: bodies, posts and competences as facts of a body | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.
