@@ -15,7 +15,7 @@ reviewed by the author before the next (decided 2026-11-06).
 - [x] 10. ADR-0024 (voter profile method), accepted by the author on 2026-11-13 (the reasons in the author's words are still to be added)
 - [x] 11. Front: the sector's indicator next to the news
 - [x] 12. Front: "Perfil de voto por renta" section with bars, table and method note (core zone of the front)
-- [ ] 13. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, PRs into `develop`
+- [x] 13. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, PRs into `develop`
 
 ## Defend (optional)
 
