@@ -32,6 +32,7 @@ Each phase goes through `.claude/workflows/spec-driven-phase.md` and has its own
 | 5 | `context-voters` | sector indicators next to each story, voter profiles |
 | 6 | `verification` | claim extraction, verdicts, review panel (from the original draft) |
 | 7 | `parliament-votes` | how each parliamentary group voted on a measure: the Congreso first, from its open data; then the regional parliaments that publish official votes (decided 2026-10-15) |
+| 8 | `org-chart` | organisation charts of the State and the communities: bodies, who holds the head post of each executive and department, and the competences of each body, from official sources and curated by hand (decided 2026-11-12; ADR-0025) |
 
 **Do not start a phase without the previous one closed.** The current phase is the one
 whose `specs/<phase>/tasks.md` has unchecked tasks; if none exists, it is the next one.
