@@ -156,3 +156,12 @@ def _check_header(path: Path, found: Sequence[str] | None, expected: list[str]) 
 def _describe(error: ValidationError) -> str:
     """Each field that failed and why, in the file's own column names."""
     return "; ".join(f"{'.'.join(str(p) for p in e['loc'])}: {e['msg']}" for e in error.errors())
+
+
+def read_organization(data_dir: Path) -> tuple[list[Body], list[Holder], list[Competence]]:
+    """The three files of `data/organization/` (or another folder with the same three names)."""
+    return (
+        read_bodies(data_dir / BODIES_FILE),
+        read_holders(data_dir / HOLDERS_FILE),
+        read_competences(data_dir / COMPETENCES_FILE),
+    )
