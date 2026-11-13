@@ -39,3 +39,19 @@ ccaa-13-digitalizacion,department,ccaa,ccaa-13,Consejería de Digitalización,cc
 ccaa-13-cultura,department,ccaa,ccaa-13,"Consejería de Cultura, Turismo y Deporte",ccaa-13-gobierno,A13022903,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13461&eli=true
 ccaa-13-asamblea,parliament,ccaa,ccaa-13,Asamblea de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#anoveno
 ccaa-13-tsj,judiciary,state,ccaa-13,Tribunal Superior de Justicia de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#acuarentaycinco
+ccaa-05-gobierno,executive_head,ccaa,ccaa-05,Presidencia del Gobierno de Canarias,,A05002844,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-49
+ccaa-05-economia,department,ccaa,ccaa-05,"Consejería de Economía, Industria, Comercio y Autónomos",ccaa-05-gobierno,A05033180,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-obras-publicas,department,ccaa,ccaa-05,"Consejería de Obras Públicas, Vivienda y Movilidad",ccaa-05-gobierno,A05032833,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-hacienda,department,ccaa,ccaa-05,Consejería de Hacienda y Relaciones con la Unión Europea,ccaa-05-gobierno,A05032839,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-presidencia,department,ccaa,ccaa-05,"Consejería de Presidencia, Administraciones Públicas, Justicia y Seguridad",ccaa-05-gobierno,A05033187,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-educacion,department,ccaa,ccaa-05,"Consejería de Educación, Formación Profesional, Actividad Física y Deportes",ccaa-05-gobierno,A05047932,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-politica-territorial,department,ccaa,ccaa-05,"Consejería de Política Territorial, Cohesión Territorial y Aguas",ccaa-05-gobierno,A05047663,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-turismo-empleo,department,ccaa,ccaa-05,Consejería de Turismo y Empleo,ccaa-05-gobierno,A05030988,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-universidades-cultura,department,ccaa,ccaa-05,"Consejería de Universidades, Ciencia e Innovación y Cultura",ccaa-05-gobierno,A05046692,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-transicion-ecologica,department,ccaa,ccaa-05,Consejería de Transición Ecológica y Energía,ccaa-05-gobierno,A05047664,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-bienestar-social,department,ccaa,ccaa-05,"Consejería de Bienestar Social, Igualdad, Juventud, Infancia y Familias",ccaa-05-gobierno,A05045232,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-sanidad,department,ccaa,ccaa-05,Consejería de Sanidad,ccaa-05-gobierno,A05002852,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-agricultura,department,ccaa,ccaa-05,"Consejería de Agricultura, Ganadería, Pesca y Soberanía Alimentaria",ccaa-05-gobierno,A05033198,https://www.gobiernodecanarias.org/boc/2023/138/001.html
+ccaa-05-parlamento,parliament,ccaa,ccaa-05,Parlamento de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-43
+ccaa-05-tsj,judiciary,state,ccaa-05,Tribunal Superior de Justicia de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-78
+ccaa-05-cabildo,local,local,ccaa-05,Cabildo insular,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-65
