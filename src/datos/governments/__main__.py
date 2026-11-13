@@ -21,6 +21,7 @@ from datos.governments.infrastructure.csv_source import (
     read_terms,
 )
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
+from datos.indicators.application.catalogue import INDICATOR_IDS
 from datos.log_setup import configure_logging
 
 DEFAULT_DIR = Path("data/governments")
@@ -53,7 +54,7 @@ def main() -> None:
         with build_engine(str(settings.database_url)).begin() as connection:
             repository = PgGovernmentRepository(connection)
             load_governments(repository, parties, terms, since=SINCE, today=date.today())
-            load_competences(repository, sectors, competences)
+            load_competences(repository, sectors, competences, indicator_ids=INDICATOR_IDS)
     except (InvalidGovernmentsFileError, InvalidGovernmentsDatasetError) as error:
         # Nothing was written: the transaction rolled back. Exit code 1 for scripts and CI.
         log.error("governments_not_loaded", reason=str(error))

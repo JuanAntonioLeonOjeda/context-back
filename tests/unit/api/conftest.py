@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from datos.api.app import create_app
+from datos.governments.domain.competence import Sector
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
@@ -16,6 +17,12 @@ from datos.stories.application.community_stories import CommunityStory, StoryArt
 from datos.stories.application.story_tree import TreeRun
 from datos.stories.domain.tree import StoryLink
 from datos.territories.territory import Level, Territory
+from datos.voters.application.community_voters import (
+    CandidatureCount,
+    ElectionInfo,
+    IncomeDownloadInfo,
+    MunicipalRow,
+)
 
 TODAY = date(2026, 10, 13)
 FETCHED = datetime(2026, 10, 13, 15, 48, tzinfo=UTC)
@@ -68,6 +75,12 @@ VALUES = [
 ]
 
 
+SECTORS = [
+    Sector("education", "Educación", indicator_id="higher_education_share_16plus"),
+    Sector("health", "Sanidad"),
+]
+
+
 class FakeGovernments:
     def __init__(self, terms: list[GovernmentTerm], parties: list[Party]) -> None:
         self._terms = terms
@@ -78,6 +91,9 @@ class FakeGovernments:
 
     def parties(self) -> list[Party]:
         return list(self._parties)
+
+    def active_sectors(self) -> list[Sector]:
+        return list(SECTORS)
 
 
 class FakeNews:
@@ -187,6 +203,52 @@ PARTIES = [
     Party("pp", "Partido Popular", "PP", "#9e9e9e"),
 ]
 
+ELECTION = ElectionInfo("congreso-2023-07", date(2023, 7, 23), "02202307_MUNI.zip")
+INCOME = IncomeDownloadInfo(
+    2023,
+    "https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?date=20230101",
+    datetime(2026, 11, 9, 8, 23, tzinfo=UTC),
+)
+# Two municipalities of Canarias with hand-picked counts: 000031 is CC (mapped), 000005
+# PP (mapped), 000099 a candidature that is not in the table.
+VOTER_ROWS = [
+    MunicipalRow(
+        "35016",
+        300,
+        10,
+        Decimal("15000"),
+        (
+            CandidatureCount("000005", "PP", 100),
+            CandidatureCount("000031", "CCa", 60),
+            CandidatureCount("000099", "LISTA X", 30),
+        ),
+    ),
+    MunicipalRow(
+        "38038",
+        200,
+        0,
+        Decimal("14000"),
+        (CandidatureCount("000005", "PP", 120), CandidatureCount("000031", "CCa", 80)),
+    ),
+]
+PARTY_BY_CANDIDATURE = {"congreso-2023-07": {"000005": "pp", "000031": "coalicion-canaria"}}
+
+
+class FakeVoters:
+    def __init__(self, rows: list[MunicipalRow]) -> None:
+        self._rows = rows
+
+    def elections(self) -> list[ElectionInfo]:
+        return [ELECTION]
+
+    def municipal_rows(
+        self, territory_id: str, election_id: str, income_year: int
+    ) -> list[MunicipalRow]:
+        return list(self._rows) if territory_id == "ccaa-05" else []
+
+    def income_download(self, year: int) -> IncomeDownloadInfo | None:
+        return INCOME if year == 2023 else None
+
 
 def term(
     territory_id: str,
@@ -256,6 +318,7 @@ def make_client(
         articles: list[ClassifiedArticle] | None = None,
         run: StoryRun | None = None,
         stories: list[CommunityStory] | None = None,
+        voter_rows: list[MunicipalRow] = VOTER_ROWS,
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
@@ -272,6 +335,8 @@ def make_client(
                 news=lambda: news_reader,
                 stories=lambda: stories_reader,
                 trees=lambda: trees_reader,
+                voters=lambda: FakeVoters(voter_rows),
+                party_by_candidature=PARTY_BY_CANDIDATURE,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
                 classifier_id="rules",

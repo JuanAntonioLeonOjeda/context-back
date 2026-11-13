@@ -56,6 +56,12 @@ class _SectorRow(BaseModel):
     id: str
     name: str
     is_active: bool = True
+    indicator_id: str | None = None
+
+    @field_validator("indicator_id", mode="before")
+    @classmethod
+    def _empty_as_none(cls, value: object) -> object:
+        return None if value == "" else value
 
 
 class _CompetenceRow(BaseModel):
@@ -136,7 +142,7 @@ def _check_unique(values: list[str], *, what: str, path: Path) -> None:
 
 def read_sectors(path: Path) -> list[Sector]:
     parsed = [_parse(_SectorRow, r, path=path, line=i + 2) for i, r in enumerate(_rows(path))]
-    sectors = [Sector(s.id, s.name, s.is_active) for s in parsed]
+    sectors = [Sector(s.id, s.name, s.is_active, s.indicator_id) for s in parsed]
     _check_unique([s.id for s in sectors], what="sector id", path=path)
     return sectors
 

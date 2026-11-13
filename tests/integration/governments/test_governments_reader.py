@@ -16,6 +16,7 @@ from datos.governments.infrastructure.csv_source import (
 )
 from datos.governments.infrastructure.pg_reader import PgGovernmentsReader
 from datos.governments.infrastructure.pg_repository import PgGovernmentRepository
+from datos.indicators.application.catalogue import INDICATOR_IDS
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
 
@@ -88,7 +89,12 @@ def test_competences_are_stored_as_in_the_dataset(
     loaded must be what the CSV says, row by row. `reader` loads the territories and terms the
     competence rules check against."""
     expected = read_competences(DATA / "competences.csv")
-    load_competences(PgGovernmentRepository(db), read_sectors(DATA / "sectors.csv"), expected)
+    load_competences(
+        PgGovernmentRepository(db),
+        read_sectors(DATA / "sectors.csv"),
+        expected,
+        indicator_ids=INDICATOR_IDS,
+    )
 
     rows = db.execute(
         text(
@@ -111,3 +117,24 @@ def test_competences_are_stored_as_in_the_dataset(
         for c in expected
     )
     assert len(rows) == 45
+
+
+def test_active_sectors_leave_out_the_planned_ones_and_carry_their_indicator(
+    reader: PgGovernmentsReader, db: Connection
+) -> None:
+    load_competences(
+        PgGovernmentRepository(db),
+        read_sectors(DATA / "sectors.csv"),
+        read_competences(DATA / "competences.csv"),
+        indicator_ids=INDICATOR_IDS,
+    )
+
+    sectors = reader.active_sectors()
+
+    assert [(s.id, s.indicator_id) for s in sectors] == [
+        ("education", "higher_education_share_16plus"),
+        ("health", None),
+        ("housing", "housing_price_index"),
+        ("justice", None),
+        ("work", "unemployment_rate"),
+    ]
