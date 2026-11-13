@@ -9,7 +9,7 @@ reviewed by the author before the next (the governments data and the schema are 
 - [x] 4. CSV readers, validation of every problem at once, loader and `python -m datos.organization load` `[core]`
 - [x] 5. Data batch 1 — the State: bodies, ministers from the BOE, competences; reviewed by the author in batches
 - [ ] 6. Data batch 2 — Madrid, checked against DIR3 and its government page
-- [ ] 7. Read side and `GET /organization`, `GET /communities/{id}/organization` `[core]`
+- [x] 7. Read side and `GET /organization`, `GET /communities/{id}/organization` `[core]`
 - [ ] 8. Front (branch of its own): client regenerated, routes, nested-list chart, "Ver organigrama" link, BOE attribution
 - [ ] 9. Data batches 3 and 4 — Canarias and Cataluña (names given by the author, with their URL)
 - [ ] 10. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, the phases table of `project-policies.md`, PRs into `develop`
