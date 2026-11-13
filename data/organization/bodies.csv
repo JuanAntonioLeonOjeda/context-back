@@ -27,3 +27,15 @@ es-consejo-general-poder-judicial,judiciary,state,es,Consejo General del Poder J
 es-tribunal-supremo,judiciary,state,es,Tribunal Supremo,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a123
 local-ayuntamiento,local,local,,Ayuntamiento,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a25
 local-diputacion,local,local,,Diputación provincial,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a36
+ccaa-13-gobierno,executive_head,ccaa,ccaa-13,Presidencia de la Comunidad de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#a17
+ccaa-13-presidencia-justicia,department,ccaa,ccaa-13,"Consejería de Presidencia, Justicia y Administración Local",ccaa-13-gobierno,A13037413,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13374&eli=true
+ccaa-13-economia-hacienda,department,ccaa,ccaa-13,"Consejería de Economía, Hacienda y Empleo",ccaa-13-gobierno,A13037513,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13375&eli=true
+ccaa-13-medio-ambiente,department,ccaa,ccaa-13,"Consejería de Medio Ambiente, Agricultura e Interior",ccaa-13-gobierno,A13037472,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13376&eli=true
+ccaa-13-familia,department,ccaa,ccaa-13,"Consejería de Familia, Juventud y Asuntos Sociales",ccaa-13-gobierno,A13002916,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13396&eli=true
+ccaa-13-vivienda-transportes,department,ccaa,ccaa-13,"Consejería de Vivienda, Transportes e Infraestructuras",ccaa-13-gobierno,A13003355,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13403&eli=true
+ccaa-13-sanidad,department,ccaa,ccaa-13,Consejería de Sanidad,ccaa-13-gobierno,A13002915,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13404&eli=true
+ccaa-13-educacion,department,ccaa,ccaa-13,"Consejería de Educación, Ciencia y Universidades",ccaa-13-gobierno,A13037434,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13410&eli=true
+ccaa-13-digitalizacion,department,ccaa,ccaa-13,Consejería de Digitalización,ccaa-13-gobierno,A13037569,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13453&eli=true
+ccaa-13-cultura,department,ccaa,ccaa-13,"Consejería de Cultura, Turismo y Deporte",ccaa-13-gobierno,A13022903,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13461&eli=true
+ccaa-13-asamblea,parliament,ccaa,ccaa-13,Asamblea de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#a9
+ccaa-13-tsj,judiciary,state,ccaa-13,Tribunal Superior de Justicia de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#a45
