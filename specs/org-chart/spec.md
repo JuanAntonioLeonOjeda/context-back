@@ -30,7 +30,9 @@ responsible for anything, and never puts a party next to a person.
    from now.
 4. Competences: a short summary in our words, the article and a link, each body mapped to the 12
    sectors.
-5. Local level generic only (LRBRL: ayuntamiento, diputación, cabildo, consell), no names.
+5. Local level generic only (LRBRL: ayuntamiento, diputación, cabildo, consell), no names. The
+   local bodies also appear on the page of their community (decided 2026-11-13): the generic ones
+   on every page, and one that exists in a single community only on that one.
 6. The general chart and each community's: the executive plus parliaments and the judiciary as
    generic boxes with competences and without names. The judiciary is one for the whole State: the
    TSJ is a separate box, not under the regional government.
@@ -49,7 +51,9 @@ responsible for anything, and never puts a party next to a person.
    and local levels as generic boxes with their competences.
 2. **A community's chart.** Given a pilot community, when `/comunidades/{id}/organigrama` opens, then
    it shows its president and consejeros with the official name of each consejería, the parliament
-   box, the State's judiciary box with the TSJ apart, and the generic local boxes.
+   box, the TSJ box apart (a State court that sits in the community), and the local bodies that
+   apply to it: the generic ones, and those that exist in that community only (a cabildo in
+   Canarias).
 3. **Competences.** Given any body, then its competences appear as a summary, the legal basis (article)
    and a link, and the sectors it relates to.
 4. **A community outside the pilot** shows the same page with "sin datos todavía" and no invented

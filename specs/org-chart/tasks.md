@@ -5,7 +5,7 @@ reviewed by the author before the next (the governments data and the schema are 
 
 - [ ] 1. ADR-0025 reviewed and decided by the author (reasons in their words) `[core]`
 - [x] 2. Migration `0016_organization` (bodies, holders, competences, their sectors) and its integration test `[core]`
-- [ ] 3. Pure domain: `holder_on`, `executive_chart` (order, completeness), hand-computed tests `[core]`
+- [x] 3. Pure domain: `holder_on`, `executive_chart` (order, completeness), hand-computed tests `[core]`
 - [ ] 4. CSV readers, validation of every problem at once, loader and `python -m datos.organization load` `[core]`
 - [ ] 5. Data batch 1 — the State: bodies, ministers from the BOE, competences; reviewed by the author in batches
 - [ ] 6. Data batch 2 — Madrid, checked against DIR3 and its government page

@@ -14,12 +14,13 @@ sector ids through the other modules' published APIs, never their internals. Dat
 |---|---|---|
 | `bodies.csv` | body | `id` (slug starting with the territory id), `kind`, `level`, `territory_id`, `name` (official), `parent_id`, `dir3_id`, `source_url` |
 | `holders.csv` | holder of the head post of a body, over a period | `body_id`, `post_title`, `holder_name`, `valid_from`, `valid_to`, `source_url` |
-| `competences.csv` | competence of a body | `id`, `body_id`, `summary` (our words), `legal_basis` (article), `sector_ids` (`\|`-separated), `source_url` |
+| `competences.csv` | competence of a body | `body_id`, `summary` (our words), `legal_basis` (article), `sector_ids` (`\|`-separated), `source_url` |
 
 `kind` is one of `executive_head`, `department` (a consejería or ministry), `parliament`,
 `judiciary`, `local`. `level` uses the vocabulary of the competence table (`state`, `ccaa`,
-`local`). A `department` has the community's `executive_head` as parent. Local bodies have no
-territory (they are generic).
+`local`). A `department` has the community's `executive_head` as parent. A local body has no
+territory when it is generic (the same in every community: an ayuntamiento) and belongs to a
+community when it exists there only (a cabildo in Canarias); the chart of a community shows both.
 
 ## Schema (migration `0016_organization`)
 
