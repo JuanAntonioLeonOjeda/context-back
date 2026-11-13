@@ -1,7 +1,7 @@
 # ADR-0024: The voter profile of a community, by income band
 
-- **Status:** Proposed
-- **Date:** 2026-11-09 (decisions taken by the author on 2026-11-06; to be accepted by the author)
+- **Status:** Accepted (by the author, 2026-11-13)
+- **Date:** 2026-11-09 (decisions taken by the author on 2026-11-06)
 - **Phase:** context-voters
 - **Amends:** ADR-0006 (the method in detail; the CIS stays out for now)
 
@@ -87,7 +87,7 @@ Option A in each question, decided by the author on 2026-11-06:
 7. Descriptive only: no correlation, no regression and no sentence about what the voters of a party
    are like. The page explains the ecological fallacy.
 
-_The reasons in the author's words: to be written by the author before accepting this ADR._
+_The reasons in the author's words: not written yet; the author adds them here._
 
 ## Consequences
 
