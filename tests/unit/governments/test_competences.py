@@ -159,7 +159,17 @@ def test_nothing_is_written_when_the_table_is_invalid() -> None:
     repository = _Repository()
 
     with pytest.raises(InvalidGovernmentsDatasetError):
-        load_competences(repository, [HEALTH], [GENERAL_CCAA, GENERAL_CCAA])  # type: ignore[arg-type]
+        load_competences(repository, [HEALTH], [GENERAL_CCAA, GENERAL_CCAA], indicator_ids=set())  # type: ignore[arg-type]
+
+    assert repository.written is False
+
+
+def test_nothing_is_written_when_a_sector_names_an_unknown_indicator() -> None:
+    repository = _Repository()
+    health = Sector("health", "Sanidad", indicator_id="waiting_days_mean")
+
+    with pytest.raises(InvalidGovernmentsDatasetError, match="unknown indicator waiting_days_mean"):
+        load_competences(repository, [health], [GENERAL_CCAA], indicator_ids={"unemployment_rate"})  # type: ignore[arg-type]
 
     assert repository.written is False
 

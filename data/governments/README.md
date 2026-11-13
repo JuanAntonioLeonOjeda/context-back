@@ -8,7 +8,7 @@ Who governed the State and each community since 2020-01-01. Rules: `specs/founda
 | `parties.csv` | party, as the brand that appears in government |
 | `government_terms.csv` | term: territory, period `[valid_from, valid_to)`, president, caretaker flag, source |
 | `government_term_parties.csv` | party of a term (key: `territory_id` + `valid_from`), its role and the source of that role |
-| `sectors.csv` | sector (topic) of the taxonomy, with `is_active`: in use, or planned for a later batch |
+| `sectors.csv` | sector (topic) of the taxonomy, with `is_active`: in use, or planned for a later batch; `indicator_id`: the INE indicator shown next to the sector's news, empty when none (phase context-voters, decided by the author on 2026-11-06) |
 | `competences.csv` | who does what in a sector: level, function, legal basis and source |
 
 ## Sectors

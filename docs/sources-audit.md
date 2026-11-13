@@ -141,6 +141,32 @@ each site allows (ADR-0019). Where a site does not allow something, it is not do
   unchecked automatic interpretation. Not used as a source: the project reads the Congreso.
 - Regional parliaments: not checked yet.
 
+## 10. Voter profiles: election results and income (checked 2026-11-06, for phase `context-voters`)
+
+- **Infoelectoral** (Ministerio del Interior, `infoelectoral.interior.gob.es`): the download area
+  and the result files (`/estaticos/docxl/apliextr/02202307_MUNI.zip`, general election of July
+  2023 by municipality) answer **403 to an automated client**: Cloudflare serves a bot challenge
+  (`cf-mitigated: challenge`). It is not bypassed (project policies): the file is downloaded by
+  hand in a browser, once per election, and the loader reads the local file and records its hash.
+  `robots.txt` allows `/` to all user agents except named AI crawlers and declares
+  `Content-Signal: search=yes, ai-train=no, use=reference`; nothing here trains a model on it.
+  The zip (`02202307_MUNI.zip`, downloaded by hand on 2026-11-06, SHA-256 `08cc98de…e420`) holds
+  fixed-width cp1252 `.DAT` files and the layout document `FICHEROS.doc` (2010). Checked against it:
+  `05` has 8,223 records of 233 characters, 8,131 municipal totals (district `99`), all official
+  (`S`); the votes to candidatures of `05` and the sum of `06` agree (24,284,335); blank 199,103.
+  `03` lists 84 candidatures, each with its national accumulation head (PSC, PSdeG-PSOE, PSE-EE →
+  PSOE; Sumar's regional lists → Sumar). Votes from abroad (CERA) are not in the municipal files.
+  Interior numbers the communities its own way (Madrid 12; INE 13): provinces and municipalities
+  use INE codes.
+- Infoelectoral has general, municipal and European elections, **not regional ones**: those are
+  published by each community (Canarias: Parlamento de Canarias open data by municipality for 2019
+  and 2023; Cataluña: Idescat CSV down to polling station; Madrid: not found). Out of the phase.
+- **Income by municipality**: INE, Atlas de Distribución de Renta de los Hogares (operation 353,
+  Tempus API), one table "Indicadores de renta media y mediana" per province (from table 30656).
+  Checked on table 30656 (Albacete): 87 municipal series of "Renta neta media por persona" (plus
+  districts and census sections), latest year **2024**, 496 of 515 series with a value (some
+  small areas have none). The series of 2015 to 2024 are there.
+
 ## Decisions taken with the author (2026-10-13)
 
 - El Periódico and El Economista are excluded (no usable access; protection not bypassed).

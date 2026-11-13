@@ -1,0 +1,149 @@
+[
+ {
+  "COD": "ADRH92537",
+  "Nombre": "Santa Cruz de Tenerife. Dato base. Renta neta media por persona. ",
+  "T3_Unidad": "Euros",
+  "T3_Escala": " ",
+  "MetaData": [
+   {
+    "Id": 6827,
+    "T3_Variable": "Municipios",
+    "Nombre": "Santa Cruz de Tenerife",
+    "Codigo": "38038"
+   },
+   {
+    "Id": 72,
+    "T3_Variable": "Tipo de dato",
+    "Nombre": "Dato base",
+    "Codigo": ""
+   },
+   {
+    "Id": 284048,
+    "T3_Variable": "SALDOS CONTABLES",
+    "Nombre": "Renta neta media por persona",
+    "Codigo": ""
+   }
+  ],
+  "Data": [
+   {
+    "Fecha": "2023-01-01T00:00:00.000+01:00",
+    "T3_TipoDato": "Definitivo",
+    "T3_Periodo": "A",
+    "Anyo": 2023,
+    "Valor": 15110.0
+   }
+  ]
+ },
+ {
+  "COD": "ADRH103921",
+  "Nombre": "Albacete. Dato base. Renta neta media por persona. ",
+  "T3_Unidad": "Euros",
+  "T3_Escala": " ",
+  "MetaData": [
+   {
+    "Id": 559,
+    "T3_Variable": "Municipios",
+    "Nombre": "Albacete",
+    "Codigo": "02003"
+   },
+   {
+    "Id": 72,
+    "T3_Variable": "Tipo de dato",
+    "Nombre": "Dato base",
+    "Codigo": ""
+   },
+   {
+    "Id": 284048,
+    "T3_Variable": "SALDOS CONTABLES",
+    "Nombre": "Renta neta media por persona",
+    "Codigo": ""
+   }
+  ],
+  "Data": [
+   {
+    "Fecha": "2023-01-01T00:00:00.000+01:00",
+    "T3_TipoDato": "Definitivo",
+    "T3_Periodo": "A",
+    "Anyo": 2023,
+    "Valor": 14611.0
+   }
+  ]
+ },
+ {
+  "COD": "ADRH93499",
+  "Nombre": "Palmas de Gran Canaria, Las. Dato base. Renta neta media por persona. ",
+  "T3_Unidad": "Euros",
+  "T3_Escala": " ",
+  "MetaData": [
+   {
+    "Id": 1433,
+    "T3_Variable": "Municipios",
+    "Nombre": "Palmas de Gran Canaria, Las",
+    "Codigo": "35016"
+   },
+   {
+    "Id": 72,
+    "T3_Variable": "Tipo de dato",
+    "Nombre": "Dato base",
+    "Codigo": ""
+   },
+   {
+    "Id": 284048,
+    "T3_Variable": "SALDOS CONTABLES",
+    "Nombre": "Renta neta media por persona",
+    "Codigo": ""
+   }
+  ],
+  "Data": [
+   {
+    "Fecha": "2023-01-01T00:00:00.000+01:00",
+    "T3_TipoDato": "Definitivo",
+    "T3_Periodo": "A",
+    "Anyo": 2023,
+    "Valor": 14968.0
+   }
+  ]
+ },
+ {
+  "COD": "ADRH99481",
+  "Nombre": "Carrascosa de Haro. Dato base. Renta neta media por persona. ",
+  "T3_Unidad": "Euros",
+  "T3_Escala": " ",
+  "MetaData": [
+   {
+    "Id": 4626,
+    "T3_Variable": "Municipios",
+    "Nombre": "Carrascosa de Haro",
+    "Codigo": "16058"
+   },
+   {
+    "Id": 72,
+    "T3_Variable": "Tipo de dato",
+    "Nombre": "Dato base",
+    "Codigo": ""
+   },
+   {
+    "Id": 284048,
+    "T3_Variable": "SALDOS CONTABLES",
+    "Nombre": "Renta neta media por persona",
+    "Codigo": ""
+   }
+  ],
+  "Data": [
+   {
+    "Fecha": "2023-01-01T00:00:00.000+01:00",
+    "T3_TipoDato": "Definitivo",
+    "T3_Periodo": "A",
+    "Anyo": 2023,
+    "Valor": null,
+    "Notas": [
+     {
+      "texto": "Dato bajo secreto estadístico, por tamaño de la Unidad Territorial. Se oculta",
+      "Fk_TipoNota": 1,
+      "textoTipo": null
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -28,6 +28,8 @@ class Sector:
     id: str
     name: str
     is_active: bool = True  # a planned sector of the taxonomy is false until its batch
+    # The indicator shown next to the sector's news (context-voters, decision 3); None: none.
+    indicator_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,6 +52,17 @@ def applicable_competences(
     rows = [c for c in competences if c.sector_id == sector_id and c.activity == activity]
     own = [c for c in rows if c.territory_id == territory_id]
     return own if own else [c for c in rows if c.territory_id is None]
+
+
+def sector_indicator_problems(
+    sectors: Sequence[Sector], indicator_ids: Collection[str]
+) -> list[str]:
+    """A sector may name an indicator only if the project defines it (empty when all do)."""
+    return [
+        f"sector {s.id}: unknown indicator {s.indicator_id}"
+        for s in sectors
+        if s.indicator_id is not None and s.indicator_id not in indicator_ids
+    ]
 
 
 def competence_problems(

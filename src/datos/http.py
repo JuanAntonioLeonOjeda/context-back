@@ -30,10 +30,19 @@ def download(
     *,
     accept: str = "*/*",
     max_bytes: int = MAX_DOWNLOAD_BYTES,
+    timeout: httpx.Timeout | None = None,
 ) -> bytes:
-    """The response body, or `SourceUnavailableError` on an HTTP error or an oversized body."""
+    """The response body, or `SourceUnavailableError` on an HTTP error or an oversized body.
+
+    `timeout` overrides the client's for one slow source; by default the client's applies.
+    """
     try:
-        with client.stream("GET", url, headers={"Accept": accept}) as response:
+        with client.stream(
+            "GET",
+            url,
+            headers={"Accept": accept},
+            timeout=httpx.USE_CLIENT_DEFAULT if timeout is None else timeout,
+        ) as response:
             response.raise_for_status()
             chunks: list[bytes] = []
             size = 0

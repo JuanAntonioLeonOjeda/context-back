@@ -2,6 +2,7 @@
 
 from sqlalchemy import Connection, Row, text
 
+from datos.governments.domain.competence import Sector
 from datos.governments.domain.government_term import GovernmentTerm, PartyRole, TermParty
 from datos.governments.domain.party import Party
 
@@ -19,6 +20,7 @@ _TERMS = text(
     """
 )
 _PARTIES = text("SELECT id, name, short_name, colour_hex FROM parties ORDER BY id")
+_ACTIVE_SECTORS = text("SELECT id, name, indicator_id FROM sectors WHERE is_active ORDER BY id")
 
 
 class PgGovernmentsReader:
@@ -35,6 +37,12 @@ class PgGovernmentsReader:
     def parties(self) -> list[Party]:
         rows = self._connection.execute(_PARTIES)
         return [Party(row.id, row.name, row.short_name, row.colour_hex) for row in rows]
+
+    def active_sectors(self) -> list[Sector]:
+        rows = self._connection.execute(_ACTIVE_SECTORS)
+        return [
+            Sector(row.id, row.name, is_active=True, indicator_id=row.indicator_id) for row in rows
+        ]
 
 
 def _term(rows: list[Row[tuple[object, ...]]]) -> GovernmentTerm:

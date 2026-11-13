@@ -32,8 +32,10 @@ _INSERT_TERM_PARTY = text(
 )
 
 _UPSERT_SECTOR = text(
-    "INSERT INTO sectors (id, name, is_active) VALUES (:id, :name, :is_active)"
-    " ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = EXCLUDED.is_active"
+    "INSERT INTO sectors (id, name, is_active, indicator_id)"
+    " VALUES (:id, :name, :is_active, :indicator_id)"
+    " ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, is_active = EXCLUDED.is_active,"
+    " indicator_id = EXCLUDED.indicator_id"
 )
 _INSERT_COMPETENCE = text(
     """
@@ -103,7 +105,12 @@ class PgGovernmentRepository:
         for sector in sectors:
             self._connection.execute(
                 _UPSERT_SECTOR,
-                {"id": sector.id, "name": sector.name, "is_active": sector.is_active},
+                {
+                    "id": sector.id,
+                    "name": sector.name,
+                    "is_active": sector.is_active,
+                    "indicator_id": sector.indicator_id,
+                },
             )
         self._connection.execute(text("DELETE FROM competences"))
         for c in competences:

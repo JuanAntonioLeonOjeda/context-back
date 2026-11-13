@@ -8,6 +8,7 @@ small (about a hundred terms), so loading a territory's terms costs nothing.
 from datetime import date
 from typing import Protocol
 
+from datos.governments.domain.competence import Sector
 from datos.governments.domain.government_term import GovernmentTerm, in_force_on
 from datos.governments.domain.party import Party
 
@@ -18,6 +19,10 @@ class GovernmentsReader(Protocol):
         ...
 
     def parties(self) -> list[Party]: ...
+
+    def active_sectors(self) -> list[Sector]:
+        """The sectors in use (ADR-0007), ordered by id, each with its indicator if it has one."""
+        ...
 
 
 def government_on(reader: GovernmentsReader, territory_id: str, day: date) -> GovernmentTerm | None:
