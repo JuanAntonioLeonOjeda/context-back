@@ -39,8 +39,23 @@ Hacienda"), `holder_name`, `valid_from`, `valid_to` (empty: in force) and `sourc
 half-open `[valid_from, valid_to)`: the day of a change belongs to the new holder. A body's periods
 never overlap.
 
+Only the current composition is kept: someone who has left has no row, and the history that
+accrues from now is in the periods and in git. `valid_from` is the date of the decree that gave
+the holder the post under that title (the person may take office the day after). The source of a
+row is that decree; when the title joins a vice-presidency and a ministry, it is the decree of the
+vice-presidency. A post that is vacant while someone attends its ordinary business (the BOE says
+"asuma el despacho ordinario de los asuntos del Ministerio") has that person as its holder, with
+the BOE's words in the title.
+
 A community's executive is shown only if its head and **every** department listed here have a
 holder in force that day; otherwise the page says "sin datos todavía".
+
+### Updating the State
+
+After a change of government or a reshuffle: new rows for the new holders with the date of their
+decrees, and a `valid_to` (the date of the decree of cese) on the rows of those who leave. The
+BOE's open API lists them by day (`/datosabiertos/api/boe/sumario/YYYYMMDD`), and the data of the
+BOE is cited as "Fuente de los datos: Agencia Estatal Boletín Oficial del Estado".
 
 ## `competences.csv`
 
