@@ -13,6 +13,8 @@ from datos.governments.domain.government_term import GovernmentTerm, PartyRole, 
 from datos.governments.domain.party import Party
 from datos.indicators.application.read_indicators import IndicatorInfo, StoredValue
 from datos.news.application.community_news import ClassifiedArticle
+from datos.organization.domain.body import Body, BodyKind, BodyLevel, Holder
+from datos.organization.domain.boxes import Competence
 from datos.stories.application.community_stories import CommunityStory, StoryArticle, StoryRun
 from datos.stories.application.story_tree import TreeRun
 from datos.stories.domain.tree import StoryLink
@@ -51,6 +53,27 @@ class FakeTerritories:
 
     def by_level(self, level: Level) -> list[Territory]:
         return [t for t in self._territories if t.level is level]
+
+
+class FakeOrganization:
+    def __init__(
+        self, bodies: list[Body], holders: list[Holder], competences: list[Competence]
+    ) -> None:
+        self._bodies = bodies
+        self._holders = holders
+        self._competences = competences
+
+    def bodies(self) -> list[Body]:
+        return self._bodies
+
+    def holders(self) -> list[Holder]:
+        return self._holders
+
+    def competences(self) -> list[Competence]:
+        return self._competences
+
+    def sector_names(self) -> dict[str, str]:
+        return {"health": "Sanidad", "taxes": "Impuestos"}
 
 
 class FakeIndicators:
@@ -291,6 +314,127 @@ TERMS = [
 ]
 
 
+def _body(
+    id_: str,
+    kind: BodyKind,
+    level: BodyLevel,
+    territory: str | None,
+    name: str,
+    parent: str | None = None,
+    dir3: str | None = None,
+) -> Body:
+    return Body(id_, kind, level, territory, name, parent, dir3, SOURCE)
+
+
+def _holder(body_id: str, name: str, since: date = date(2023, 6, 17)) -> Holder:
+    return Holder(body_id, f"Titular de {body_id}", name, since, None, SOURCE)
+
+
+# The State and Madrid have a complete executive, Canarias only a head with nobody in it.
+# Madrid's departments, by name, case-insensitively: "educación", "Sanidad".
+ORGANIZATION: tuple[list[Body], list[Holder], list[Competence]] = (
+    [
+        _body(
+            "es-gobierno",
+            BodyKind.EXECUTIVE_HEAD,
+            BodyLevel.STATE,
+            "es",
+            "Presidencia del Gobierno",
+        ),
+        _body(
+            "es-hacienda",
+            BodyKind.DEPARTMENT,
+            BodyLevel.STATE,
+            "es",
+            "Ministerio de Hacienda",
+            "es-gobierno",
+            dir3="E05250001",
+        ),
+        _body("es-cortes", BodyKind.PARLIAMENT, BodyLevel.STATE, "es", "Cortes Generales"),
+        _body("es-supremo", BodyKind.JUDICIARY, BodyLevel.STATE, "es", "Tribunal Supremo"),
+        _body(
+            "ccaa-13-gobierno",
+            BodyKind.EXECUTIVE_HEAD,
+            BodyLevel.CCAA,
+            "ccaa-13",
+            "Presidencia de la Comunidad",
+        ),
+        _body(
+            "ccaa-13-sanidad",
+            BodyKind.DEPARTMENT,
+            BodyLevel.CCAA,
+            "ccaa-13",
+            "Consejería de Sanidad",
+            "ccaa-13-gobierno",
+        ),
+        _body(
+            "ccaa-13-educacion",
+            BodyKind.DEPARTMENT,
+            BodyLevel.CCAA,
+            "ccaa-13",
+            "consejería de educación",
+            "ccaa-13-gobierno",
+        ),
+        _body(
+            "ccaa-13-asamblea", BodyKind.PARLIAMENT, BodyLevel.CCAA, "ccaa-13", "Asamblea de Madrid"
+        ),
+        _body(
+            "ccaa-13-tsj",
+            BodyKind.JUDICIARY,
+            BodyLevel.STATE,
+            "ccaa-13",
+            "Tribunal Superior de Justicia de Madrid",
+        ),
+        _body(
+            "ccaa-05-gobierno",
+            BodyKind.EXECUTIVE_HEAD,
+            BodyLevel.CCAA,
+            "ccaa-05",
+            "Presidencia de Canarias",
+        ),
+        _body("ccaa-05-cabildo", BodyKind.LOCAL, BodyLevel.LOCAL, "ccaa-05", "Cabildo insular"),
+        _body("local-ayuntamiento", BodyKind.LOCAL, BodyLevel.LOCAL, None, "Ayuntamiento"),
+    ],
+    [
+        _holder("es-gobierno", "Pedro Sánchez Pérez-Castejón", date(2023, 11, 17)),
+        _holder("es-hacienda", "Arcadi España García", date(2026, 3, 26)),
+        _holder("ccaa-13-gobierno", "Isabel Díaz Ayuso"),
+        _holder("ccaa-13-sanidad", "Fátima Matute Teresa"),
+        _holder("ccaa-13-educacion", "María Mercedes Zarzalejo Carbajo"),
+    ],
+    [
+        Competence(
+            "es-hacienda",
+            "Hacienda pública, presupuestos y gastos.",
+            "RD 829/2023, art. 5.1",
+            ("taxes",),
+            SOURCE,
+        ),
+        Competence(
+            "ccaa-13-sanidad",
+            "Salud y asistencia sanitaria.",
+            "Decreto 245/2023, art. 1",
+            ("health", "unknown"),
+            SOURCE,
+        ),
+        Competence(
+            "ccaa-13-asamblea",
+            "Potestad legislativa de la Comunidad.",
+            "Estatuto, art. 9",
+            ("taxes",),
+            SOURCE,
+        ),
+        Competence(
+            "local-ayuntamiento",
+            "Urbanismo y vivienda.",
+            "Ley 7/1985, art. 25.2.a",
+            ("health",),
+            SOURCE,
+        ),
+    ],
+)
+
+
 @pytest.fixture
 def news_reader() -> FakeNews:
     return FakeNews()
@@ -319,6 +463,7 @@ def make_client(
         run: StoryRun | None = None,
         stories: list[CommunityStory] | None = None,
         voter_rows: list[MunicipalRow] = VOTER_ROWS,
+        organization: FakeOrganization | None = None,
     ) -> TestClient:
         governments = FakeGovernments(terms, PARTIES)
         territories = FakeTerritories(TERRITORIES)
@@ -336,6 +481,7 @@ def make_client(
                 stories=lambda: stories_reader,
                 trees=lambda: trees_reader,
                 voters=lambda: FakeVoters(voter_rows),
+                organization=lambda: organization or FakeOrganization(*ORGANIZATION),
                 party_by_candidature=PARTY_BY_CANDIDATURE,
                 clock=FixedClock(today),
                 geometry=GEOMETRY,
