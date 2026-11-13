@@ -33,7 +33,17 @@ AYUNTAMIENTO = _body(
 DIPUTACION = _body(
     "local-diputacion", BodyKind.LOCAL, "Diputación provincial", None, level=BodyLevel.LOCAL
 )
-ALL = [PARLIAMENT_14, PARLIAMENT_13, STATE_COURT, TSJ_13, CABILDO, DIPUTACION, AYUNTAMIENTO]
+CABILDO_05 = _body("ccaa-05-cabildo", BodyKind.LOCAL, "Cabildo", "ccaa-05", level=BodyLevel.LOCAL)
+ALL = [
+    PARLIAMENT_14,
+    PARLIAMENT_13,
+    STATE_COURT,
+    TSJ_13,
+    CABILDO,
+    DIPUTACION,
+    AYUNTAMIENTO,
+    CABILDO_05,
+]
 
 
 def test_the_parliament_of_a_territory_is_its_own_and_no_other() -> None:
@@ -60,7 +70,23 @@ def test_the_generic_local_bodies_belong_to_no_territory_and_come_by_name_withou
         "cabildo insular",
         "Diputación provincial",
     ]
-    assert boxes(ALL, [], kind=BodyKind.LOCAL, territory_id="ccaa-13") == ()
+
+
+def test_a_community_has_the_generic_local_bodies_and_those_that_exist_only_in_it() -> None:
+    in_canarias = boxes(ALL, [], kind=BodyKind.LOCAL, territory_id="ccaa-05")
+    in_madrid = boxes(ALL, [], kind=BodyKind.LOCAL, territory_id="ccaa-13")
+
+    assert [box.body.id for box in in_canarias] == [
+        "local-ayuntamiento",
+        "ccaa-05-cabildo",
+        "local-cabildo",
+        "local-diputacion",
+    ]
+    assert [box.body.id for box in in_madrid] == [
+        "local-ayuntamiento",
+        "local-cabildo",
+        "local-diputacion",
+    ]
 
 
 def test_two_boxes_with_the_same_name_keep_a_fixed_order_by_id() -> None:

@@ -116,12 +116,27 @@ def test_a_department_of_a_community_is_stored_under_its_executive(seeded: Conne
     assert parent == "ccaa-13-gobierno"
 
 
-def test_a_generic_local_body_has_no_territory(seeded: Connection) -> None:
-    _body(seeded, "local-cabildo", kind="local", level="local", territory=None)
+def test_a_local_body_is_generic_or_belongs_to_a_community(seeded: Connection) -> None:
+    _body(seeded, "local-ayuntamiento", kind="local", level="local", territory=None)
+    _body(seeded, "ccaa-13-cabildo", kind="local", level="local", territory="ccaa-13")
 
-    # Its id starts with the territory, so this is the only rule it breaks.
+    # Its id starts with the territory, so this is the only rule each one breaks.
+    for territory in ("es", "prov-28"):
+        _body_fails(
+            seeded,
+            "bodies_local_is_generic_or_of_a_community",
+            f"{territory}-cabildo",
+            "local",
+            "local",
+            territory,
+        )
+
+
+def test_only_a_local_body_may_have_no_territory(seeded: Connection) -> None:
+    # A State court with no territory: the check on the State's bodies would also refuse it, but
+    # PostgreSQL names the first broken rule in alphabetical order, and this one comes first.
     _body_fails(
-        seeded, "bodies_local_has_no_territory", "ccaa-13-ayuntamiento", "local", "local", "ccaa-13"
+        seeded, "bodies_only_local_has_no_territory", "local-tribunal", "judiciary", "state", None
     )
 
 

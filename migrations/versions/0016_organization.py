@@ -47,9 +47,13 @@ def _bodies() -> None:
                 CHECK (dir3_id IS NULL OR dir3_id ~ '^[A-Z][0-9A-Z]{8}$'),
             CONSTRAINT bodies_dir3_id_unique UNIQUE (dir3_id),
 
-            -- A generic local body has no territory; every other body has one.
-            CONSTRAINT bodies_local_has_no_territory
-                CHECK ((level = 'local') = (territory_id IS NULL)),
+            -- Only a local body may have no territory: a generic one, the same in every community
+            -- (an ayuntamiento). One that exists in a single community (a cabildo) belongs to it.
+            CONSTRAINT bodies_only_local_has_no_territory
+                CHECK (level = 'local' OR territory_id IS NOT NULL),
+            CONSTRAINT bodies_local_is_generic_or_of_a_community CHECK (
+                level <> 'local' OR territory_id IS NULL OR territory_id LIKE 'ccaa-%'
+            ),
             -- A community's body belongs to a community (not to the State, not to a province).
             CONSTRAINT bodies_ccaa_belongs_to_a_community CHECK (
                 level <> 'ccaa' OR (territory_id IS NOT NULL AND territory_id LIKE 'ccaa-%')

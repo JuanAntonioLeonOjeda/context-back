@@ -42,12 +42,22 @@ def boxes(
 ) -> tuple[Box, ...]:
     """The bodies of `kind` that belong to `territory_id`, each with its competences, by name.
 
-    `territory_id` None gives the generic local bodies, which belong to no territory. The head of
-    an executive and the departments have a holder and come from `executive_chart`, not from here.
+    `territory_id` None gives the generic local bodies, which belong to no territory. For a
+    community, local bodies are the generic ones plus those that exist in that community only (a
+    cabildo in Canarias). The head of an executive and the departments have a holder and come from
+    `executive_chart`, not from here.
     """
     if kind in HEADED_KINDS:
         raise ValueError(f"{kind.value} bodies have a holder: use executive_chart")
     given = list(competences)
-    own = [b for b in bodies if b.kind is kind and b.territory_id == territory_id]
+    own = [b for b in bodies if _belongs(b, kind, territory_id)]
     ordered = sorted(own, key=lambda b: (b.name.casefold(), b.id))
     return tuple(Box(b, competences_of(given, b.id)) for b in ordered)
+
+
+def _belongs(body: Body, kind: BodyKind, territory_id: str | None) -> bool:
+    if body.kind is not kind:
+        return False
+    if kind is BodyKind.LOCAL and territory_id is not None:
+        return body.territory_id in (None, territory_id)
+    return body.territory_id == territory_id
