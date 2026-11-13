@@ -38,7 +38,7 @@ day; otherwise it is `no_data`, with no head and no departments: the web app say
 todavía". Departments are ordered by name, never by importance. No party is given for anyone."""
 
 
-class SectorOut(BaseModel):
+class SectorRefOut(BaseModel):
     id: str
     name: str
 
@@ -46,7 +46,7 @@ class SectorOut(BaseModel):
 class CompetenceOut(BaseModel):
     summary: str  # in the project's own words
     legal_basis: str  # the article
-    sectors: list[SectorOut]
+    sectors: list[SectorRefOut]
     source_url: str
 
 
@@ -200,6 +200,6 @@ def _competence(competence: Competence, names: Mapping[str, str]) -> CompetenceO
     return CompetenceOut(
         summary=competence.summary,
         legal_basis=competence.legal_basis,
-        sectors=[SectorOut(id=s, name=names.get(s, s)) for s in competence.sector_ids],
+        sectors=[SectorRefOut(id=s, name=names.get(s, s)) for s in competence.sector_ids],
         source_url=competence.source_url,
     )

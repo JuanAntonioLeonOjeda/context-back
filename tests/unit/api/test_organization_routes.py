@@ -153,3 +153,11 @@ def test_no_party_is_given_for_anyone_anywhere(make_client: Client) -> None:
     )
 
     assert not keys & {"party", "parties", "party_id", "party_ids", "partido", "partidos"}
+
+
+def test_no_schema_of_the_contract_has_a_name_that_two_modules_share(make_client: Client) -> None:
+    # Two models with one name get module-qualified names in the OpenAPI and rename the other
+    # module's type in every generated client.
+    schemas = make_client().get("/openapi.json").json()["components"]["schemas"]
+
+    assert [name for name in schemas if "__" in name] == []
