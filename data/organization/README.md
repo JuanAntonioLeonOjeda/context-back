@@ -63,3 +63,28 @@ One row per competence of a body: `body_id`, `summary` (in our words), `legal_ba
 `sector_ids` (one or more ids of `data/governments/sectors.csv`, separated by `|`) and `source_url`
 (a link to the text). It states what the law gives a body, never who is responsible for what a news
 item says (ADR-0025).
+
+### Wording and sectors: one rule for every territory
+
+- **Wording.** A competence is written in Spanish, in our words, and says what the norm gives the
+  body: "Tiene atribuidas las competencias en …" for a department; a plain description of the
+  article for the other bodies. Official names (`name`, `post_title`) stay in the language of the
+  source, so a Catalan department keeps its Catalan name.
+- **Granularity.** One row per group of matters of the same sector that the same article of the
+  norm assigns to a body. Matters of different sectors are split into different rows, and a row
+  never merges matters of different sectors.
+- **Sector of a matter** (the same in every file):
+
+| Matter | Sector |
+|---|---|
+| Education, universities, research, innovation, culture, sport | `education` |
+| Health | `health` |
+| Housing, urban planning, land | `housing` |
+| Environment, water, energy, climate | `environment` |
+| Economy, industry, trade, consumers, gambling, tourism, agriculture, transport and public works | `economy` |
+| Taxes, budgets, public debt | `taxes` (with `economy` when the row also covers economic policy) |
+| Employment, labour relations | `work` |
+| Social services, equality, youth, children, democratic memory, human rights | `rights` |
+| Migration, asylum, citizenship | `migration` |
+| Justice, courts, penitentiary services | `justice` |
+| Public administration, civil service, security, civil protection, elections, institutions | `institutional` |
