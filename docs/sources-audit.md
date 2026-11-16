@@ -226,3 +226,30 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
   (~33/day). **Cataluña:** private outlet pending a within-community audience figure.
 - **GDELT** is a complement, not the main history source (to revise in ADR-0002).
 
+## 12. Voter profiles by education: the INE's Censo anual (checked 2026-11-16, for phase `voters-dimensions`)
+
+- **Tables** (operation 463, "Censo de Población", annual census): **66620**, population of 15 and
+  more by sex, age and level of studies (grouped), municipalities of 500 inhabitants or more; **66623**,
+  the same without age, municipalities from 50 to 499. Modified 2026-04-29. Municipalities under 50
+  inhabitants are not published.
+- **The API cannot serve them**: table 66620 answers "No puede mostrarse por restricciones de volumen";
+  table 66623 is cut at 40 MB; a whole-operation request filtered by variable (as the ADRH's) answers
+  500 after 5 minutes. The files of the tables are served instead:
+  `https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/66620.csv?nocab=1` (266,309,863 bytes, 106 s,
+  SHA-256 `0a9b5797be2ccac7…`) and `…/66623.csv?nocab=1` (15,106,062 bytes, 7 s, `8fea9fd33d10ac4c…`).
+  No bot challenge; honest user agent.
+- **Layout**: `;`-separated, **UTF-8 with a byte order mark** although the HTTP header says
+  ISO-8859-15. Columns: municipality (`01006 Armiñón`: INE code and name), `Sexo`, `Edad` (66620
+  only), `Nivel de estudios`, `Periodo`, `Total`. Thousands are written with a dot (`2.503`). Periods
+  2021, 2022, 2023 and 2024. Levels: `Total`, `Educación primaria e inferior`, `Primera etapa de
+  Educación Secundaria y similar`, `Segunda etapa de Educación Secundaria y Educación Postsecundaria
+  no Superior`, `Educación superior`. Age rows of 66620: `15 y más años` and ten-year groups.
+- **Coverage, 2023, sex Total, 15 and more**: 3,419 municipalities in 66623 and 4,144 in 66620, no
+  overlap: **7,563 municipalities**, each with the total and the higher-education count, no
+  non-numeric cell.
+- **Sanity**: higher education share (superior / total) for Madrid 46.3 %, Las Palmas de Gran
+  Canaria 33.1 %, Santa Cruz de Tenerife 36.4 %, Armiñón 40.6 %; over the 7,563: minimum 3.4 %,
+  median 24.6 %, maximum 63.9 %.
+- **Measure chosen for the profile**: higher education share of the population of 15 and more, 2023
+  (the election's year); municipalities without a value are counted apart, as with income.
+

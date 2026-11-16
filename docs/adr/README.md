@@ -36,6 +36,7 @@ web and API were merged.
 | [0023](0023-public-deploy-on-hugging-face.md) | Public deploy on a Hugging Face Space, fed by a daily snapshot | Proposed |
 | [0024](0024-voter-profile-by-income-band.md) | The voter profile of a community, by income band (amends 0006) | Accepted |
 | [0025](0025-organisation-charts.md) | Organisation charts: bodies, posts and competences as facts of a body | Proposed |
+| [0026](0026-voter-profile-by-several-dimensions.md) | The voter profile by several dimensions: income, size and education (amends 0024) | Proposed |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

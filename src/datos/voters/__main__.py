@@ -7,6 +7,11 @@
 - `load-income --year YYYY`: the INE's mean net income per person of every municipality for that
   year (ADRH), in one request that the INE takes minutes to answer; only new or revised values
   are stored.
+- `load-education --year YYYY --file PATH [--file PATH]`: the percentage of people with higher
+  education of every municipality, from the INE's table files 66620.csv and 66623.csv (Censo
+  anual de población), downloaded by hand (docs/sources-audit.md, section 12). Give both files:
+  with one, the municipalities of the other size are left without a value. Only new or revised
+  values are stored.
 """
 
 import argparse
@@ -18,6 +23,7 @@ from datos.config import load_settings
 from datos.db import build_engine
 from datos.http import SourceUnavailableError, build_client
 from datos.log_setup import configure_logging
+from datos.voters.application.load_education import InvalidValuesError, load_education
 from datos.voters.application.load_election import (
     ElectionAlreadyLoadedError,
     InvalidElectionError,
@@ -25,9 +31,15 @@ from datos.voters.application.load_election import (
 )
 from datos.voters.application.load_income import InvalidIncomeError, load_income
 from datos.voters.infrastructure.adrh_source import AdrhSource, InvalidAdrhResponseError
+from datos.voters.infrastructure.education_source import (
+    InvalidEducationFileError,
+    read_education_file,
+    table_page,
+)
 from datos.voters.infrastructure.infoelectoral import InvalidElectionFileError, read_election_zip
 from datos.voters.infrastructure.pg_election_repository import PgElectionRepository
 from datos.voters.infrastructure.pg_income_repository import PgIncomeRepository
+from datos.voters.infrastructure.pg_value_repository import PgValueRepository
 
 log = structlog.get_logger(__name__)
 
@@ -39,12 +51,26 @@ def main() -> None:
     election.add_argument("--file", type=Path, required=True, help="the Infoelectoral zip")
     income = commands.add_parser("load-income", help="load the INE's income by municipality")
     income.add_argument("--year", type=int, required=True)
+    education = commands.add_parser(
+        "load-education", help="load the INE's education by municipality"
+    )
+    education.add_argument("--year", type=int, required=True)
+    education.add_argument(
+        "--file",
+        type=Path,
+        action="append",
+        required=True,
+        help="a table file (66620.csv, 66623.csv)",
+    )
     arguments = parser.parse_args()
 
     settings = load_settings()
     configure_logging(settings.log_level, as_json=settings.log_json)
     if arguments.command == "load-income":
         _load_income(str(settings.database_url), arguments.year)
+        return
+    if arguments.command == "load-education":
+        _load_education(str(settings.database_url), arguments.year, arguments.file)
         return
     path: Path = arguments.file
     try:
@@ -76,6 +102,21 @@ def _load_income(database_url: str, year: int) -> None:
         log.error("income_not_loaded", year=year, reason=str(error))
         raise SystemExit(1) from error
     log.info("income_loaded", year=year, stored=stored)
+
+
+def _load_education(database_url: str, year: int, paths: list[Path]) -> None:
+    try:
+        files = [read_education_file(p, year, source_url=table_page(p)) for p in paths]
+        stored = load_education(files, PgValueRepository(build_engine(database_url)), year=year)
+    except (InvalidEducationFileError, InvalidValuesError) as error:
+        log.error("education_not_loaded", year=year, reason=str(error))
+        raise SystemExit(1) from error
+    log.info(
+        "education_loaded",
+        year=year,
+        stored=stored,
+        files=[{"file": f.source_file, "sha256": f.sha256, "counts": len(f.counts)} for f in files],
+    )
 
 
 if __name__ == "__main__":

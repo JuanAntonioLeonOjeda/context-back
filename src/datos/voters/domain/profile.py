@@ -1,12 +1,14 @@
-"""Voter profile of a community: its municipalities in income bands, and the votes of each band.
+"""Voter profile of a community: its municipalities in bands of one dimension (income, size or
+education), and the votes of each band.
 
 Descriptive and about areas, never people (spec decisions 2, 5, 7 and 9): a band is a group of
-municipalities, and its shares say how those municipalities voted, not how their richer or poorer
-residents did (ecological fallacy).
+municipalities, and its shares say how those municipalities voted, not how their residents did
+(ecological fallacy).
 """
 
+from bisect import bisect_right
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -28,7 +30,9 @@ def vote_group(code: str, acronym: str, party_by_candidature: Mapping[str, str])
 class MunicipalVotes:
     code: str
     census: int
-    income: Decimal | None  # None: the INE gives none (statistical secrecy)
+    # The value of the dimension the bands are made by (income per person today); None: the source
+    # gives none (the INE's statistical secrecy).
+    value: Decimal | None
     blank_votes: int
     votes: Mapping[str, int]  # group (vote_group) -> votes
 
@@ -39,11 +43,11 @@ class MunicipalVotes:
 
 @dataclass(frozen=True, slots=True)
 class Band:
-    index: int  # 0 = the lowest incomes
+    index: int  # 0 = the lowest values
     municipality_codes: tuple[str, ...]
     census: int
-    income_min: Decimal | None  # None when the band is empty
-    income_max: Decimal | None
+    value_min: Decimal | None  # None when the band is empty
+    value_max: Decimal | None
     valid_votes: int
     blank_votes: int
     votes: Mapping[str, int]  # shown groups and OTHERS
@@ -53,8 +57,8 @@ class Band:
 class VoterProfile:
     bands: tuple[Band, ...]
     shown_groups: tuple[str, ...]  # the groups above the threshold, sorted by key
-    census: int  # of the municipalities with income
-    without_income: tuple[str, ...]  # municipalities left out, by code
+    census: int  # of the municipalities with a value
+    without_value: tuple[str, ...]  # municipalities left out, by code
 
 
 def band_index(census_before: int, census: int, total: int) -> int:
@@ -64,13 +68,48 @@ def band_index(census_before: int, census: int, total: int) -> int:
     return min(BANDS - 1, (2 * census_before + census) * BANDS // (2 * total))
 
 
-def voter_profile(municipalities: Sequence[MunicipalVotes]) -> VoterProfile | None:
-    """The profile of a community's municipalities, or None when fewer than two have income
-    (one municipality cannot be split into bands: Ceuta, Melilla) or when those with income
+# How the municipalities with a value, already in order, are cut into bands: one list per band,
+# the lowest values first, empty lists included. The order is the caller's, never changed here.
+type Grouping = Callable[[Sequence[MunicipalVotes]], list[list[MunicipalVotes]]]
+
+
+def equal_census_grouping(placed: Sequence[MunicipalVotes]) -> list[list[MunicipalVotes]]:
+    """BANDS bands of about the same census: each municipality whole, in the band where the
+    midpoint of its census falls (ADR-0024). The census of `placed` is not 0."""
+    total = sum(m.census for m in placed)
+    members: list[list[MunicipalVotes]] = [[] for _ in range(BANDS)]
+    before = 0
+    for m in placed:
+        members[band_index(before, m.census, total)].append(m)
+        before += m.census
+    return members
+
+
+def fixed_limits_grouping(limits: Sequence[Decimal]) -> Grouping:
+    """Bands cut at fixed values: `limits` are the lowest value of every band but the first, in
+    ascending order, so n limits give n + 1 bands, and a value equal to a limit goes to the band
+    that starts there. The census plays no part: a big city is alone in its band instead of
+    filling the community's, which is why the size of a municipality is grouped this way."""
+
+    def group(placed: Sequence[MunicipalVotes]) -> list[list[MunicipalVotes]]:
+        members: list[list[MunicipalVotes]] = [[] for _ in range(len(limits) + 1)]
+        for m in placed:
+            if m.value is not None:  # the caller has left those without a value out
+                members[bisect_right(limits, m.value)].append(m)
+        return members
+
+    return group
+
+
+def voter_profile(
+    municipalities: Sequence[MunicipalVotes], grouping: Grouping = equal_census_grouping
+) -> VoterProfile | None:
+    """The profile of a community's municipalities, or None when fewer than two have a value
+    (one municipality cannot be split into bands: Ceuta, Melilla) or when those with a value
     have no census at all (there is no population to split)."""
     placed = sorted(
-        (m for m in municipalities if m.income is not None),
-        key=lambda m: (m.income, m.code),  # ties in income: by INE code, so it is deterministic
+        (m for m in municipalities if m.value is not None),
+        key=lambda m: (m.value, m.code),  # ties in value: by INE code, so it is deterministic
     )
     if len(placed) < 2:
         return None
@@ -78,22 +117,17 @@ def voter_profile(municipalities: Sequence[MunicipalVotes]) -> VoterProfile | No
     if total == 0:
         return None
     shown = _shown_groups(municipalities)
-    members: list[list[MunicipalVotes]] = [[] for _ in range(BANDS)]
-    before = 0
-    for m in placed:
-        members[band_index(before, m.census, total)].append(m)
-        before += m.census
     return VoterProfile(
-        bands=tuple(_band(i, ms, shown) for i, ms in enumerate(members)),
+        bands=tuple(_band(i, ms, shown) for i, ms in enumerate(grouping(placed))),
         shown_groups=tuple(sorted(shown)),
         census=total,
-        without_income=tuple(sorted(m.code for m in municipalities if m.income is None)),
+        without_value=tuple(sorted(m.code for m in municipalities if m.value is None)),
     )
 
 
 def _shown_groups(municipalities: Sequence[MunicipalVotes]) -> set[str]:
     """Groups with at least SHOWN_FROM_PERCENT of the community's valid votes, all its
-    municipalities counted (with or without income). Integers: votes·100 ≥ 3·valid."""
+    municipalities counted (with or without a value). Integers: votes·100 ≥ 3·valid."""
     totals: dict[str, int] = defaultdict(int)
     for m in municipalities:
         for group, votes in m.votes.items():
@@ -107,13 +141,13 @@ def _band(index: int, members: Sequence[MunicipalVotes], shown: set[str]) -> Ban
     for m in members:
         for group, count in m.votes.items():
             votes[group if group in shown else OTHERS] += count
-    incomes = [m.income for m in members if m.income is not None]
+    values = [m.value for m in members if m.value is not None]
     return Band(
         index=index,
         municipality_codes=tuple(m.code for m in members),
         census=sum(m.census for m in members),
-        income_min=min(incomes) if incomes else None,
-        income_max=max(incomes) if incomes else None,
+        value_min=min(values) if values else None,
+        value_max=max(values) if values else None,
         valid_votes=sum(m.valid_votes for m in members),
         blank_votes=sum(m.blank_votes for m in members),
         votes=dict(votes),
