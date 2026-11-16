@@ -176,3 +176,58 @@ def _share_counts(layout: TableLayout, found: Mapping[str, Mapping[str, int]]) -
         if present:
             counts.append(ShareCount(code, Component.PART, sum(values[v] for v in present)))
     return counts
+
+
+@dataclass(frozen=True, slots=True)
+class TableSource:
+    """A dimension's INE tables: the layout they share and the page of each file, by the name the
+    INE gives it when it is downloaded. A file with another name is refused: one we cannot trace
+    to its table is not loaded."""
+
+    layout: TableLayout
+    pages: Mapping[str, str]
+
+    def page(self, path: Path) -> str:
+        try:
+            return self.pages[path.name]
+        except KeyError:
+            raise InvalidTableFileError(
+                f"{path.name!r} is not one of the tables of this dimension: {sorted(self.pages)}"
+            ) from None
+
+
+_PAGE = "https://www.ine.es/jaxiT3/Tabla.htm?t="
+_ALL = "Total"
+
+EDUCATION_SOURCE = TableSource(
+    TableLayout(
+        category="Nivel de estudios",
+        total=_ALL,
+        part=frozenset({"Educación superior"}),
+        fixed={"Sexo": _ALL, "Edad": "15 y más años"},
+        optional=frozenset({"Edad"}),  # 66623 (50 to 499 people) has no age column
+    ),
+    {"66620.csv": _PAGE + "66620", "66623.csv": _PAGE + "66623"},
+)
+
+# The 15 or over are the denominator; the part is the three groups from 70 up. Only the file of
+# the municipalities of 500 or more has ages (docs/sources-audit.md, section 13).
+AGE_SOURCE = TableSource(
+    TableLayout(
+        category="Edad",
+        total="15 y más años",
+        part=frozenset({"De 70 a 79 años", "De 80 a 89 años", "90 y más años"}),
+        fixed={"Sexo": _ALL, "Nivel de estudios": _ALL},
+    ),
+    {"66620.csv": _PAGE + "66620"},
+)
+
+BORN_ABROAD_SOURCE = TableSource(
+    TableLayout(
+        category="País de nacimiento",
+        total=_ALL,
+        part=frozenset({"Extranjero"}),
+        fixed={"Sexo": _ALL, "Nivel de estudios": _ALL},
+    ),
+    {"66621.csv": _PAGE + "66621"},
+)

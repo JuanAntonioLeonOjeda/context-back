@@ -1,30 +1,24 @@
 import hashlib
+from collections.abc import Sequence
 from pathlib import Path
 
 import pytest
 
 from datos.voters.domain.share import Component, ShareCount
 from datos.voters.infrastructure.table_source import (
+    AGE_SOURCE,
+    BORN_ABROAD_SOURCE,
+    EDUCATION_SOURCE,
     CategoryCount,
     InvalidTableFileError,
     TableLayout,
+    TableSource,
     category_count,
     read_table_file,
 )
 
-EDUCATION = TableLayout(
-    category="Nivel de estudios",
-    total="Total",
-    part=frozenset({"Educación superior"}),
-    fixed={"Sexo": "Total", "Edad": "15 y más años"},
-    optional=frozenset({"Edad"}),
-)
-AGE = TableLayout(
-    category="Edad",
-    total="15 y más años",
-    part=frozenset({"De 70 a 79 años", "De 80 a 89 años", "90 y más años"}),
-    fixed={"Sexo": "Total", "Nivel de estudios": "Total"},
-)
+EDUCATION = EDUCATION_SOURCE.layout
+AGE = AGE_SOURCE.layout
 
 
 def _row(**changes: str) -> dict[str, str]:
@@ -274,3 +268,74 @@ def test_a_municipality_without_its_total_gives_only_its_part(tmp_path: Path) ->
     file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
 
     assert file.counts == [ShareCount("01001", Component.PART, 150)]
+
+
+# --- the real files' samples and the dimensions' sources -----------------------------------------
+
+FIXTURES = Path(__file__).parents[2] / "fixtures" / "ine"
+BIG = FIXTURES / "education-66620-sample.csv"  # municipalities of 500 people or more, with ages
+SMALL = FIXTURES / "education-66623-sample.csv"  # 50 to 499, without the age column
+
+
+def _by_municipality(counts: Sequence[ShareCount]) -> dict[tuple[str, Component], int]:
+    return {(c.municipality_code, c.component): c.count for c in counts}
+
+
+def test_the_education_file_with_ages_gives_the_counts_of_15_or_more_in_the_year() -> None:
+    file = read_table_file(BIG, 2023, EDUCATION, source_url=URL)
+
+    assert _by_municipality(file.counts) == {
+        ("01001", Component.TOTAL): 2452,
+        ("01001", Component.PART): 1055,
+        ("28079", Component.TOTAL): 2_925_135,
+        ("28079", Component.PART): 1_354_780,
+    }
+
+
+def test_the_education_file_without_ages_gives_its_counts_the_same_way() -> None:
+    file = read_table_file(SMALL, 2023, EDUCATION, source_url=URL)
+
+    assert _by_municipality(file.counts) == {
+        ("01006", Component.TOTAL): 207,
+        ("01006", Component.PART): 84,
+        ("01011", Component.TOTAL): 278,
+        ("01011", Component.PART): 83,
+    }
+
+
+def test_the_year_chooses_the_rows() -> None:
+    counts = _by_municipality(read_table_file(SMALL, 2021, EDUCATION, source_url=URL).counts)
+
+    assert counts[("01006", Component.TOTAL)] == 198
+
+
+@pytest.mark.parametrize(
+    ("source", "name", "page"),
+    [
+        (EDUCATION_SOURCE, "66620.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66620"),
+        (EDUCATION_SOURCE, "66623.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66623"),
+        (AGE_SOURCE, "66620.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66620"),
+        (BORN_ABROAD_SOURCE, "66621.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66621"),
+    ],
+)
+def test_a_file_is_traced_to_the_page_of_its_table_by_its_name(
+    source: TableSource, name: str, page: str
+) -> None:
+    assert source.page(Path("data/raw/ine") / name) == page
+
+
+@pytest.mark.parametrize(
+    ("source", "name"),
+    [
+        (EDUCATION_SOURCE, "66621.csv"),  # a table of another dimension
+        (AGE_SOURCE, "66623.csv"),  # the small municipalities have no age
+        (BORN_ABROAD_SOURCE, "66620.csv"),
+        (EDUCATION_SOURCE, "66620.csv.bak"),
+        (EDUCATION_SOURCE, "table.csv"),
+    ],
+)
+def test_a_file_that_is_not_one_of_the_tables_of_the_dimension_is_refused(
+    source: TableSource, name: str
+) -> None:
+    with pytest.raises(InvalidTableFileError, match="not one of the tables"):
+        source.page(Path(name))

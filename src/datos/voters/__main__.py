@@ -31,15 +31,15 @@ from datos.voters.application.load_election import (
 )
 from datos.voters.application.load_income import InvalidIncomeError, load_income
 from datos.voters.infrastructure.adrh_source import AdrhSource, InvalidAdrhResponseError
-from datos.voters.infrastructure.education_source import (
-    InvalidEducationFileError,
-    read_education_file,
-    table_page,
-)
 from datos.voters.infrastructure.infoelectoral import InvalidElectionFileError, read_election_zip
 from datos.voters.infrastructure.pg_election_repository import PgElectionRepository
 from datos.voters.infrastructure.pg_income_repository import PgIncomeRepository
 from datos.voters.infrastructure.pg_value_repository import PgValueRepository
+from datos.voters.infrastructure.table_source import (
+    EDUCATION_SOURCE,
+    InvalidTableFileError,
+    read_table_file,
+)
 
 log = structlog.get_logger(__name__)
 
@@ -106,9 +106,12 @@ def _load_income(database_url: str, year: int) -> None:
 
 def _load_education(database_url: str, year: int, paths: list[Path]) -> None:
     try:
-        files = [read_education_file(p, year, source_url=table_page(p)) for p in paths]
+        files = [
+            read_table_file(p, year, EDUCATION_SOURCE.layout, source_url=EDUCATION_SOURCE.page(p))
+            for p in paths
+        ]
         stored = load_education(files, PgValueRepository(build_engine(database_url)), year=year)
-    except (InvalidEducationFileError, InvalidValuesError) as error:
+    except (InvalidTableFileError, InvalidValuesError) as error:
         log.error("education_not_loaded", year=year, reason=str(error))
         raise SystemExit(1) from error
     log.info(
