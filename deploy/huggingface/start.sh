@@ -36,6 +36,7 @@ fi
 alembic upgrade head
 python -m datos.territories load
 python -m datos.governments load
+python -m datos.organization load
 
 uvicorn datos.main:app --factory --host 127.0.0.1 --port 8000 &
 exec nginx -c /etc/nginx/space.conf -g 'daemon off;'

@@ -1,0 +1,86 @@
+"""Read side: the organisation chart of a territory on a given day (spec AC1 to AC4)."""
+
+from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
+from datetime import date
+from typing import Protocol
+
+from datos.organization.domain.body import Body, BodyKind, Holder
+from datos.organization.domain.boxes import Box, Competence, boxes, competences_of
+from datos.organization.domain.chart import ChartStatus, ExecutiveChart, executive_chart
+
+
+class OrganizationReader(Protocol):
+    def bodies(self) -> list[Body]: ...
+
+    def holders(self) -> list[Holder]: ...
+
+    def competences(self) -> list[Competence]: ...
+
+    def sector_names(self) -> dict[str, str]:
+        """The name of every sector of the taxonomy, active or planned, by id."""
+        ...
+
+
+@dataclass(frozen=True, slots=True)
+class OrganizationChart:
+    territory_id: str  # "es" for the general chart
+    day: date
+    executive: ExecutiveChart
+    # The competences of the head and of each department of the executive, by body id.
+    executive_competences: Mapping[str, tuple[Competence, ...]]
+    parliaments: tuple[Box, ...]
+    judiciary: tuple[Box, ...]
+    local: tuple[Box, ...]
+    sector_names: Mapping[str, str]
+
+
+def organization_chart(
+    reader: OrganizationReader, territory_id: str, day: date
+) -> OrganizationChart:
+    """The chart of `territory_id` (`"es"` for the State's and the general one) on `day`.
+
+    The executive is complete or nothing. Parliaments and courts are those of the territory (a TSJ
+    sits in its community). The local bodies are the generic ones plus those that exist in that
+    territory only: for the State there are none, so the general chart shows the generic ones.
+    """
+    return _chart(_read(reader, day), territory_id, day)
+
+
+def general_chart(
+    reader: OrganizationReader, community_ids: Iterable[str], day: date
+) -> tuple[OrganizationChart, dict[str, ChartStatus]]:
+    """The State's chart and whether each community's executive can be drawn, with one read."""
+    data = _read(reader, day)
+    statuses = {t: executive_chart(data.bodies, data.holders, t, day).status for t in community_ids}
+    return _chart(data, "es", day), statuses
+
+
+@dataclass(frozen=True, slots=True)
+class _Data:
+    bodies: list[Body]
+    holders: list[Holder]
+    competences: list[Competence]
+    sector_names: dict[str, str]
+
+
+def _read(reader: OrganizationReader, day: date) -> _Data:
+    """Everything the chart of `day` needs; a body that does not exist that day is left out."""
+    bodies = [b for b in reader.bodies() if b.in_force_on(day)]
+    return _Data(bodies, reader.holders(), reader.competences(), reader.sector_names())
+
+
+def _chart(data: _Data, territory_id: str, day: date) -> OrganizationChart:
+    bodies, competences = data.bodies, data.competences
+    executive = executive_chart(bodies, data.holders, territory_id, day)
+    posts = [] if executive.head is None else [executive.head, *executive.departments]
+    return OrganizationChart(
+        territory_id=territory_id,
+        day=day,
+        executive=executive,
+        executive_competences={p.body.id: competences_of(competences, p.body.id) for p in posts},
+        parliaments=boxes(bodies, competences, kind=BodyKind.PARLIAMENT, territory_id=territory_id),
+        judiciary=boxes(bodies, competences, kind=BodyKind.JUDICIARY, territory_id=territory_id),
+        local=boxes(bodies, competences, kind=BodyKind.LOCAL, territory_id=territory_id),
+        sector_names=data.sector_names,
+    )
