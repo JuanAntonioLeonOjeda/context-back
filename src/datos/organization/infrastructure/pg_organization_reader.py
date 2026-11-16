@@ -6,7 +6,8 @@ from datos.organization.domain.body import Body, BodyKind, BodyLevel, Holder
 from datos.organization.domain.boxes import Competence
 
 _BODIES = text(
-    "SELECT id, kind, level, territory_id, name, parent_id, dir3_id, source_url"
+    "SELECT id, kind, level, territory_id, name, parent_id, dir3_id, source_url,"
+    " valid_from, valid_to"
     " FROM bodies ORDER BY id"
 )
 _HOLDERS = text(
@@ -45,6 +46,8 @@ class PgOrganizationReader:
                 parent_id=r.parent_id,
                 dir3_id=r.dir3_id,
                 source_url=r.source_url,
+                valid_from=r.valid_from,
+                valid_to=r.valid_to,
             )
             for r in self._connection.execute(_BODIES)
         ]

@@ -24,6 +24,12 @@ One row per box of the chart.
 | `parent_id` | A department's parent: the executive head of its territory |
 | `dir3_id` | The code of the body in DIR3, to cross-check the name; empty when it has none |
 | `source_url` | Where the body and its name are stated |
+| `valid_from`, `valid_to` | The days the body exists, half-open `[valid_from, valid_to)`; empty is "no known limit", which is what almost every row has |
+
+A department that is merged, abolished or renamed under a new id is **not deleted**: it gets a
+`valid_to` (the day of the decree that closes it) and keeps its holders' history. The chart of a day
+only counts the bodies that exist that day, so a closed department no longer keeps the executive
+from being drawn. A department that opens later gets a `valid_from`.
 
 A court is a State body that sits in a community (a TSJ: `level` `state`, `territory_id` the
 community). A local body that exists in one community only (a cabildo) has that community as
@@ -47,8 +53,8 @@ vice-presidency. A post that is vacant while someone attends its ordinary busine
 "asuma el despacho ordinario de los asuntos del Ministerio") has that person as its holder, with
 the BOE's words in the title.
 
-A community's executive is shown only if its head and **every** department listed here have a
-holder in force that day; otherwise the page says "sin datos todavía".
+A community's executive is shown only if its head and **every** department that exists that day
+have a holder in force that day; otherwise the page says "sin datos todavía".
 
 ### Updating the State
 

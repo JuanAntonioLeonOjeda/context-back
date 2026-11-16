@@ -68,6 +68,8 @@ def _place_problems(body: Body) -> list[str]:
         problems.append(f"body {body.id}: a body of a community belongs to a community")
     if body.level is BodyLevel.STATE and not _belongs_to_the_state(body, in_a_community):
         problems.append(f"body {body.id}: a State body belongs to the State, except a court")
+    if body.valid_from and body.valid_to and body.valid_to <= body.valid_from:
+        problems.append(f"body {body.id}: its period is empty")
     if body.kind in HEADED_KINDS and body.level is BodyLevel.LOCAL:
         problems.append(f"body {body.id}: a body with a holder is not a local body")
     prefix = "local-" if territory is None else f"{territory}-"

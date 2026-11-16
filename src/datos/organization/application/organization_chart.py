@@ -44,14 +44,14 @@ def organization_chart(
     sits in its community). The local bodies are the generic ones plus those that exist in that
     territory only: for the State there are none, so the general chart shows the generic ones.
     """
-    return _chart(_read(reader), territory_id, day)
+    return _chart(_read(reader, day), territory_id, day)
 
 
 def general_chart(
     reader: OrganizationReader, community_ids: Iterable[str], day: date
 ) -> tuple[OrganizationChart, dict[str, ChartStatus]]:
     """The State's chart and whether each community's executive can be drawn, with one read."""
-    data = _read(reader)
+    data = _read(reader, day)
     statuses = {t: executive_chart(data.bodies, data.holders, t, day).status for t in community_ids}
     return _chart(data, "es", day), statuses
 
@@ -64,8 +64,10 @@ class _Data:
     sector_names: dict[str, str]
 
 
-def _read(reader: OrganizationReader) -> _Data:
-    return _Data(reader.bodies(), reader.holders(), reader.competences(), reader.sector_names())
+def _read(reader: OrganizationReader, day: date) -> _Data:
+    """Everything the chart of `day` needs; a body that does not exist that day is left out."""
+    bodies = [b for b in reader.bodies() if b.in_force_on(day)]
+    return _Data(bodies, reader.holders(), reader.competences(), reader.sector_names())
 
 
 def _chart(data: _Data, territory_id: str, day: date) -> OrganizationChart:

@@ -56,6 +56,8 @@ class _BodyRow(_Row):
     parent_id: Text | None
     dir3_id: Text | None
     source_url: SourceUrl
+    valid_from: date | None
+    valid_to: date | None
 
 
 class _HolderRow(_Row):
@@ -94,6 +96,8 @@ def read_bodies(path: Path) -> list[Body]:
             parent_id=r.parent_id,
             dir3_id=r.dir3_id,
             source_url=r.source_url,
+            valid_from=r.valid_from,
+            valid_to=r.valid_to,
         )
         for r in _read(path, _BodyRow)
     ]

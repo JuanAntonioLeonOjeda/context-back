@@ -1,6 +1,7 @@
 """The organisation chart of a territory, assembled from a small dataset worked out by hand."""
 
 from collections.abc import Sequence
+from dataclasses import replace
 from datetime import date
 
 from datos.organization.application.organization_chart import (
@@ -169,3 +170,49 @@ def test_the_general_chart_and_the_status_of_each_executive_come_from_one_read()
         "ccaa-99": ChartStatus.NO_DATA,
     }
     assert reader.reads == {"bodies": 1, "holders": 1}
+
+
+class _WithBodies(_Reader):
+    def __init__(self, extra: list[Body]) -> None:
+        self._extra = extra
+
+    def bodies(self) -> list[Body]:
+        return [*BODIES, *self._extra]
+
+
+def test_a_department_that_no_longer_exists_does_not_hold_the_executive_back() -> None:
+    old = replace(
+        _body("ccaa-13-vieja", BodyKind.DEPARTMENT, BodyLevel.CCAA, "ccaa-13", "ccaa-13-gobierno"),
+        valid_to=date(2026, 1, 1),  # merged: it has no holder in the files any more
+    )
+    reader = _WithBodies([old])
+
+    before = organization_chart(reader, "ccaa-13", date(2025, 12, 31))
+    after = organization_chart(reader, "ccaa-13", date(2026, 1, 1))
+
+    assert before.executive.status is ChartStatus.NO_DATA  # still a department without a holder
+    assert after.executive.status is ChartStatus.COMPLETE
+    assert [p.body.id for p in after.executive.departments] == ["ccaa-13-sanidad"]
+
+
+def test_a_department_that_does_not_exist_yet_is_not_part_of_the_chart() -> None:
+    new = replace(
+        _body("ccaa-13-nueva", BodyKind.DEPARTMENT, BodyLevel.CCAA, "ccaa-13", "ccaa-13-gobierno"),
+        valid_from=date(2027, 1, 1),
+    )
+
+    chart = organization_chart(_WithBodies([new]), "ccaa-13", DAY)
+
+    assert [p.body.id for p in chart.executive.departments] == ["ccaa-13-sanidad"]
+    assert chart.executive.status is ChartStatus.COMPLETE
+
+
+def test_the_status_of_a_community_ignores_a_body_that_is_closed() -> None:
+    old = replace(
+        _body("ccaa-13-vieja", BodyKind.DEPARTMENT, BodyLevel.CCAA, "ccaa-13", "ccaa-13-gobierno"),
+        valid_to=date(2026, 1, 1),
+    )
+
+    _, statuses = general_chart(_WithBodies([old]), ["ccaa-13"], DAY)
+
+    assert statuses == {"ccaa-13": ChartStatus.COMPLETE}

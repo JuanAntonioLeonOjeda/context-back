@@ -34,6 +34,9 @@ def _bodies() -> None:
             parent_id    text REFERENCES bodies (id),
             dir3_id      text,                       -- the code of the body in DIR3, to cross-check
             source_url   text NOT NULL,
+            -- The days the body exists (half-open); empty is "no known limit".
+            valid_from   date,
+            valid_to     date,
 
             CONSTRAINT bodies_id_is_slug CHECK (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
             CONSTRAINT bodies_kind_known CHECK (
@@ -79,6 +82,8 @@ def _bodies() -> None:
                 kind <> 'department' OR parent_id IS NOT NULL
             ),
             CONSTRAINT bodies_parent_is_another_body CHECK (parent_id IS NULL OR parent_id <> id),
+            CONSTRAINT bodies_period_not_empty
+                CHECK (valid_from IS NULL OR valid_to IS NULL OR valid_to > valid_from),
 
             -- Lets a holder repeat the kind of its body and have the database check it.
             CONSTRAINT bodies_id_kind_unique UNIQUE (id, kind)

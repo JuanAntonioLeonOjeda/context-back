@@ -170,6 +170,29 @@ def test_the_head_of_an_executive_and_a_department_are_never_local_bodies(
     )
 
 
+def test_the_period_of_a_body_is_not_empty_and_may_be_open_on_either_side(
+    seeded: Connection,
+) -> None:
+    sql = (
+        "INSERT INTO bodies (id, kind, level, territory_id, name, source_url, valid_from, valid_to)"
+        " VALUES (:id, 'parliament', 'ccaa', 'ccaa-13', 'A body', 'https://example.org/source',"
+        " :valid_from, :valid_to)"
+    )
+    for id_, start, end in (
+        ("ccaa-13-open", None, None),
+        ("ccaa-13-from", date(2023, 6, 17), None),
+        ("ccaa-13-until", None, date(2026, 1, 1)),
+        ("ccaa-13-both", date(2023, 6, 17), date(2026, 1, 1)),
+    ):
+        seeded.execute(text(sql), {"id": id_, "valid_from": start, "valid_to": end})
+
+    for id_, start, end in (
+        ("ccaa-13-same-day", date(2026, 1, 1), date(2026, 1, 1)),
+        ("ccaa-13-backwards", date(2026, 1, 2), date(2026, 1, 1)),
+    ):
+        _fails(seeded, sql, "bodies_period_not_empty", id=id_, valid_from=start, valid_to=end)
+
+
 def test_a_state_body_belongs_to_the_state_except_a_court(seeded: Connection) -> None:
     _body(seeded, "ccaa-13-tsj", kind="judiciary", level="state", territory="ccaa-13")
 

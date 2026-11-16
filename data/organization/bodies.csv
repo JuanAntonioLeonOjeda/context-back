@@ -1,76 +1,76 @@
-id,kind,level,territory_id,name,parent_id,dir3_id,source_url
-es-gobierno,executive_head,state,es,Presidencia del Gobierno,,EA0008567,https://www.boe.es/buscar/act.php?id=BOE-A-1997-25336
-es-asuntos-exteriores,department,state,es,"Ministerio de Asuntos Exteriores, Unión Europea y Cooperación",es-gobierno,E05023901,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-presidencia-justicia,department,state,es,"Ministerio de la Presidencia, Justicia y Relaciones con las Cortes",es-gobierno,E05228601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-defensa,department,state,es,Ministerio de Defensa,es-gobierno,E00003301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-hacienda,department,state,es,Ministerio de Hacienda,es-gobierno,E05250001,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-interior,department,state,es,Ministerio del Interior,es-gobierno,E00003801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-transportes,department,state,es,Ministerio de Transportes y Movilidad Sostenible,es-gobierno,E05229701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-educacion,department,state,es,"Ministerio de Educación, Formación Profesional y Deportes",es-gobierno,E05230301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-trabajo,department,state,es,Ministerio de Trabajo y Economía Social,es-gobierno,E05066501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-industria-turismo,department,state,es,Ministerio de Industria y Turismo,es-gobierno,E05231501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-agricultura,department,state,es,"Ministerio de Agricultura, Pesca y Alimentación",es-gobierno,E05024401,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-politica-territorial,department,state,es,Ministerio de Política Territorial y Memoria Democrática,es-gobierno,E05232701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-transicion-ecologica,department,state,es,Ministerio para la Transición Ecológica y el Reto Demográfico,es-gobierno,E05068001,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-vivienda,department,state,es,Ministerio de Vivienda y Agenda Urbana,es-gobierno,E05233601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-cultura,department,state,es,Ministerio de Cultura,es-gobierno,E05234201,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-economia,department,state,es,"Ministerio de Economía, Comercio y Empresa",es-gobierno,E05234801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-sanidad,department,state,es,Ministerio de Sanidad,es-gobierno,E05070101,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-derechos-sociales,department,state,es,"Ministerio de Derechos Sociales, Consumo y Agenda 2030",es-gobierno,E05235701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-ciencia,department,state,es,"Ministerio de Ciencia, Innovación y Universidades",es-gobierno,E05236301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-igualdad,department,state,es,Ministerio de Igualdad,es-gobierno,E05071601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-inclusion,department,state,es,"Ministerio de Inclusión, Seguridad Social y Migraciones",es-gobierno,E05072501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-transformacion-digital,department,state,es,Ministerio para la Transformación Digital y de la Función Pública,es-gobierno,E05251701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-juventud-infancia,department,state,es,Ministerio de Juventud e Infancia,es-gobierno,E05237801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1
-es-cortes-generales,parliament,state,es,Cortes Generales,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a66
-es-consejo-general-poder-judicial,judiciary,state,es,Consejo General del Poder Judicial,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a122
-es-tribunal-supremo,judiciary,state,es,Tribunal Supremo,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a123
-local-ayuntamiento,local,local,,Ayuntamiento,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a25
-local-diputacion,local,local,,Diputación provincial,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a36
-ccaa-13-gobierno,executive_head,ccaa,ccaa-13,Presidencia de la Comunidad de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#adiecisiete
-ccaa-13-presidencia-justicia,department,ccaa,ccaa-13,"Consejería de Presidencia, Justicia y Administración Local",ccaa-13-gobierno,A13037413,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13374&eli=true
-ccaa-13-economia-hacienda,department,ccaa,ccaa-13,"Consejería de Economía, Hacienda y Empleo",ccaa-13-gobierno,A13037513,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13375&eli=true
-ccaa-13-medio-ambiente,department,ccaa,ccaa-13,"Consejería de Medio Ambiente, Agricultura e Interior",ccaa-13-gobierno,A13037472,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13376&eli=true
-ccaa-13-familia,department,ccaa,ccaa-13,"Consejería de Familia, Juventud y Asuntos Sociales",ccaa-13-gobierno,A13002916,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13396&eli=true
-ccaa-13-vivienda-transportes,department,ccaa,ccaa-13,"Consejería de Vivienda, Transportes e Infraestructuras",ccaa-13-gobierno,A13003355,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13403&eli=true
-ccaa-13-sanidad,department,ccaa,ccaa-13,Consejería de Sanidad,ccaa-13-gobierno,A13002915,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13404&eli=true
-ccaa-13-educacion,department,ccaa,ccaa-13,"Consejería de Educación, Ciencia y Universidades",ccaa-13-gobierno,A13037434,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13410&eli=true
-ccaa-13-digitalizacion,department,ccaa,ccaa-13,Consejería de Digitalización,ccaa-13-gobierno,A13037569,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13453&eli=true
-ccaa-13-cultura,department,ccaa,ccaa-13,"Consejería de Cultura, Turismo y Deporte",ccaa-13-gobierno,A13022903,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13461&eli=true
-ccaa-13-asamblea,parliament,ccaa,ccaa-13,Asamblea de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#anoveno
-ccaa-13-tsj,judiciary,state,ccaa-13,Tribunal Superior de Justicia de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#acuarentaycinco
-ccaa-05-gobierno,executive_head,ccaa,ccaa-05,Presidencia del Gobierno de Canarias,,A05002844,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-49
-ccaa-05-economia,department,ccaa,ccaa-05,"Consejería de Economía, Industria, Comercio y Autónomos",ccaa-05-gobierno,A05033180,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-obras-publicas,department,ccaa,ccaa-05,"Consejería de Obras Públicas, Vivienda y Movilidad",ccaa-05-gobierno,A05032833,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-hacienda,department,ccaa,ccaa-05,Consejería de Hacienda y Relaciones con la Unión Europea,ccaa-05-gobierno,A05032839,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-presidencia,department,ccaa,ccaa-05,"Consejería de Presidencia, Administraciones Públicas, Justicia y Seguridad",ccaa-05-gobierno,A05033187,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-educacion,department,ccaa,ccaa-05,"Consejería de Educación, Formación Profesional, Actividad Física y Deportes",ccaa-05-gobierno,A05047932,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-politica-territorial,department,ccaa,ccaa-05,"Consejería de Política Territorial, Cohesión Territorial y Aguas",ccaa-05-gobierno,A05047663,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-turismo-empleo,department,ccaa,ccaa-05,Consejería de Turismo y Empleo,ccaa-05-gobierno,A05030988,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-universidades-cultura,department,ccaa,ccaa-05,"Consejería de Universidades, Ciencia e Innovación y Cultura",ccaa-05-gobierno,A05046692,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-transicion-ecologica,department,ccaa,ccaa-05,Consejería de Transición Ecológica y Energía,ccaa-05-gobierno,A05047664,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-bienestar-social,department,ccaa,ccaa-05,"Consejería de Bienestar Social, Igualdad, Juventud, Infancia y Familias",ccaa-05-gobierno,A05045232,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-sanidad,department,ccaa,ccaa-05,Consejería de Sanidad,ccaa-05-gobierno,A05002852,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-agricultura,department,ccaa,ccaa-05,"Consejería de Agricultura, Ganadería, Pesca y Soberanía Alimentaria",ccaa-05-gobierno,A05033198,https://www.gobiernodecanarias.org/boc/2023/138/001.html
-ccaa-05-parlamento,parliament,ccaa,ccaa-05,Parlamento de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-43
-ccaa-05-tsj,judiciary,state,ccaa-05,Tribunal Superior de Justicia de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-78
-ccaa-05-cabildo,local,local,ccaa-05,Cabildo insular,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-65
-ccaa-09-govern,executive_head,ccaa,ccaa-09,Presidència de la Generalitat de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a67
-ccaa-09-presidencia,department,ccaa,ccaa-09,Departament de la Presidència,ccaa-09-govern,A09002971,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-economia,department,ccaa,ccaa-09,Departament d'Economia i Finances,ccaa-09-govern,A09037293,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-interior,department,ccaa,ccaa-09,Departament d'Interior i Seguretat Pública,ccaa-09-govern,A09002979,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-justicia,department,ccaa,ccaa-09,Departament de Justícia i Qualitat Democràtica,ccaa-09-govern,A09002980,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-territori,department,ccaa,ccaa-09,"Departament de Territori, Habitatge i Transició Ecològica",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-salut,department,ccaa,ccaa-09,Departament de Salut,ccaa-09-govern,A09002982,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-educacio,department,ccaa,ccaa-09,Departament d'Educació i Formació Professional,ccaa-09-govern,A09002976,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-drets-socials,department,ccaa,ccaa-09,Departament de Drets Socials i Inclusió,ccaa-09-govern,A09037192,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-empresa-treball,department,ccaa,ccaa-09,Departament d'Empresa i Treball,ccaa-09-govern,A09037292,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-igualtat,department,ccaa,ccaa-09,Departament d'Igualtat i Feminisme,ccaa-09-govern,A09037372,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-ue-accio-exterior,department,ccaa,ccaa-09,Departament d'Unió Europea i Acció Exterior,ccaa-09-govern,A09018798,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-recerca-universitats,department,ccaa,ccaa-09,Departament de Recerca i Universitats,ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-agricultura,department,ccaa,ccaa-09,"Departament d'Agricultura, Ramaderia, Pesca i Alimentació",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-esports,department,ccaa,ccaa-09,Departament d'Esports,ccaa-09-govern,A09050673,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-cultura,department,ccaa,ccaa-09,Departament de Cultura,ccaa-09-govern,A09002974,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-politica-linguistica,department,ccaa,ccaa-09,Departament de Política Lingüística,ccaa-09-govern,A09050672,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
-ccaa-09-parlament,parliament,ccaa,ccaa-09,Parlament de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a55
-ccaa-09-tsj,judiciary,state,ccaa-09,Tribunal Superior de Justícia de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a95
+id,kind,level,territory_id,name,parent_id,dir3_id,source_url,valid_from,valid_to
+es-gobierno,executive_head,state,es,Presidencia del Gobierno,,EA0008567,https://www.boe.es/buscar/act.php?id=BOE-A-1997-25336,,
+es-asuntos-exteriores,department,state,es,"Ministerio de Asuntos Exteriores, Unión Europea y Cooperación",es-gobierno,E05023901,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-presidencia-justicia,department,state,es,"Ministerio de la Presidencia, Justicia y Relaciones con las Cortes",es-gobierno,E05228601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-defensa,department,state,es,Ministerio de Defensa,es-gobierno,E00003301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-hacienda,department,state,es,Ministerio de Hacienda,es-gobierno,E05250001,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-interior,department,state,es,Ministerio del Interior,es-gobierno,E00003801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-transportes,department,state,es,Ministerio de Transportes y Movilidad Sostenible,es-gobierno,E05229701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-educacion,department,state,es,"Ministerio de Educación, Formación Profesional y Deportes",es-gobierno,E05230301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-trabajo,department,state,es,Ministerio de Trabajo y Economía Social,es-gobierno,E05066501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-industria-turismo,department,state,es,Ministerio de Industria y Turismo,es-gobierno,E05231501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-agricultura,department,state,es,"Ministerio de Agricultura, Pesca y Alimentación",es-gobierno,E05024401,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-politica-territorial,department,state,es,Ministerio de Política Territorial y Memoria Democrática,es-gobierno,E05232701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-transicion-ecologica,department,state,es,Ministerio para la Transición Ecológica y el Reto Demográfico,es-gobierno,E05068001,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-vivienda,department,state,es,Ministerio de Vivienda y Agenda Urbana,es-gobierno,E05233601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-cultura,department,state,es,Ministerio de Cultura,es-gobierno,E05234201,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-economia,department,state,es,"Ministerio de Economía, Comercio y Empresa",es-gobierno,E05234801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-sanidad,department,state,es,Ministerio de Sanidad,es-gobierno,E05070101,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-derechos-sociales,department,state,es,"Ministerio de Derechos Sociales, Consumo y Agenda 2030",es-gobierno,E05235701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-ciencia,department,state,es,"Ministerio de Ciencia, Innovación y Universidades",es-gobierno,E05236301,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-igualdad,department,state,es,Ministerio de Igualdad,es-gobierno,E05071601,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-inclusion,department,state,es,"Ministerio de Inclusión, Seguridad Social y Migraciones",es-gobierno,E05072501,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-transformacion-digital,department,state,es,Ministerio para la Transformación Digital y de la Función Pública,es-gobierno,E05251701,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-juventud-infancia,department,state,es,Ministerio de Juventud e Infancia,es-gobierno,E05237801,https://www.boe.es/buscar/act.php?id=BOE-A-2023-23537#a1,,
+es-cortes-generales,parliament,state,es,Cortes Generales,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a66,,
+es-consejo-general-poder-judicial,judiciary,state,es,Consejo General del Poder Judicial,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a122,,
+es-tribunal-supremo,judiciary,state,es,Tribunal Supremo,,,https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a123,,
+local-ayuntamiento,local,local,,Ayuntamiento,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a25,,
+local-diputacion,local,local,,Diputación provincial,,,https://www.boe.es/buscar/act.php?id=BOE-A-1985-5392#a36,,
+ccaa-13-gobierno,executive_head,ccaa,ccaa-13,Presidencia de la Comunidad de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#adiecisiete,,
+ccaa-13-presidencia-justicia,department,ccaa,ccaa-13,"Consejería de Presidencia, Justicia y Administración Local",ccaa-13-gobierno,A13037413,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13374&eli=true,,
+ccaa-13-economia-hacienda,department,ccaa,ccaa-13,"Consejería de Economía, Hacienda y Empleo",ccaa-13-gobierno,A13037513,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13375&eli=true,,
+ccaa-13-medio-ambiente,department,ccaa,ccaa-13,"Consejería de Medio Ambiente, Agricultura e Interior",ccaa-13-gobierno,A13037472,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13376&eli=true,,
+ccaa-13-familia,department,ccaa,ccaa-13,"Consejería de Familia, Juventud y Asuntos Sociales",ccaa-13-gobierno,A13002916,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13396&eli=true,,
+ccaa-13-vivienda-transportes,department,ccaa,ccaa-13,"Consejería de Vivienda, Transportes e Infraestructuras",ccaa-13-gobierno,A13003355,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13403&eli=true,,
+ccaa-13-sanidad,department,ccaa,ccaa-13,Consejería de Sanidad,ccaa-13-gobierno,A13002915,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13404&eli=true,,
+ccaa-13-educacion,department,ccaa,ccaa-13,"Consejería de Educación, Ciencia y Universidades",ccaa-13-gobierno,A13037434,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13410&eli=true,,
+ccaa-13-digitalizacion,department,ccaa,ccaa-13,Consejería de Digitalización,ccaa-13-gobierno,A13037569,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13453&eli=true,,
+ccaa-13-cultura,department,ccaa,ccaa-13,"Consejería de Cultura, Turismo y Deporte",ccaa-13-gobierno,A13022903,https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13461&eli=true,,
+ccaa-13-asamblea,parliament,ccaa,ccaa-13,Asamblea de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#anoveno,,
+ccaa-13-tsj,judiciary,state,ccaa-13,Tribunal Superior de Justicia de Madrid,,,https://www.boe.es/buscar/act.php?id=BOE-A-1983-6317#acuarentaycinco,,
+ccaa-05-gobierno,executive_head,ccaa,ccaa-05,Presidencia del Gobierno de Canarias,,A05002844,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-49,,
+ccaa-05-economia,department,ccaa,ccaa-05,"Consejería de Economía, Industria, Comercio y Autónomos",ccaa-05-gobierno,A05033180,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-obras-publicas,department,ccaa,ccaa-05,"Consejería de Obras Públicas, Vivienda y Movilidad",ccaa-05-gobierno,A05032833,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-hacienda,department,ccaa,ccaa-05,Consejería de Hacienda y Relaciones con la Unión Europea,ccaa-05-gobierno,A05032839,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-presidencia,department,ccaa,ccaa-05,"Consejería de Presidencia, Administraciones Públicas, Justicia y Seguridad",ccaa-05-gobierno,A05033187,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-educacion,department,ccaa,ccaa-05,"Consejería de Educación, Formación Profesional, Actividad Física y Deportes",ccaa-05-gobierno,A05047932,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-politica-territorial,department,ccaa,ccaa-05,"Consejería de Política Territorial, Cohesión Territorial y Aguas",ccaa-05-gobierno,A05047663,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-turismo-empleo,department,ccaa,ccaa-05,Consejería de Turismo y Empleo,ccaa-05-gobierno,A05030988,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-universidades-cultura,department,ccaa,ccaa-05,"Consejería de Universidades, Ciencia e Innovación y Cultura",ccaa-05-gobierno,A05046692,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-transicion-ecologica,department,ccaa,ccaa-05,Consejería de Transición Ecológica y Energía,ccaa-05-gobierno,A05047664,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-bienestar-social,department,ccaa,ccaa-05,"Consejería de Bienestar Social, Igualdad, Juventud, Infancia y Familias",ccaa-05-gobierno,A05045232,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-sanidad,department,ccaa,ccaa-05,Consejería de Sanidad,ccaa-05-gobierno,A05002852,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-agricultura,department,ccaa,ccaa-05,"Consejería de Agricultura, Ganadería, Pesca y Soberanía Alimentaria",ccaa-05-gobierno,A05033198,https://www.gobiernodecanarias.org/boc/2023/138/001.html,,
+ccaa-05-parlamento,parliament,ccaa,ccaa-05,Parlamento de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-43,,
+ccaa-05-tsj,judiciary,state,ccaa-05,Tribunal Superior de Justicia de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-78,,
+ccaa-05-cabildo,local,local,ccaa-05,Cabildo insular,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-65,,
+ccaa-09-govern,executive_head,ccaa,ccaa-09,Presidència de la Generalitat de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a67,,
+ccaa-09-presidencia,department,ccaa,ccaa-09,Departament de la Presidència,ccaa-09-govern,A09002971,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-economia,department,ccaa,ccaa-09,Departament d'Economia i Finances,ccaa-09-govern,A09037293,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-interior,department,ccaa,ccaa-09,Departament d'Interior i Seguretat Pública,ccaa-09-govern,A09002979,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-justicia,department,ccaa,ccaa-09,Departament de Justícia i Qualitat Democràtica,ccaa-09-govern,A09002980,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-territori,department,ccaa,ccaa-09,"Departament de Territori, Habitatge i Transició Ecològica",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-salut,department,ccaa,ccaa-09,Departament de Salut,ccaa-09-govern,A09002982,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-educacio,department,ccaa,ccaa-09,Departament d'Educació i Formació Professional,ccaa-09-govern,A09002976,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-drets-socials,department,ccaa,ccaa-09,Departament de Drets Socials i Inclusió,ccaa-09-govern,A09037192,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-empresa-treball,department,ccaa,ccaa-09,Departament d'Empresa i Treball,ccaa-09-govern,A09037292,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-igualtat,department,ccaa,ccaa-09,Departament d'Igualtat i Feminisme,ccaa-09-govern,A09037372,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-ue-accio-exterior,department,ccaa,ccaa-09,Departament d'Unió Europea i Acció Exterior,ccaa-09-govern,A09018798,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-recerca-universitats,department,ccaa,ccaa-09,Departament de Recerca i Universitats,ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-agricultura,department,ccaa,ccaa-09,"Departament d'Agricultura, Ramaderia, Pesca i Alimentació",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-esports,department,ccaa,ccaa-09,Departament d'Esports,ccaa-09-govern,A09050673,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-cultura,department,ccaa,ccaa-09,Departament de Cultura,ccaa-09-govern,A09002974,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-politica-linguistica,department,ccaa,ccaa-09,Departament de Política Lingüística,ccaa-09-govern,A09050672,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf,,
+ccaa-09-parlament,parliament,ccaa,ccaa-09,Parlament de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a55,,
+ccaa-09-tsj,judiciary,state,ccaa-09,Tribunal Superior de Justícia de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a95,,

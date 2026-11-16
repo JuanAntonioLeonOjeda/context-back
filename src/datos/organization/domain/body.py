@@ -41,10 +41,20 @@ class Body:
     parent_id: str | None  # a department's parent is the executive head of its territory
     dir3_id: str | None  # the code of the body in DIR3, to cross-check names
     source_url: str
+    # The days the body exists, half-open like a holder's period; None is "no known limit". A body
+    # that is merged or abolished gets a `valid_to` and stays in the files with its history, and
+    # the chart of a day only counts the bodies in force that day.
+    valid_from: date | None = None
+    valid_to: date | None = None
 
     @property
     def has_holder(self) -> bool:
         return self.kind in HEADED_KINDS
+
+    def in_force_on(self, day: date) -> bool:
+        return (self.valid_from is None or self.valid_from <= day) and (
+            self.valid_to is None or day < self.valid_to
+        )
 
 
 @dataclass(frozen=True, slots=True)

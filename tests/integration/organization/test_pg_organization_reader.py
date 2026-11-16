@@ -1,5 +1,6 @@
 """The organisation read back from PostgreSQL as the domain types, in the order of the files."""
 
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -64,6 +65,17 @@ def test_what_was_loaded_is_read_back_as_the_domain_types(
         [HEAD, SANIDAD, TSJ, LOCAL], key=lambda b: b.id
     )
     assert reader.holders() == [HOLDER]
+
+
+def test_the_period_of_a_body_is_read_back(reader: PgOrganizationReader, db: Connection) -> None:
+    closed = replace(SANIDAD, valid_from=date(2019, 8, 20), valid_to=date(2026, 1, 1))
+
+    _load(db, [HEAD, closed], [], [])
+
+    assert {b.id: (b.valid_from, b.valid_to) for b in reader.bodies()} == {
+        HEAD.id: (None, None),
+        closed.id: (date(2019, 8, 20), date(2026, 1, 1)),
+    }
 
 
 def test_the_competences_keep_the_order_of_the_file_and_their_sectors_come_sorted(

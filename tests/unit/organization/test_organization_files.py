@@ -13,7 +13,7 @@ from datos.organization.infrastructure.csv_source import (
     read_holders,
 )
 
-BODY_HEADER = "id,kind,level,territory_id,name,parent_id,dir3_id,source_url"
+BODY_HEADER = "id,kind,level,territory_id,name,parent_id,dir3_id,source_url,valid_from,valid_to"
 HOLDER_HEADER = "body_id,post_title,holder_name,valid_from,valid_to,source_url"
 COMPETENCE_HEADER = "body_id,summary,legal_basis,sector_ids,source_url"
 URL = "https://example.org/source"
@@ -47,6 +47,20 @@ def test_reads_bodies_with_their_optional_cells_empty(tmp_path: Path) -> None:
     )
     assert (department.parent_id, department.dir3_id) == ("ccaa-13-gobierno", "A13002915")
     assert (local.territory_id, local.level) == (None, BodyLevel.LOCAL)
+
+
+def test_reads_the_period_of_a_body_that_was_closed(tmp_path: Path) -> None:
+    path = _file(
+        tmp_path,
+        BODY_HEADER,
+        f"ccaa-13-vieja,department,ccaa,ccaa-13,Vieja,ccaa-13-gobierno,,{URL},2019-08-20,2026-01-01",
+        f"ccaa-13-sanidad,department,ccaa,ccaa-13,Sanidad,ccaa-13-gobierno,,{URL},,",
+    )
+
+    closed, open_ = read_bodies(path)
+
+    assert (closed.valid_from, closed.valid_to) == (date(2019, 8, 20), date(2026, 1, 1))
+    assert (open_.valid_from, open_.valid_to) == (None, None)
 
 
 def test_reads_holders_and_a_period_without_an_end(tmp_path: Path) -> None:

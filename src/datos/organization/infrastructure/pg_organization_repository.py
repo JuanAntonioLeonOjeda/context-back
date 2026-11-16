@@ -10,8 +10,10 @@ from datos.organization.domain.boxes import Competence
 _TERRITORIES = text("SELECT id FROM territories")
 _SECTORS = text("SELECT id FROM sectors")
 _INSERT_BODY = text(
-    "INSERT INTO bodies (id, kind, level, territory_id, name, parent_id, dir3_id, source_url)"
-    " VALUES (:id, :kind, :level, :territory_id, :name, :parent_id, :dir3_id, :source_url)"
+    "INSERT INTO bodies (id, kind, level, territory_id, name, parent_id, dir3_id, source_url,"
+    " valid_from, valid_to)"
+    " VALUES (:id, :kind, :level, :territory_id, :name, :parent_id, :dir3_id, :source_url,"
+    " :valid_from, :valid_to)"
 )
 _INSERT_HOLDER = text(
     "INSERT INTO body_holders (body_id, body_kind, post_title, holder_name, valid_from, valid_to,"
@@ -85,6 +87,8 @@ def _body_values(body: Body) -> dict[str, object]:
         "parent_id": body.parent_id,
         "dir3_id": body.dir3_id,
         "source_url": body.source_url,
+        "valid_from": body.valid_from,
+        "valid_to": body.valid_to,
     }
 
 
