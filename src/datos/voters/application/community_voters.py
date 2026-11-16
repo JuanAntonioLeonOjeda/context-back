@@ -1,12 +1,13 @@
 """Read side of voters: the voter profile of a community for an election (spec AC3)."""
 
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Protocol
 
+from datos.voters.domain.dimensions import INCOME, Dimension, DimensionId
 from datos.voters.domain.profile import MunicipalVotes, VoterProfile, vote_group, voter_profile
 
 
@@ -61,13 +62,22 @@ class VotersReader(Protocol):
 @dataclass(frozen=True, slots=True)
 class CommunityVoters:
     election: ElectionInfo
-    income: IncomeDownloadInfo | None
+    dimension: Dimension
+    # The INE download the dimension's values come from; None when they come from the election's
+    # own files (the size of a municipality is its census).
+    download: IncomeDownloadInfo | None
     municipalities: int
-    profile: VoterProfile | None  # None: fewer than two municipalities with income
+    profile: VoterProfile | None  # None: fewer than two municipalities with a value
 
 
 # The curated table: election id → candidature code → party id (data/voters/).
 type PartyByCandidature = Mapping[str, Mapping[str, str]]
+
+# How each dimension reads the value of a municipality from its row (None: no value).
+_VALUE_OF: dict[DimensionId, Callable[[MunicipalRow], Decimal | None]] = {
+    DimensionId.INCOME: lambda row: row.income,
+    DimensionId.SIZE: lambda row: Decimal(row.census),
+}
 
 
 def community_voters(
@@ -76,9 +86,10 @@ def community_voters(
     *,
     territory_id: str,
     election_id: str | None,
+    dimension: Dimension = INCOME,
 ) -> CommunityVoters | None:
-    """The profile for `election_id`, or for the latest loaded election when it is None; None
-    when there is no such election."""
+    """The profile by `dimension` for `election_id`, or for the latest loaded election when it is
+    None; None when there is no such election."""
     elections = reader.elections()
     election = next((e for e in elections if election_id in (None, e.id)), None)
     if election is None:
@@ -88,17 +99,21 @@ def community_voters(
     year = election.held_on.year
     rows = reader.municipal_rows(territory_id, election.id, year)
     parties = party_by_candidature.get(election.id, {})
-    municipalities = [_municipal_votes(row, parties) for row in rows]
+    value_of = _VALUE_OF[dimension.id]
+    municipalities = [_municipal_votes(row, parties, value_of(row)) for row in rows]
     return CommunityVoters(
         election=election,
-        income=reader.income_download(year),
+        dimension=dimension,
+        download=reader.income_download(year) if dimension.id is DimensionId.INCOME else None,
         municipalities=len(rows),
-        profile=voter_profile(municipalities),
+        profile=voter_profile(municipalities, dimension.grouping),
     )
 
 
-def _municipal_votes(row: MunicipalRow, parties: Mapping[str, str]) -> MunicipalVotes:
+def _municipal_votes(
+    row: MunicipalRow, parties: Mapping[str, str], value: Decimal | None
+) -> MunicipalVotes:
     votes: dict[str, int] = defaultdict(int)
     for count in row.counts:
         votes[vote_group(count.code, count.acronym, parties)] += count.votes
-    return MunicipalVotes(row.code, row.census, row.income, row.blank_votes, dict(votes))
+    return MunicipalVotes(row.code, row.census, value, row.blank_votes, dict(votes))

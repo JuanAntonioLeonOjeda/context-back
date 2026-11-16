@@ -15,15 +15,20 @@ from datos.voters.application.community_voters import CandidatureCount, Municipa
 type Client = Callable[..., TestClient]
 
 
-def test_names_the_election_and_the_income_with_their_sources(make_client: Client) -> None:
+def test_names_the_election_and_the_dimension_with_their_sources(make_client: Client) -> None:
     body = make_client().get("/communities/ccaa-05/voters").json()
 
     assert body["election"]["id"] == "congreso-2023-07"
     assert body["election"]["source_url"].startswith("https://infoelectoral.interior.gob.es/")
-    assert body["income"]["year"] == 2023
+    dimension = body["dimension"]
+    assert (dimension["id"], dimension["unit"], dimension["year"]) == (
+        "income",
+        "eur_per_person",
+        2023,
+    )
     # The statistic's page, which a reader can open; not the request the loader made.
-    assert body["income"]["source_url"].startswith("https://www.ine.es/dyngs/INEbase/")
-    assert "wstempus" not in body["income"]["source_url"]
+    assert dimension["source_url"].startswith("https://www.ine.es/dyngs/INEbase/")
+    assert "wstempus" not in dimension["source_url"]
     assert body["municipalities"] == 2
     assert body["no_profile_reason"] is None
 
@@ -48,7 +53,7 @@ def test_each_municipality_lands_in_its_band_with_hand_computed_shares(
 
     assert [b["municipalities"] for b in bands] == [0, 1, 0, 1, 0]
     low, high = bands[1], bands[3]
-    assert (low["census_percent"], low["income_min_eur"], low["valid_votes"]) == (
+    assert (low["census_percent"], low["value_min"], low["valid_votes"]) == (
         40.0,
         14000.0,
         200,
@@ -63,11 +68,60 @@ def test_each_municipality_lands_in_its_band_with_hand_computed_shares(
     ]
 
 
-def test_an_empty_band_has_zeros_and_no_income_range(make_client: Client) -> None:
+def test_an_empty_band_has_zeros_and_no_value_range(make_client: Client) -> None:
     empty = make_client().get("/communities/ccaa-05/voters").json()["profile"]["bands"][0]
 
-    assert (empty["census"], empty["census_percent"], empty["income_min_eur"]) == (0, 0.0, None)
+    assert (empty["census"], empty["census_percent"], empty["value_min"]) == (0, 0.0, None)
     assert all(s["percent"] == 0.0 for s in empty["shares"])
+
+
+def test_the_size_of_a_municipality_groups_by_electors_at_fixed_limits(make_client: Client) -> None:
+    body = make_client().get("/communities/ccaa-05/voters?by=size").json()
+
+    # No INE download behind it: the size is the census of the election's own files.
+    assert body["dimension"] == {
+        "id": "size",
+        "unit": "electors",
+        "source_url": None,
+        "year": None,
+        "fetched_at": None,
+    }
+    bands = body["profile"]["bands"]
+    # Four bands (limits 1,500, 8,000 and 40,000 electors); both municipalities, of 200 and 300
+    # electors, are in the first one, whatever their income.
+    assert [b["municipalities"] for b in bands] == [2, 0, 0, 0]
+    first = bands[0]
+    assert (first["census"], first["census_percent"], first["value_min"], first["value_max"]) == (
+        500,
+        100.0,
+        200.0,
+        300.0,
+    )
+    # Valid votes 400 (blank 10): CC 140, LISTA X 30, PP 220.
+    assert first["blank_percent"] == 2.5
+    assert [(s["group_id"], s["percent"]) for s in first["shares"]] == [
+        ("coalicion-canaria", 35.0),
+        ("lista:LISTA X", 7.5),
+        ("pp", 55.0),
+        ("otras", 0.0),
+    ]
+    assert bands[2]["value_min"] is None
+
+
+def test_an_unknown_dimension_is_a_422_that_names_the_allowed_ones(make_client: Client) -> None:
+    response = make_client().get("/communities/ccaa-05/voters?by=age")
+
+    assert response.status_code == 422
+    assert "'income' or 'size'" in response.json()["detail"][0]["msg"]
+
+
+def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: Client) -> None:
+    contract = make_client().get("/openapi.json").json()
+
+    parameters = contract["paths"]["/communities/{territory_id}/voters"]["get"]["parameters"]
+    by = next(p for p in parameters if p["name"] == "by")
+    assert by["schema"]["default"] == "income"
+    assert contract["components"]["schemas"]["DimensionId"]["enum"] == ["income", "size"]
 
 
 def test_a_community_without_results_has_no_profile_and_says_why(make_client: Client) -> None:
