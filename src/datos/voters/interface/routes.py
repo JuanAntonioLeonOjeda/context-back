@@ -1,4 +1,4 @@
-"""`GET /communities/{id}/voters`: how a community's municipalities voted, by income band.
+"""`GET /communities/{id}/voters`: how a community's municipalities voted, by band of one dimension.
 
 Every number is computed here, from the stored results, and rounded for display; the web app
 only draws it. Parties are ordered by the name shown, never by size; "Otras" goes last.
@@ -18,9 +18,11 @@ from datos.territories.territory import Level
 from datos.voters.application.community_voters import (
     CommunityVoters,
     PartyByCandidature,
+    SourceInfo,
     VotersReader,
     community_voters,
 )
+from datos.voters.domain.dimensions import DIMENSIONS, DimensionId
 from datos.voters.domain.profile import (
     LIST_PREFIX,
     OTHERS,
@@ -41,14 +43,21 @@ INE_INCOME_URL = (
 )
 
 DESCRIPTION = """How the municipalities of a community voted in a general election, grouped in
-five income bands of about the same census (each municipality whole, in the band where the
-midpoint of its census falls; a big city can leave a band almost empty). Income: the INE's mean net
-income per person of the election's year. It describes areas, not people.
+bands of one dimension (`by`). `income` (the default): five bands of about the same census, ordered
+by the INE's mean net income per person of the election's year (each municipality whole, in the
+band where the midpoint of its census falls; a big city can leave a band almost empty). `size`:
+four bands cut at fixed numbers of electors. `education`: five bands of about the same census,
+ordered by the percentage of people aged 15 or over with higher education (INE, Censo anual de
+población). It describes areas, not people: a band is a group of municipalities, and its shares
+say how those municipalities voted, not how their residents with higher education, with any
+level of studies or with any income voted (ecological fallacy). It says nothing about the voters
+of a party.
 
 Without `election`, the latest loaded one. Groups: the parties with at least
 `shown_from_percent` % of the community's valid votes (and a candidature that is not in the party
-table, by its acronym), then "others". `profile` is null when fewer than two municipalities have
-income (Ceuta, Melilla). 404: the community does not exist, or no such election is loaded."""
+table, by its acronym), then "others". `profile` is null when fewer than two municipalities have a
+value (Ceuta, Melilla). 404: the community does not exist, or no such election is loaded. 422: an
+unknown `by`."""
 
 
 class ElectionOut(BaseModel):
@@ -58,10 +67,15 @@ class ElectionOut(BaseModel):
     source_url: str
 
 
-class IncomeOut(BaseModel):
-    year: int
-    source_url: str  # the statistic's page at the INE
-    fetched_at: datetime
+class DimensionOut(BaseModel):
+    id: DimensionId
+    # What a value counts: "eur_per_person", "electors" or "percent".
+    unit: str
+    # Where the values come from when they are not the election's own files (the INE's page, for
+    # income); null for the size of a municipality, which is its census in the election.
+    source_url: str | None
+    year: int | None
+    fetched_at: datetime | None
 
 
 class GroupOut(BaseModel):
@@ -79,12 +93,12 @@ class ShareOut(BaseModel):
 
 
 class BandOut(BaseModel):
-    index: int  # 0 = the lowest incomes
+    index: int  # 0 = the lowest values
     municipalities: int
     census: int
     census_percent: float  # of the profile's census, one decimal
-    income_min_eur: float | None
-    income_max_eur: float | None
+    value_min: float | None  # in the unit of the dimension; null for an empty band
+    value_max: float | None
     valid_votes: int
     blank_votes: int
     blank_percent: float
@@ -95,13 +109,13 @@ class ProfileOut(BaseModel):
     census: int
     groups: list[GroupOut]
     bands: list[BandOut]
-    municipalities_without_income: int
+    municipalities_without_value: int
 
 
 class VotersOut(BaseModel):
     territory_id: str
     election: ElectionOut
-    income: IncomeOut | None
+    dimension: DimensionOut
     municipalities: int
     # A group is shown from this percentage of the community's valid votes; the rest is "others".
     shown_from_percent: int
@@ -133,11 +147,18 @@ def build_voters_router(
         governments_reader: Annotated[GovernmentsReader, Depends(governments)],
         territory_reader: Annotated[TerritoryReader, Depends(territories)],
         election: Annotated[str | None, Query(description="e.g. congreso-2023-07")] = None,
+        by: Annotated[
+            DimensionId, Query(description="The dimension of the bands")
+        ] = DimensionId.INCOME,
     ) -> VotersOut:
         if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
         found = community_voters(
-            reader, party_by_candidature, territory_id=territory_id, election_id=election
+            reader,
+            party_by_candidature,
+            territory_id=territory_id,
+            election_id=election,
+            dimension=DIMENSIONS[by],
         )
         if found is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"no election {election or 'loaded'}")
@@ -157,15 +178,28 @@ def _out(territory_id: str, found: CommunityVoters, labels: dict[str, str]) -> V
         election=ElectionOut(
             id=e.id, held_on=e.held_on, source_file=e.source_file, source_url=INFOELECTORAL_URL
         ),
-        income=None
-        if found.income is None
-        else IncomeOut(
-            year=found.income.year, source_url=INE_INCOME_URL, fetched_at=found.income.fetched_at
-        ),
+        dimension=_dimension(found),
         municipalities=found.municipalities,
         shown_from_percent=SHOWN_FROM_PERCENT,
         profile=None if found.profile is None else _profile(found.profile, labels),
         no_profile_reason=reason,
+    )
+
+
+def _source_page(dimension: DimensionId, download: SourceInfo) -> str:
+    """The page a reader can open to see the source: the income's is the INE's table, not the API
+    request it was downloaded with; the other dimensions' loads name their own page."""
+    return INE_INCOME_URL if dimension is DimensionId.INCOME else download.url
+
+
+def _dimension(found: CommunityVoters) -> DimensionOut:
+    download = found.download
+    return DimensionOut(
+        id=found.dimension.id,
+        unit=found.dimension.unit,
+        source_url=None if download is None else _source_page(found.dimension.id, download),
+        year=None if download is None else download.year,
+        fetched_at=None if download is None else download.fetched_at,
     )
 
 
@@ -175,7 +209,7 @@ def _profile(profile: VoterProfile, labels: dict[str, str]) -> ProfileOut:
         census=profile.census,
         groups=groups,
         bands=[_band(b, profile.census, groups) for b in profile.bands],
-        municipalities_without_income=len(profile.without_income),
+        municipalities_without_value=len(profile.without_value),
     )
 
 
@@ -198,8 +232,8 @@ def _band(band: Band, census: int, groups: list[GroupOut]) -> BandOut:
         municipalities=len(band.municipality_codes),
         census=band.census,
         census_percent=_percent(band.census, census),
-        income_min_eur=_euros(band.income_min),
-        income_max_eur=_euros(band.income_max),
+        value_min=_number(band.value_min),
+        value_max=_number(band.value_max),
         valid_votes=band.valid_votes,
         blank_votes=band.blank_votes,
         blank_percent=_percent(band.blank_votes, band.valid_votes),
@@ -221,5 +255,5 @@ def _percent(part: int, whole: int) -> float:
     return float((Decimal(100 * part) / Decimal(whole)).quantize(Decimal("0.1"), "ROUND_HALF_UP"))
 
 
-def _euros(value: Decimal | None) -> float | None:
+def _number(value: Decimal | None) -> float | None:
     return None if value is None else float(value)

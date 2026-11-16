@@ -22,8 +22,8 @@ from datos.territories.territory import Level, Territory
 from datos.voters.application.community_voters import (
     CandidatureCount,
     ElectionInfo,
-    IncomeDownloadInfo,
     MunicipalRow,
+    SourceInfo,
 )
 
 TODAY = date(2026, 10, 13)
@@ -227,10 +227,15 @@ PARTIES = [
 ]
 
 ELECTION = ElectionInfo("congreso-2023-07", date(2023, 7, 23), "02202307_MUNI.zip")
-INCOME = IncomeDownloadInfo(
+INCOME = SourceInfo(
     2023,
     "https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?date=20230101",
     datetime(2026, 11, 9, 8, 23, tzinfo=UTC),
+)
+EDUCATION = SourceInfo(
+    2023,
+    "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176992",
+    datetime(2026, 11, 16, 15, 47, tzinfo=UTC),
 )
 # Two municipalities of Canarias with hand-picked counts: 000031 is CC (mapped), 000005
 # PP (mapped), 000099 a candidature that is not in the table.
@@ -269,8 +274,11 @@ class FakeVoters:
     ) -> list[MunicipalRow]:
         return list(self._rows) if territory_id == "ccaa-05" else []
 
-    def income_download(self, year: int) -> IncomeDownloadInfo | None:
+    def income_download(self, year: int) -> SourceInfo | None:
         return INCOME if year == 2023 else None
+
+    def education_source(self, year: int) -> SourceInfo | None:
+        return EDUCATION if year == 2023 else None
 
 
 def term(

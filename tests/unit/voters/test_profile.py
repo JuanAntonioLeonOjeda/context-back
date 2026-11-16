@@ -8,6 +8,7 @@ from datos.voters.domain.profile import (
     OTHERS,
     MunicipalVotes,
     band_index,
+    fixed_limits_grouping,
     vote_group,
     voter_profile,
 )
@@ -16,14 +17,14 @@ from datos.voters.domain.profile import (
 def _m(
     code: str,
     census: int,
-    income: str | None,
+    value: str | None,
     votes: dict[str, int] | None = None,
     blank: int = 0,
 ) -> MunicipalVotes:
     return MunicipalVotes(
         code,
         census,
-        None if income is None else Decimal(income),
+        None if value is None else Decimal(value),
         blank,
         {"pp": census} if votes is None else votes,
     )
@@ -76,7 +77,7 @@ def test_municipalities_without_income_are_left_out_and_named() -> None:
     )
 
     assert profile is not None
-    assert profile.without_income == ("01003",)
+    assert profile.without_value == ("01003",)
     assert profile.census == 100
     assert all("01003" not in b.municipality_codes for b in profile.bands)
 
@@ -131,7 +132,7 @@ def test_an_empty_band_has_no_income_range() -> None:
 
     assert profile is not None
     empty = [b for b in profile.bands if not b.municipality_codes]
-    assert empty and all(b.income_min is None and b.census == 0 for b in empty)
+    assert empty and all(b.value_min is None and b.census == 0 for b in empty)
 
 
 @pytest.mark.parametrize(
@@ -173,3 +174,70 @@ def test_the_smallest_census_there_can_be_still_has_a_profile() -> None:
         (),
         ("01002",),
     ]
+
+
+# --- bands cut at fixed values (the size of a municipality) -------------------------------
+
+SIZE_LIMITS = (Decimal(1500), Decimal(8000), Decimal(40000))
+
+
+def _sized(
+    census: int, number: int, votes: dict[str, int] | None = None, blank: int = 0
+) -> MunicipalVotes:
+    """A municipality whose value is its own census, as the size dimension has it."""
+    return _m(f"01{number:03d}", census, str(census), votes, blank)
+
+
+def _fixed_members(municipalities: list[MunicipalVotes]) -> list[tuple[str, ...]]:
+    profile = voter_profile(municipalities, fixed_limits_grouping(SIZE_LIMITS))
+    assert profile is not None
+    return [band.municipality_codes for band in profile.bands]
+
+
+def test_a_value_equal_to_a_limit_starts_the_band_that_begins_there() -> None:
+    censuses = [999, 1000, 1499, 1500, 7999, 8000, 39999, 40000, 90000]
+    municipalities = [_sized(c, i + 1) for i, c in enumerate(censuses)]
+
+    assert _fixed_members(municipalities) == [
+        ("01001", "01002", "01003"),  # below 1,500
+        ("01004", "01005"),  # 1,500 and 7,999
+        ("01006", "01007"),  # 8,000 and 39,999
+        ("01008", "01009"),  # 40,000 and more
+    ]
+
+
+def test_n_limits_give_n_plus_one_bands_and_an_empty_one_stays_empty() -> None:
+    profile = voter_profile([_sized(100, 1), _sized(50000, 2)], fixed_limits_grouping(SIZE_LIMITS))
+
+    assert profile is not None
+    assert [len(b.municipality_codes) for b in profile.bands] == [1, 0, 0, 1]
+    empty = [b for b in profile.bands if not b.municipality_codes]
+    assert all(b.value_min is None and b.census == 0 for b in empty)
+    assert [b.index for b in profile.bands] == [0, 1, 2, 3]
+
+
+def test_a_big_city_does_not_move_the_small_municipalities_to_other_bands() -> None:
+    villages = [_sized(300, 1), _sized(900, 2), _sized(2000, 3), _sized(5000, 4)]
+    city = _sized(2_000_000, 5)
+
+    without = _fixed_members(villages)
+    with_city = _fixed_members([*villages, city])
+
+    # By census weight the city would take every band but one; by fixed limits it only adds
+    # itself to the last band.
+    assert with_city[:3] == without[:3]
+    assert with_city[3] == ("01005",)
+
+
+def test_the_votes_of_a_fixed_band_are_added_per_group() -> None:
+    a = _sized(2000, 1, {"pp": 100, "psoe": 50}, blank=10)
+    b = _sized(3000, 2, {"pp": 200, "psoe": 150}, blank=20)
+
+    profile = voter_profile([a, b], fixed_limits_grouping(SIZE_LIMITS))
+
+    assert profile is not None
+    band = profile.bands[1]
+    assert band.municipality_codes == ("01001", "01002")
+    assert dict(band.votes) == {"pp": 300, "psoe": 200}
+    assert (band.valid_votes, band.blank_votes, band.census) == (530, 30, 5000)
+    assert (band.value_min, band.value_max) == (Decimal(2000), Decimal(3000))
