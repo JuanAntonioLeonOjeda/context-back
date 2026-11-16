@@ -55,3 +55,22 @@ ccaa-05-agricultura,department,ccaa,ccaa-05,"Consejería de Agricultura, Ganader
 ccaa-05-parlamento,parliament,ccaa,ccaa-05,Parlamento de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-43
 ccaa-05-tsj,judiciary,state,ccaa-05,Tribunal Superior de Justicia de Canarias,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-78
 ccaa-05-cabildo,local,local,ccaa-05,Cabildo insular,,,https://www.boe.es/buscar/act.php?id=BOE-A-2018-15138#ar-65
+ccaa-09-govern,executive_head,ccaa,ccaa-09,Presidència de la Generalitat de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a67
+ccaa-09-presidencia,department,ccaa,ccaa-09,Departament de la Presidència,ccaa-09-govern,A09002971,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-economia,department,ccaa,ccaa-09,Departament d'Economia i Finances,ccaa-09-govern,A09037293,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-interior,department,ccaa,ccaa-09,Departament d'Interior i Seguretat Pública,ccaa-09-govern,A09002979,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-justicia,department,ccaa,ccaa-09,Departament de Justícia i Qualitat Democràtica,ccaa-09-govern,A09002980,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-territori,department,ccaa,ccaa-09,"Departament de Territori, Habitatge i Transició Ecològica",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-salut,department,ccaa,ccaa-09,Departament de Salut,ccaa-09-govern,A09002982,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-educacio,department,ccaa,ccaa-09,Departament d'Educació i Formació Professional,ccaa-09-govern,A09002976,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-drets-socials,department,ccaa,ccaa-09,Departament de Drets Socials i Inclusió,ccaa-09-govern,A09037192,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-empresa-treball,department,ccaa,ccaa-09,Departament d'Empresa i Treball,ccaa-09-govern,A09037292,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-igualtat,department,ccaa,ccaa-09,Departament d'Igualtat i Feminisme,ccaa-09-govern,A09037372,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-ue-accio-exterior,department,ccaa,ccaa-09,Departament d'Unió Europea i Acció Exterior,ccaa-09-govern,A09018798,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-recerca-universitats,department,ccaa,ccaa-09,Departament de Recerca i Universitats,ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-agricultura,department,ccaa,ccaa-09,"Departament d'Agricultura, Ramaderia, Pesca i Alimentació",ccaa-09-govern,,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-esports,department,ccaa,ccaa-09,Departament d'Esports,ccaa-09-govern,A09050673,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-cultura,department,ccaa,ccaa-09,Departament de Cultura,ccaa-09-govern,A09002974,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-politica-linguistica,department,ccaa,ccaa-09,Departament de Política Lingüística,ccaa-09-govern,A09050672,https://portaldogc.gencat.cat/utilsEADOP/PDF/9225/2042935.pdf
+ccaa-09-parlament,parliament,ccaa,ccaa-09,Parlament de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a55
+ccaa-09-tsj,judiciary,state,ccaa-09,Tribunal Superior de Justícia de Catalunya,,,https://www.boe.es/buscar/act.php?id=BOE-A-2006-13087#a95
