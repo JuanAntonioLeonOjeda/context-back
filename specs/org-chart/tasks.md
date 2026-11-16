@@ -12,7 +12,7 @@ reviewed by the author before the next (the governments data and the schema are 
 - [x] 7. Read side and `GET /organization`, `GET /communities/{id}/organization` `[core]`
 - [x] 8. Front (branch of its own): client regenerated, routes, nested-list chart, "Ver organigrama" link, BOE attribution
 - [x] 9. Data batches 3 and 4 — Canarias and Cataluña (checked against the governments' official pages)
-- [ ] 10. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, the phases table of `project-policies.md`, PRs into `develop`
+- [x] 10. Reviews (`py-reviewer`, `neutrality-reviewer`, `ts-reviewer`, `accessibility-reviewer`), `AGENTS.md`, the phases table of `project-policies.md`, PRs into `develop`
 - [ ] 11. After the election of 2026-11-29: the State's new ministers (close the old rows, add the new ones)
 
 ## Defend (optional)
