@@ -18,7 +18,7 @@ from datos.clock import Clock
 from datos.organization.application.organization_chart import (
     OrganizationChart,
     OrganizationReader,
-    executive_statuses,
+    general_chart,
     organization_chart,
 )
 from datos.organization.domain.body import Body, Holder
@@ -113,8 +113,8 @@ def build_organization_router(
         communities = sorted(
             territory_reader.by_level(Level.CCAA), key=lambda t: (t.name.casefold(), t.id)
         )
-        statuses = executive_statuses(reader, [t.id for t in communities], day)
-        chart = _out(organization_chart(reader, STATE, day))
+        state_chart, statuses = general_chart(reader, [t.id for t in communities], day)
+        chart = _out(state_chart)
         return GeneralOrganizationOut(
             **chart.model_dump(),
             communities=[

@@ -5,7 +5,7 @@ from datetime import date
 
 from datos.organization.application.organization_chart import (
     OrganizationChart,
-    executive_statuses,
+    general_chart,
     organization_chart,
 )
 from datos.organization.domain.body import Body, BodyKind, BodyLevel, Holder
@@ -143,11 +143,29 @@ def test_the_day_decides_who_is_in_force() -> None:
     assert before_everyone.executive.status is ChartStatus.NO_DATA
 
 
-def test_the_status_of_each_executive_for_the_list_of_communities() -> None:
-    statuses = executive_statuses(_Reader(), ["ccaa-13", "ccaa-05", "ccaa-99"], DAY)
+class _CountingReader(_Reader):
+    def __init__(self) -> None:
+        self.reads = {"bodies": 0, "holders": 0}
 
+    def bodies(self) -> list[Body]:
+        self.reads["bodies"] += 1
+        return super().bodies()
+
+    def holders(self) -> list[Holder]:
+        self.reads["holders"] += 1
+        return super().holders()
+
+
+def test_the_general_chart_and_the_status_of_each_executive_come_from_one_read() -> None:
+    reader = _CountingReader()
+
+    chart, statuses = general_chart(reader, ["ccaa-13", "ccaa-05", "ccaa-99"], DAY)
+
+    assert chart.territory_id == "es"
+    assert chart.executive.status is ChartStatus.COMPLETE
     assert statuses == {
         "ccaa-13": ChartStatus.COMPLETE,
         "ccaa-05": ChartStatus.NO_DATA,
         "ccaa-99": ChartStatus.NO_DATA,
     }
+    assert reader.reads == {"bodies": 1, "holders": 1}
