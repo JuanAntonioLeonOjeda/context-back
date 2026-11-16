@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from datos.voters.application.load_education import EducationSourceFile
-from datos.voters.domain.education import EducationCount, EducationLevel
+from datos.voters.domain.share import Component, ShareCount
 from datos.voters.infrastructure.education_source import (
     InvalidEducationFileError,
     education_count,
@@ -26,18 +26,18 @@ def _row(**changes: str) -> dict[str, str]:
 
 
 def test_a_row_of_the_higher_level_gives_its_count_with_the_dot_of_thousands_removed() -> None:
-    assert education_count(_row(), 2023) == EducationCount("01001", EducationLevel.HIGHER, 2452)
+    assert education_count(_row(), 2023) == ShareCount("01001", Component.PART, 2452)
 
 
 def test_the_row_of_all_levels_gives_the_total() -> None:
     row = _row(**{"Nivel de estudios": "Total", "Total": "215"})
-    assert education_count(row, 2023) == EducationCount("01001", EducationLevel.TOTAL, 215)
+    assert education_count(row, 2023) == ShareCount("01001", Component.TOTAL, 215)
 
 
 def test_the_file_without_an_age_column_is_read_the_same() -> None:
     row = _row()
     del row["Edad"]
-    assert education_count(row, 2023) == EducationCount("01001", EducationLevel.HIGHER, 2452)
+    assert education_count(row, 2023) == ShareCount("01001", Component.PART, 2452)
 
 
 @pytest.mark.parametrize(
@@ -76,18 +76,18 @@ BIG = FIXTURES / "education-66620-sample.csv"  # municipalities of 500 people or
 SMALL = FIXTURES / "education-66623-sample.csv"  # 50 to 499, without the age column
 
 
-def _by_municipality(file: EducationSourceFile) -> dict[tuple[str, EducationLevel], int]:
-    return {(c.municipality_code, c.level): c.count for c in file.counts}
+def _by_municipality(file: EducationSourceFile) -> dict[tuple[str, Component], int]:
+    return {(c.municipality_code, c.component): c.count for c in file.counts}
 
 
 def test_the_file_with_ages_gives_the_counts_of_15_or_more_in_the_year() -> None:
     file = read_education_file(BIG, 2023, source_url=URL)
 
     assert _by_municipality(file) == {
-        ("01001", EducationLevel.TOTAL): 2452,
-        ("01001", EducationLevel.HIGHER): 1055,
-        ("28079", EducationLevel.TOTAL): 2_925_135,
-        ("28079", EducationLevel.HIGHER): 1_354_780,
+        ("01001", Component.TOTAL): 2452,
+        ("01001", Component.PART): 1055,
+        ("28079", Component.TOTAL): 2_925_135,
+        ("28079", Component.PART): 1_354_780,
     }
 
 
@@ -95,17 +95,17 @@ def test_the_file_without_ages_gives_its_counts_the_same_way() -> None:
     file = read_education_file(SMALL, 2023, source_url=URL)
 
     assert _by_municipality(file) == {
-        ("01006", EducationLevel.TOTAL): 207,
-        ("01006", EducationLevel.HIGHER): 84,
-        ("01011", EducationLevel.TOTAL): 278,
-        ("01011", EducationLevel.HIGHER): 83,
+        ("01006", Component.TOTAL): 207,
+        ("01006", Component.PART): 84,
+        ("01011", Component.TOTAL): 278,
+        ("01011", Component.PART): 83,
     }
 
 
 def test_the_year_chooses_the_rows() -> None:
     counts = _by_municipality(read_education_file(SMALL, 2021, source_url=URL))
 
-    assert counts[("01006", EducationLevel.TOTAL)] == 198
+    assert counts[("01006", Component.TOTAL)] == 198
 
 
 def test_the_hash_and_the_name_are_those_of_the_file_as_it_is() -> None:
@@ -129,7 +129,7 @@ def test_a_file_without_the_bom_and_with_a_blank_line_at_the_end_is_read(tmp_pat
 
     file = read_education_file(_write(tmp_path, text), 2023, source_url=URL)
 
-    assert file.counts == (EducationCount("01006", EducationLevel.TOTAL, 207),)
+    assert file.counts == (ShareCount("01006", Component.TOTAL, 207),)
 
 
 @pytest.mark.parametrize(

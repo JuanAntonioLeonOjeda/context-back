@@ -12,7 +12,7 @@ from datos.voters.application.load_education import (
     ValueLoad,
     load_education,
 )
-from datos.voters.domain.education import EducationCount, EducationLevel
+from datos.voters.domain.share import Component, ShareCount
 
 
 class FakeValueRepository:
@@ -36,8 +36,8 @@ def _file(name: str, *municipalities: tuple[str, int, int]) -> EducationSourceFi
         count
         for code, higher, total in municipalities
         for count in (
-            EducationCount(code, EducationLevel.TOTAL, total),
-            EducationCount(code, EducationLevel.HIGHER, higher),
+            ShareCount(code, Component.TOTAL, total),
+            ShareCount(code, Component.PART, higher),
         )
     ]
     return EducationSourceFile(f"https://ine.es/{name}", f"{name}.csv", name[0] * 64, counts)

@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Protocol
 
-from datos.voters.domain.education import EducationCount, education_values
 from datos.voters.domain.municipal_value import (
     MunicipalValue,
     changed_since,
     unknown_province_problems,
 )
+from datos.voters.domain.share import ShareCount, share_values
 
 EDUCATION = "education"  # the `dimension` of its loads (migration 0017)
 
@@ -23,7 +23,7 @@ class EducationSourceFile:
     source_url: str
     source_file: str
     sha256: str
-    counts: Sequence[EducationCount]
+    counts: Sequence[ShareCount]
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +72,7 @@ def load_education(
     if empty:
         raise InvalidValuesError(empty)
     counts = [count for file in files for count in file.counts]
-    values, problems = education_values(counts, year)
+    values, problems = share_values(counts, year)
     problems += unknown_province_problems(values, repository.province_ids())
     if problems:
         raise InvalidValuesError(problems)

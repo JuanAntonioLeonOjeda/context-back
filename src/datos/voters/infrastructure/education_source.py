@@ -15,14 +15,14 @@ from pathlib import Path
 from typing import BinaryIO
 
 from datos.voters.application.load_education import EducationSourceFile
-from datos.voters.domain.education import EducationCount, EducationLevel
+from datos.voters.domain.share import Component, ShareCount
 
 MUNICIPALITY = "municipality"  # the first column, whose title differs between the files
 SEX, AGE, LEVEL, PERIOD, COUNT = "Sexo", "Edad", "Nivel de estudios", "Periodo", "Total"
 
 _ALL_SEXES = "Total"
 _AGE_15_OR_MORE = "15 y más años"
-_LEVELS = {"Total": EducationLevel.TOTAL, "Educación superior": EducationLevel.HIGHER}
+_LEVELS = {"Total": Component.TOTAL, "Educación superior": Component.PART}
 _MUNICIPALITY = re.compile(r"^(\d{5}) \S")  # '01006 Armiñón'
 _THOUSANDS = re.compile(r"^\d{1,3}(\.\d{3})*$|^\d+$")  # '2.503', '215'
 
@@ -31,7 +31,7 @@ class InvalidEducationFileError(Exception):
     """A row of the file is not what the INE's tables look like."""
 
 
-def education_count(row: Mapping[str, str], year: int) -> EducationCount | None:
+def education_count(row: Mapping[str, str], year: int) -> ShareCount | None:
     """The count a row gives, or None when the row is not one the percentage uses: another sex,
     another age group (in the file that has them), another year or another level of studies.
     A row that is used but cannot be read (municipality or number) raises, never a guess."""
@@ -43,7 +43,7 @@ def education_count(row: Mapping[str, str], year: int) -> EducationCount | None:
         or row[PERIOD] != str(year)
     ):
         return None
-    return EducationCount(_municipality_code(row[MUNICIPALITY]), level, _count(row[COUNT]))
+    return ShareCount(_municipality_code(row[MUNICIPALITY]), level, _count(row[COUNT]))
 
 
 def _municipality_code(cell: str) -> str:

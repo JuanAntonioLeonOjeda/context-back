@@ -13,8 +13,8 @@ from datos.voters.application.load_education import (
     ValueLoad,
     load_education,
 )
-from datos.voters.domain.education import EducationCount, EducationLevel
 from datos.voters.domain.municipal_value import MunicipalValue
+from datos.voters.domain.share import Component, ShareCount
 from datos.voters.infrastructure.pg_value_repository import PgValueRepository
 
 pytestmark = pytest.mark.integration
@@ -96,8 +96,8 @@ def test_the_provinces_are_the_ones_of_the_territories(engine: Engine) -> None:
 
 def _file(sha: str, higher: int) -> EducationSourceFile:
     counts = [
-        EducationCount("28079", EducationLevel.TOTAL, 1000),
-        EducationCount("28079", EducationLevel.HIGHER, higher),
+        ShareCount("28079", Component.TOTAL, 1000),
+        ShareCount("28079", Component.PART, higher),
     ]
     return EducationSourceFile("https://www.ine.es/t", "66620.csv", sha * 64, counts)
 
