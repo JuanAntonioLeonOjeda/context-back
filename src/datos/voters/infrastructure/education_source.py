@@ -11,10 +11,10 @@ import csv
 import hashlib
 import re
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO
 
+from datos.voters.application.load_education import EducationSourceFile
 from datos.voters.domain.education import EducationCount, EducationLevel
 
 MUNICIPALITY = "municipality"  # the first column, whose title differs between the files
@@ -59,17 +59,7 @@ def _count(cell: str) -> int:
     return int(cell.replace(".", ""))
 
 
-@dataclass(frozen=True, slots=True)
-class EducationFile:
-    """What a table file gives: its name and hash (what `municipal_value_loads` keeps of it) and
-    the counts the percentage uses, a few thousand out of millions of rows."""
-
-    source_file: str
-    sha256: str
-    counts: tuple[EducationCount, ...]
-
-
-def read_education_file(path: Path, year: int) -> EducationFile:
+def read_education_file(path: Path, year: int, *, source_url: str) -> EducationSourceFile:
     """Reads a table file of the INE in one pass and in constant memory (66620 is 266 MB): the
     hash is computed over the bytes while the rows are read, so the file is not read twice."""
     digest = hashlib.sha256()
@@ -82,7 +72,7 @@ def read_education_file(path: Path, year: int) -> EducationFile:
             if row  # a blank line, as at the end of the file
             if (count := education_count(_named(columns, row), year)) is not None
         )
-    return EducationFile(path.name, digest.hexdigest(), counts)
+    return EducationSourceFile(source_url, path.name, digest.hexdigest(), counts)
 
 
 def _decoded_lines(file: BinaryIO, digest: "hashlib._Hash") -> Iterator[str]:
