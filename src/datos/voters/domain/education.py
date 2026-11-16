@@ -1,6 +1,8 @@
 """Share of a municipality's population with higher education, from the INE's Censo anual."""
 
+from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
+from enum import StrEnum
 
 _THOUSANDTH = Decimal("0.001")
 
@@ -17,3 +19,17 @@ def education_percentage(higher: int, total: int) -> Decimal | None:
     if total == 0:
         return None
     return (Decimal(higher) * 100 / Decimal(total)).quantize(_THOUSANDTH, rounding=ROUND_HALF_UP)
+
+
+class EducationLevel(StrEnum):
+    TOTAL = "total"  # every level: the population the percentage is of
+    HIGHER = "higher"  # "Educación superior"
+
+
+@dataclass(frozen=True, slots=True)
+class EducationCount:
+    """People of one municipality and year at one level, as a file of the INE counts them."""
+
+    municipality_code: str  # INE: province (2) + municipality (3)
+    level: EducationLevel
+    count: int
