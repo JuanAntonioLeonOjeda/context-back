@@ -2,7 +2,15 @@
 
 from decimal import Decimal
 
-from datos.voters.domain.dimensions import DIMENSIONS, EDUCATION, INCOME, SIZE, DimensionId
+from datos.voters.domain.dimensions import (
+    AGE,
+    BORN_ABROAD,
+    DIMENSIONS,
+    EDUCATION,
+    INCOME,
+    SIZE,
+    DimensionId,
+)
 from datos.voters.domain.profile import MunicipalVotes, voter_profile
 
 
@@ -15,8 +23,11 @@ def test_every_dimension_is_listed_by_its_id_with_its_unit() -> None:
         DimensionId.INCOME: INCOME,
         DimensionId.SIZE: SIZE,
         DimensionId.EDUCATION: EDUCATION,
+        DimensionId.AGE: AGE,
+        DimensionId.BORN_ABROAD: BORN_ABROAD,
     }
-    assert (INCOME.unit, SIZE.unit, EDUCATION.unit) == ("eur_per_person", "electors", "percent")
+    assert (INCOME.unit, SIZE.unit) == ("eur_per_person", "electors")
+    assert (EDUCATION.unit, AGE.unit, BORN_ABROAD.unit) == ("percent",) * 3
 
 
 def test_the_size_bands_start_at_1500_8000_and_40000_electors() -> None:
@@ -34,5 +45,5 @@ def test_the_size_bands_start_at_1500_8000_and_40000_electors() -> None:
     ]
 
 
-def test_education_is_banded_by_equal_census_like_income() -> None:
-    assert EDUCATION.grouping is INCOME.grouping
+def test_the_percentages_are_banded_by_equal_census_like_income() -> None:
+    assert EDUCATION.grouping is AGE.grouping is BORN_ABROAD.grouping is INCOME.grouping

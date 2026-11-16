@@ -156,10 +156,13 @@ def test_education_counts_the_municipalities_without_a_value_apart(make_client: 
 
 
 def test_an_unknown_dimension_is_a_422_that_names_the_allowed_ones(make_client: Client) -> None:
-    response = make_client().get("/communities/ccaa-05/voters?by=age")
+    response = make_client().get("/communities/ccaa-05/voters?by=astrology")
 
     assert response.status_code == 422
-    assert "'income', 'size' or 'education'" in response.json()["detail"][0]["msg"]
+    assert (
+        "'income', 'size', 'education', 'age' or 'born_abroad'"
+        in response.json()["detail"][0]["msg"]
+    )
 
 
 def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: Client) -> None:
@@ -172,6 +175,8 @@ def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: C
         "income",
         "size",
         "education",
+        "age",
+        "born_abroad",
     ]
 
 
