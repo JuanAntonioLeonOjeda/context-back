@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import BinaryIO
 
-from datos.voters.application.load_education import EducationSourceFile
+from datos.voters.application.load_values import ValueSourceFile
 from datos.voters.domain.share import Component, ShareCount
 
 MUNICIPALITY = "municipality"  # the first column, whose title differs between the files
@@ -100,7 +100,7 @@ def _count(cell: str) -> int:
 
 def read_table_file(
     path: Path, year: int, layout: TableLayout, *, source_url: str
-) -> EducationSourceFile:
+) -> ValueSourceFile:
     """Reads a table file of the INE in one pass and in constant memory (66620 is 266 MB): the
     hash is computed over the bytes while the rows are read, so the file is not read twice."""
     digest = hashlib.sha256()
@@ -118,9 +118,7 @@ def read_table_file(
         # A file that is missing, not UTF-8 (the header says ISO-8859-15, the bytes are UTF-8) or
         # not CSV is a broken input like any other: said and refused, never a traceback.
         raise InvalidTableFileError(f"{path.name}: {error}") from error
-    return EducationSourceFile(
-        source_url, path.name, digest.hexdigest(), _share_counts(layout, found)
-    )
+    return ValueSourceFile(source_url, path.name, digest.hexdigest(), _share_counts(layout, found))
 
 
 def _decoded_lines(file: BinaryIO, digest: "hashlib._Hash") -> Iterator[str]:

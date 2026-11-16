@@ -1,5 +1,5 @@
-"""Load the percentage of people with higher education of every municipality for a year, from
-the INE's table files (spec AC4 of voters-dimensions)."""
+"""Load a dimension's municipal percentages for a year (higher education, aged 70 or over, born
+abroad), from the INE's table files (spec AC4 of voters-dimensions; voters-age-origin)."""
 
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -13,11 +13,9 @@ from datos.voters.domain.municipal_value import (
 )
 from datos.voters.domain.share import ShareCount, share_values
 
-EDUCATION = "education"  # the `dimension` of its loads (migration 0017)
-
 
 @dataclass(frozen=True, slots=True)
-class EducationSourceFile:
+class ValueSourceFile:
     """A table file of the INE as the use case needs it: what identifies it and its counts."""
 
     source_url: str
@@ -54,10 +52,11 @@ class InvalidValuesError(Exception):
         self.problems = list(problems)
 
 
-def load_education(
-    files: Sequence[EducationSourceFile], repository: ValueRepository, *, year: int
+def load_values(
+    dimension: str, files: Sequence[ValueSourceFile], repository: ValueRepository, *, year: int
 ) -> int:
-    """Check the year's percentages and store the new or revised ones; returns how many.
+    """Check the year's percentages of a dimension and store the new or revised ones; returns how
+    many. `dimension` is the one of its loads (migration 0017), e.g. "education".
 
     A municipality is in one file only (in two it is a problem), and its value is stored in that
     file's load. An unchanged value is not stored again, and a file with nothing new is not
@@ -65,7 +64,7 @@ def load_education(
     # A file with no count of the year is a wrong file or a wrong year, never "nothing new": with
     # the other one alone, its municipalities would silently have no value.
     empty = [
-        f"{file.source_file}: no education count of any municipality for {year}"
+        f"{file.source_file}: no {dimension} count of any municipality for {year}"
         for file in files
         if not file.counts
     ]
@@ -76,16 +75,14 @@ def load_education(
     problems += unknown_province_problems(values, repository.province_ids())
     if problems:
         raise InvalidValuesError(problems)
-    changed = changed_since(values, repository.latest_values(EDUCATION, year))
+    changed = changed_since(values, repository.latest_values(dimension, year))
     loads = _loads(files, changed)
     if loads:
-        repository.record(EDUCATION, loads)
+        repository.record(dimension, loads)
     return len(changed)
 
 
-def _loads(
-    files: Sequence[EducationSourceFile], changed: Sequence[MunicipalValue]
-) -> list[ValueLoad]:
+def _loads(files: Sequence[ValueSourceFile], changed: Sequence[MunicipalValue]) -> list[ValueLoad]:
     """The changed values grouped under the file their municipality's counts came from."""
     owner = {count.municipality_code: file for file in files for count in file.counts}
     loads = [
