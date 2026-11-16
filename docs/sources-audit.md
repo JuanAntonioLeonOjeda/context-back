@@ -167,6 +167,46 @@ each site allows (ADR-0019). Where a site does not allow something, it is not do
   districts and census sections), latest year **2024**, 496 of 515 series with a value (some
   small areas have none). The series of 2015 to 2024 are there.
 
+## 11. Organisation charts: bodies, post holders and competences (checked 2026-11-13, for phase `org-chart`)
+
+Read-only checks of public pages; a claim is "read" when it was seen on the page. Nothing was
+scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder to look at them.
+
+- **State, BOE.** Open data API (`boe.es/datosabiertos`): daily summaries and consolidated
+  legislation, JSON or XML. Reuse, commercial or not, with attribution ("Fuente de los datos:
+  Agencia Estatal Boletín Oficial del Estado"; "Basado en datos de…" for derived works). The Real
+  Decreto that names the ministers and the one that sets their structure are to be located when the
+  data is curated; **not identified yet**.
+- **DIR3** (`administracionelectronica.gob.es/ctt/dir3/descargas`, files dated 30/06/2026): public
+  XLSX lists without login, no API (the production service is only on the Red Sara). The licence field
+  says "No aplica": no reuse terms are stated. `Listado Unidades AGE` (19,919 units, 1.2 MB) and
+  `Listado Unidades CCAA` (18,825 units, 1.3 MB) carry the unit code, official name, hierarchy level,
+  type, superior and principal unit. **No post holders.** Findings on the data: the units directly
+  under a community are its consejerías mixed with parliaments, foundations, companies and, in
+  Cataluña, departments of 2016 and 2021; every row is marked `V` (in force). Two ministries with the
+  same area, from the 2020 and the 2023 structures, are both `V`. So DIR3 gives the official name and a
+  stable code of a body, **not which bodies the current government has**. The names under Madrid match
+  the page of its government.
+- **Madrid.** `comunidad.madrid/gobierno/equipo-gobierno` (plain HTML, updated 2026-10-29) lists the
+  president and nine consejeros with their consejería. Structure decrees on
+  `comunidad.madrid/informacion-juridica-legislacion/normativa-reguladora-estructuras-organicas`:
+  Decreto 38/2023 (number and names of the consejerías), 76/2023 (basic structure) and one per
+  consejería. The BOCM has RSS, XML per bulletin and ELI, but its legal notice reserves
+  reproduction (personal use) and its `robots.txt` disallows the bulletin PDFs.
+- **Canarias.** The BOC has RSS by section and department, no open data or ELI seen, reuse "citing
+  the source", `robots.txt` disallows `*.pdf`. `gobiernodecanarias.org/principal/consejerias/` lists
+  the twelve consejerías **without the consejeros**; their names are probably in the "ficha de altos
+  cargos" pages of the organigrama (not opened; that page lacks the XI legislature). The structure
+  decree was not found (not in the BOC of 7 and 10 July 2023).
+- **Cataluña.** `dogc.gencat.cat/robots.txt` is `User-agent: *` / `Disallow: /`. DOGC documents are
+  offered as Akoma Ntoso, RDF and ELI; the open data portal has the normative published in the DOGC
+  (daily) and the history of departments, **but no dataset of the current consellers**. The page of
+  the Govern answered 403 to an automated client: not read, not forced.
+- **Consequence** (decided by the author, 2026-11-13): the posts and holders are **curated by hand
+  in CSV files, one source URL per row**, as `data/governments/`; no reader of regional gazettes. The
+  State's ministers come from the BOE. DIR3 is a cross-check and a source of the body's code, not a
+  list of what exists.
+
 ## Decisions taken with the author (2026-10-13)
 
 - El Periódico and El Economista are excluded (no usable access; protection not bypassed).
