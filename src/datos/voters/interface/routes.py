@@ -175,7 +175,7 @@ def _profile(profile: VoterProfile, labels: dict[str, str]) -> ProfileOut:
         census=profile.census,
         groups=groups,
         bands=[_band(b, profile.census, groups) for b in profile.bands],
-        municipalities_without_income=len(profile.without_income),
+        municipalities_without_income=len(profile.without_value),
     )
 
 
@@ -198,8 +198,8 @@ def _band(band: Band, census: int, groups: list[GroupOut]) -> BandOut:
         municipalities=len(band.municipality_codes),
         census=band.census,
         census_percent=_percent(band.census, census),
-        income_min_eur=_euros(band.income_min),
-        income_max_eur=_euros(band.income_max),
+        income_min_eur=_euros(band.value_min),
+        income_max_eur=_euros(band.value_max),
         valid_votes=band.valid_votes,
         blank_votes=band.blank_votes,
         blank_percent=_percent(band.blank_votes, band.valid_votes),

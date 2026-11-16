@@ -16,14 +16,14 @@ from datos.voters.domain.profile import (
 def _m(
     code: str,
     census: int,
-    income: str | None,
+    value: str | None,
     votes: dict[str, int] | None = None,
     blank: int = 0,
 ) -> MunicipalVotes:
     return MunicipalVotes(
         code,
         census,
-        None if income is None else Decimal(income),
+        None if value is None else Decimal(value),
         blank,
         {"pp": census} if votes is None else votes,
     )
@@ -76,7 +76,7 @@ def test_municipalities_without_income_are_left_out_and_named() -> None:
     )
 
     assert profile is not None
-    assert profile.without_income == ("01003",)
+    assert profile.without_value == ("01003",)
     assert profile.census == 100
     assert all("01003" not in b.municipality_codes for b in profile.bands)
 
@@ -131,7 +131,7 @@ def test_an_empty_band_has_no_income_range() -> None:
 
     assert profile is not None
     empty = [b for b in profile.bands if not b.municipality_codes]
-    assert empty and all(b.income_min is None and b.census == 0 for b in empty)
+    assert empty and all(b.value_min is None and b.census == 0 for b in empty)
 
 
 @pytest.mark.parametrize(
