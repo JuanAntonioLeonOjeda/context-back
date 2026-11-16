@@ -109,9 +109,13 @@ def test_a_new_load_may_revise_the_same_value(seeded: Connection) -> None:
     assert count == 2
 
 
-def test_the_same_file_cannot_be_loaded_twice(seeded: Connection) -> None:
-    _load(seeded)
-    _refused(seeded, "municipal_value_loads_one_file", lambda: _load(seeded))
+def test_the_same_file_may_be_loaded_again_for_another_year(seeded: Connection) -> None:
+    first = _load(seeded)
+    second = _load(seeded)
+    _value(seeded, first, year=2023)
+    _value(seeded, second, year=2024)
+
+    assert first != second
 
 
 def test_a_dimension_the_code_does_not_know_is_refused(seeded: Connection) -> None:

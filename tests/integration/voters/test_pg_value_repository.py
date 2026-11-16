@@ -77,8 +77,12 @@ def test_a_refused_load_leaves_nothing_of_the_others_in_its_call(engine: Engine)
     repository = PgValueRepository(engine)
     repository.record(EDUCATION, [_load("a", ("28079", "46.315"))])
 
-    with pytest.raises(DBAPIError, match="municipal_value_loads_one_file"):
-        repository.record(EDUCATION, [_load("b", ("01006", "40.580")), _load("a", ("28079", "47"))])
+    # The second load is refused for its value (a percentage above 100): the first one of the same
+    # call must not stay.
+    with pytest.raises(DBAPIError, match="municipal_values_percent"):
+        repository.record(
+            EDUCATION, [_load("b", ("01006", "40.580")), _load("c", ("28079", "101"))]
+        )
 
     assert repository.latest_values(EDUCATION, 2023) == {"28079": Decimal("46.315")}
 

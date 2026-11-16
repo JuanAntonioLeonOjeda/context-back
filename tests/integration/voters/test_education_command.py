@@ -89,3 +89,43 @@ def test_a_year_the_files_do_not_have_stops_the_load(
 
     assert stop.value.code == 1
     assert _values(engine) == {}
+
+
+def test_the_same_files_load_a_second_year(
+    monkeypatch: pytest.MonkeyPatch, engine: Engine, files: tuple[Path, Path]
+) -> None:
+    for year in ("2023", "2024"):
+        _run(monkeypatch, engine, "--year", year, "--file", str(files[0]), "--file", str(files[1]))
+
+    with engine.connect() as connection:
+        years = connection.execute(
+            text("SELECT year, count(*) FROM municipal_values GROUP BY year ORDER BY year")
+        ).all()
+    assert [tuple(row) for row in years] == [(2023, 4), (2024, 4)]
+
+
+def test_a_file_without_the_year_stops_the_load_even_with_the_other_one(
+    monkeypatch: pytest.MonkeyPatch, engine: Engine, files: tuple[Path, Path]
+) -> None:
+    files[1].write_bytes(files[1].read_bytes().replace(b";2023;", b";2019;"))
+
+    with pytest.raises(SystemExit) as stop:
+        _run(
+            monkeypatch, engine, "--year", "2023", "--file", str(files[0]), "--file", str(files[1])
+        )
+
+    assert stop.value.code == 1
+    assert _values(engine) == {}
+
+
+def test_a_file_that_is_not_utf_8_stops_the_load_with_a_log_and_exit_1(
+    monkeypatch: pytest.MonkeyPatch, engine: Engine, files: tuple[Path, Path]
+) -> None:
+    files[0].write_bytes(
+        files[0].read_bytes().replace("Alegría".encode(), "Alegr\xeda".encode("latin-1"))
+    )
+
+    with pytest.raises(SystemExit) as stop:
+        _run(monkeypatch, engine, "--year", "2023", "--file", str(files[0]))
+
+    assert stop.value.code == 1
