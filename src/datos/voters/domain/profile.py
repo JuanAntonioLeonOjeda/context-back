@@ -1,9 +1,9 @@
-"""Voter profile of a community: its municipalities in bands of one dimension (income, for now),
+"""Voter profile of a community: its municipalities in bands of one dimension (income, size or education),
 and the votes of each band.
 
 Descriptive and about areas, never people (spec decisions 2, 5, 7 and 9): a band is a group of
-municipalities, and its shares say how those municipalities voted, not how their richer or poorer
-residents did (ecological fallacy).
+municipalities, and its shares say how those municipalities voted, not how their residents did
+(ecological fallacy).
 """
 
 from bisect import bisect_right

@@ -70,7 +70,9 @@ assistant, accepted as they were):
 3. Education is the percentage of people aged 15 or over with higher education (the INE's
    "Educación superior" level), of the election's year, from tables 66620 and 66623.
 4. The values of a dimension that comes from a file are stored in `municipal_values`, each load
-   with the name and hash of its file; income stays where it is.
+   with the name and hash of its file; income stays where it is. The same file may be loaded
+   once per year (migration 0018 dropped the uniqueness of the hash: a value that did not change
+   is never stored again, which is what keeps a repeated load from adding rows).
 5. The API is `GET /communities/{id}/voters?by=income|size|education` (income by default); the
    answer names the dimension (id, unit, source, year) and each band carries `value_min` and
    `value_max`. An unknown `by` is a 422.
@@ -84,10 +86,14 @@ most worth answering: why electors and not inhabitants, knowing they are not the
 - What gets easier: a new dimension is an entry in `domain/dimensions.py`, a way to read its
   value and, if it comes from a file, a loader and rows in `municipal_values`; the profile, the
   API and the tabs do not change.
-- What we accept: the size is in electors, so a reader who thinks in inhabitants has to
+- What we accept: a cell of the INE's tables that is not a number (`..`) in a row we use stops the
+  whole load instead of being guessed (the real files have none); the size is in electors, so a reader who thinks in inhabitants has to
   translate; the limits are rounded and decided, not measured; municipalities under 50 people
   have no education value and are counted apart; the education of a year later than 2024 is not
   published yet, so an election after it has no education profile until the INE publishes it.
+- Neutrality: education is read as a property of areas, never of people. The API description
+  and the web's method note say that a band's shares are those of its municipalities, and that
+  nothing is said about the voters of a party.
 - What would make us revisit this: a verified source of inhabitants for every municipality (size
   by inhabitants), a source of age or of born abroad, or a measure of how often the fixed limits
   leave a band empty in the real communities.

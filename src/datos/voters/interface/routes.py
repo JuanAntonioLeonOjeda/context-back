@@ -48,7 +48,9 @@ by the INE's mean net income per person of the election's year (each municipalit
 band where the midpoint of its census falls; a big city can leave a band almost empty). `size`:
 four bands cut at fixed numbers of electors. `education`: five bands of about the same census,
 ordered by the percentage of people aged 15 or over with higher education (INE, Censo anual de
-población). It describes areas, not people.
+población). It describes areas, not people: a band is a group of municipalities, and its shares say how
+those municipalities voted, not how their residents with higher education, with any level of
+studies or with any income voted (ecological fallacy). It says nothing about the voters of a party.
 
 Without `election`, the latest loaded one. Groups: the parties with at least
 `shown_from_percent` % of the community's valid votes (and a candidature that is not in the party
@@ -66,7 +68,7 @@ class ElectionOut(BaseModel):
 
 class DimensionOut(BaseModel):
     id: DimensionId
-    # What a value counts: "eur_per_person" or "electors".
+    # What a value counts: "eur_per_person", "electors" or "percent".
     unit: str
     # Where the values come from when they are not the election's own files (the INE's page, for
     # income); null for the size of a municipality, which is its census in the election.
