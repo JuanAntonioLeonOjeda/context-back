@@ -13,7 +13,7 @@ from datos.territories.repository import PgTerritoryRepository
 from datos.voters.application.load_election import load_election
 from datos.voters.infrastructure.infoelectoral import read_election_zip
 from datos.voters.infrastructure.pg_election_repository import PgElectionRepository
-from datos.voters.infrastructure.pg_voters_reader import PgVotersReader
+from datos.voters.infrastructure.pg_voters_reader import CENSO_ANUAL_URL, PgVotersReader
 
 pytestmark = pytest.mark.integration
 
@@ -124,3 +124,70 @@ def test_names_the_latest_income_download_of_the_year(reader: PgVotersReader) ->
     assert download is not None
     assert download.url == NEW_URL
     assert reader.income_download(2019) is None
+
+
+def _education_load(
+    db: Connection, sha: str, year: int, values: dict[str, str], loaded_at: str = "2026-11-16"
+) -> None:
+    load_id = db.execute(
+        text(
+            "INSERT INTO municipal_value_loads"
+            " (dimension, source_url, source_file, source_sha256, loaded_at)"
+            " VALUES ('education', 'https://www.ine.es/t', '66620.csv', :sha, :loaded_at)"
+            " RETURNING id"
+        ),
+        {"sha": sha * 64, "loaded_at": loaded_at},
+    ).scalar_one()
+    for code, value in values.items():
+        db.execute(
+            text(
+                "INSERT INTO municipal_values (load_id, municipality_code, year, value)"
+                " VALUES (:load, :code, :year, :value)"
+            ),
+            {"load": load_id, "code": code, "year": year, "value": Decimal(value)},
+        )
+
+
+def test_gives_each_municipality_its_latest_education_of_the_year(
+    reader: PgVotersReader, db: Connection
+) -> None:
+    _education_load(db, "a", 2023, {"35016": "33.000", "38038": "36.000"})
+    _education_load(db, "b", 2023, {"35016": "33.052"})  # a revision: the newer load wins
+    _education_load(db, "c", 2022, {"38038": "10.000"})  # another year: not this election's
+
+    by_code = {r.code: r for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)}
+
+    assert by_code["35016"].education == Decimal("33.052")
+    assert by_code["38038"].education == Decimal("36.000")
+
+
+def test_a_municipality_without_education_has_none(reader: PgVotersReader) -> None:
+    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)
+
+    assert all(r.education is None for r in rows)
+
+
+def test_names_the_census_page_and_the_latest_education_load_of_the_year(
+    reader: PgVotersReader, db: Connection
+) -> None:
+    _education_load(db, "a", 2023, {"35016": "33.000"})
+    _education_load(db, "b", 2022, {"35016": "32.000"})
+
+    source = reader.education_source(2023)
+
+    assert source is not None
+    assert source.url == CENSO_ANUAL_URL
+    assert source.year == 2023
+    assert reader.education_source(2019) is None
+
+
+def test_the_education_source_is_loaded_when_its_latest_load_of_the_year_was(
+    reader: PgVotersReader, db: Connection
+) -> None:
+    _education_load(db, "a", 2023, {"35016": "33.000"}, loaded_at="2026-11-16")
+    _education_load(db, "b", 2023, {"38038": "36.000"}, loaded_at="2026-12-01")
+
+    source = reader.education_source(2023)
+
+    assert source is not None
+    assert str(source.fetched_at.date()) == "2026-12-01"
