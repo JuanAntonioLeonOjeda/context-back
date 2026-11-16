@@ -1,5 +1,5 @@
-"""Voter profile of a community: its municipalities in bands of one dimension (income, size or education),
-and the votes of each band.
+"""Voter profile of a community: its municipalities in bands of one dimension (income, size or
+education), and the votes of each band.
 
 Descriptive and about areas, never people (spec decisions 2, 5, 7 and 9): a band is a group of
 municipalities, and its shares say how those municipalities voted, not how their residents did

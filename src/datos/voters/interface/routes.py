@@ -48,9 +48,10 @@ by the INE's mean net income per person of the election's year (each municipalit
 band where the midpoint of its census falls; a big city can leave a band almost empty). `size`:
 four bands cut at fixed numbers of electors. `education`: five bands of about the same census,
 ordered by the percentage of people aged 15 or over with higher education (INE, Censo anual de
-población). It describes areas, not people: a band is a group of municipalities, and its shares say how
-those municipalities voted, not how their residents with higher education, with any level of
-studies or with any income voted (ecological fallacy). It says nothing about the voters of a party.
+población). It describes areas, not people: a band is a group of municipalities, and its shares
+say how those municipalities voted, not how their residents with higher education, with any
+level of studies or with any income voted (ecological fallacy). It says nothing about the voters
+of a party.
 
 Without `election`, the latest loaded one. Groups: the parties with at least
 `shown_from_percent` % of the community's valid votes (and a candidature that is not in the party
