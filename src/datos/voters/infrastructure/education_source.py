@@ -7,8 +7,13 @@ has one row per municipality, sex, level of studies and period; 66620 (municipal
 people or more) adds an age column and 66623 (50 to 499) has none.
 """
 
+import csv
+import hashlib
 import re
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
+from pathlib import Path
+from typing import BinaryIO
 
 from datos.voters.domain.education import EducationCount, EducationLevel
 
@@ -52,3 +57,58 @@ def _count(cell: str) -> int:
     if not _THOUSANDS.match(cell):
         raise InvalidEducationFileError(f"count {cell!r} is not a whole number")
     return int(cell.replace(".", ""))
+
+
+@dataclass(frozen=True, slots=True)
+class EducationFile:
+    """What a table file gives: its name and hash (what `municipal_value_loads` keeps of it) and
+    the counts the percentage uses, a few thousand out of millions of rows."""
+
+    source_file: str
+    sha256: str
+    counts: tuple[EducationCount, ...]
+
+
+def read_education_file(path: Path, year: int) -> EducationFile:
+    """Reads a table file of the INE in one pass and in constant memory (66620 is 266 MB): the
+    hash is computed over the bytes while the rows are read, so the file is not read twice."""
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        rows = csv.reader(_decoded_lines(file, digest), delimiter=";")
+        columns = _columns(next(rows, []))
+        counts = tuple(
+            count
+            for row in rows
+            if row  # a blank line, as at the end of the file
+            if (count := education_count(_named(columns, row), year)) is not None
+        )
+    return EducationFile(path.name, digest.hexdigest(), counts)
+
+
+def _decoded_lines(file: BinaryIO, digest: "hashlib._Hash") -> Iterator[str]:
+    """The lines of the file as text, each one hashed as its bytes. Only the first carries the
+    BOM, which `utf-8-sig` drops."""
+    for number, line in enumerate(file):
+        digest.update(line)
+        yield line.decode("utf-8-sig" if number == 0 else "utf-8")
+
+
+def _columns(header: list[str]) -> list[str]:
+    """The header with its first column named MUNICIPALITY, or an error when the table is not
+    the one expected: a changed layout must stop the load, not shift the columns."""
+    names = header[1:]
+    if not {SEX, LEVEL, PERIOD, COUNT} <= set(names) or not set(names) <= {
+        SEX,
+        AGE,
+        LEVEL,
+        PERIOD,
+        COUNT,
+    }:
+        raise InvalidEducationFileError(f"unexpected columns: {header!r}")
+    return [MUNICIPALITY, *names]
+
+
+def _named(columns: list[str], row: list[str]) -> dict[str, str]:
+    if len(row) != len(columns):
+        raise InvalidEducationFileError(f"row with {len(row)} cells, expected {len(columns)}")
+    return dict(zip(columns, row, strict=True))
