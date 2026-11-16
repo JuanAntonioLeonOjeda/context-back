@@ -6,8 +6,9 @@ municipalities, and its shares say how those municipalities voted, not how their
 residents did (ecological fallacy).
 """
 
+from bisect import bisect_right
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -67,7 +68,42 @@ def band_index(census_before: int, census: int, total: int) -> int:
     return min(BANDS - 1, (2 * census_before + census) * BANDS // (2 * total))
 
 
-def voter_profile(municipalities: Sequence[MunicipalVotes]) -> VoterProfile | None:
+# How the municipalities with a value, already in order, are cut into bands: one list per band,
+# the lowest values first, empty lists included. The order is the caller's, never changed here.
+type Grouping = Callable[[Sequence[MunicipalVotes]], list[list[MunicipalVotes]]]
+
+
+def equal_census_grouping(placed: Sequence[MunicipalVotes]) -> list[list[MunicipalVotes]]:
+    """BANDS bands of about the same census: each municipality whole, in the band where the
+    midpoint of its census falls (ADR-0024). The census of `placed` is not 0."""
+    total = sum(m.census for m in placed)
+    members: list[list[MunicipalVotes]] = [[] for _ in range(BANDS)]
+    before = 0
+    for m in placed:
+        members[band_index(before, m.census, total)].append(m)
+        before += m.census
+    return members
+
+
+def fixed_limits_grouping(limits: Sequence[Decimal]) -> Grouping:
+    """Bands cut at fixed values: `limits` are the lowest value of every band but the first, in
+    ascending order, so n limits give n + 1 bands, and a value equal to a limit goes to the band
+    that starts there. The census plays no part: a big city is alone in its band instead of
+    filling the community's, which is why the size of a municipality is grouped this way."""
+
+    def group(placed: Sequence[MunicipalVotes]) -> list[list[MunicipalVotes]]:
+        members: list[list[MunicipalVotes]] = [[] for _ in range(len(limits) + 1)]
+        for m in placed:
+            if m.value is not None:  # the caller has left those without a value out
+                members[bisect_right(limits, m.value)].append(m)
+        return members
+
+    return group
+
+
+def voter_profile(
+    municipalities: Sequence[MunicipalVotes], grouping: Grouping = equal_census_grouping
+) -> VoterProfile | None:
     """The profile of a community's municipalities, or None when fewer than two have a value
     (one municipality cannot be split into bands: Ceuta, Melilla) or when those with a value
     have no census at all (there is no population to split)."""
@@ -81,13 +117,8 @@ def voter_profile(municipalities: Sequence[MunicipalVotes]) -> VoterProfile | No
     if total == 0:
         return None
     shown = _shown_groups(municipalities)
-    members: list[list[MunicipalVotes]] = [[] for _ in range(BANDS)]
-    before = 0
-    for m in placed:
-        members[band_index(before, m.census, total)].append(m)
-        before += m.census
     return VoterProfile(
-        bands=tuple(_band(i, ms, shown) for i, ms in enumerate(members)),
+        bands=tuple(_band(i, ms, shown) for i, ms in enumerate(grouping(placed))),
         shown_groups=tuple(sorted(shown)),
         census=total,
         without_value=tuple(sorted(m.code for m in municipalities if m.value is None)),
