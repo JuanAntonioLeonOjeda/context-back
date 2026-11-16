@@ -112,7 +112,7 @@ def test_an_unknown_dimension_is_a_422_that_names_the_allowed_ones(make_client: 
     response = make_client().get("/communities/ccaa-05/voters?by=age")
 
     assert response.status_code == 422
-    assert "'income' or 'size'" in response.json()["detail"][0]["msg"]
+    assert "'income', 'size' or 'education'" in response.json()["detail"][0]["msg"]
 
 
 def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: Client) -> None:
@@ -121,7 +121,11 @@ def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: C
     parameters = contract["paths"]["/communities/{territory_id}/voters"]["get"]["parameters"]
     by = next(p for p in parameters if p["name"] == "by")
     assert by["schema"]["default"] == "income"
-    assert contract["components"]["schemas"]["DimensionId"]["enum"] == ["income", "size"]
+    assert contract["components"]["schemas"]["DimensionId"]["enum"] == [
+        "income",
+        "size",
+        "education",
+    ]
 
 
 def test_a_community_without_results_has_no_profile_and_says_why(make_client: Client) -> None:

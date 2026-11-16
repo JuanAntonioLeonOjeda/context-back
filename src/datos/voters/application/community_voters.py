@@ -5,7 +5,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Protocol
+from typing import Protocol, assert_never
 
 from datos.voters.domain.dimensions import INCOME, Dimension, DimensionId
 from datos.voters.domain.profile import MunicipalVotes, VoterProfile, vote_group, voter_profile
@@ -19,7 +19,9 @@ class ElectionInfo:
 
 
 @dataclass(frozen=True, slots=True)
-class IncomeDownloadInfo:
+class SourceInfo:
+    """Where a dimension's values come from: the INE page, and when we fetched or loaded them."""
+
     year: int
     url: str
     fetched_at: datetime
@@ -41,6 +43,7 @@ class MunicipalRow:
     blank_votes: int
     income: Decimal | None
     counts: Sequence[CandidatureCount]
+    education: Decimal | None = None  # % with higher education; None: no value for the year
 
 
 class VotersReader(Protocol):
@@ -54,8 +57,12 @@ class VotersReader(Protocol):
         """The community's municipalities in that election, each with its latest income."""
         ...
 
-    def income_download(self, year: int) -> IncomeDownloadInfo | None:
+    def income_download(self, year: int) -> SourceInfo | None:
         """The latest INE download of income for the year, to name the source."""
+        ...
+
+    def education_source(self, year: int) -> SourceInfo | None:
+        """The latest load of education percentages for the year, to name the source."""
         ...
 
 
@@ -63,9 +70,9 @@ class VotersReader(Protocol):
 class CommunityVoters:
     election: ElectionInfo
     dimension: Dimension
-    # The INE download the dimension's values come from; None when they come from the election's
+    # The INE source the dimension's values come from; None when they come from the election's
     # own files (the size of a municipality is its census).
-    download: IncomeDownloadInfo | None
+    download: SourceInfo | None
     municipalities: int
     profile: VoterProfile | None  # None: fewer than two municipalities with a value
 
@@ -77,6 +84,7 @@ type PartyByCandidature = Mapping[str, Mapping[str, str]]
 _VALUE_OF: dict[DimensionId, Callable[[MunicipalRow], Decimal | None]] = {
     DimensionId.INCOME: lambda row: row.income,
     DimensionId.SIZE: lambda row: Decimal(row.census),
+    DimensionId.EDUCATION: lambda row: row.education,
 }
 
 
@@ -104,10 +112,24 @@ def community_voters(
     return CommunityVoters(
         election=election,
         dimension=dimension,
-        download=reader.income_download(year) if dimension.id is DimensionId.INCOME else None,
+        download=_download(reader, dimension, year),
         municipalities=len(rows),
         profile=voter_profile(municipalities, dimension.grouping),
     )
+
+
+def _download(reader: VotersReader, dimension: Dimension, year: int) -> SourceInfo | None:
+    """Where the values come from, when they come from a file of the INE: the size of a
+    municipality is its census, which the election's own files give."""
+    match dimension.id:
+        case DimensionId.INCOME:
+            return reader.income_download(year)
+        case DimensionId.EDUCATION:
+            return reader.education_source(year)
+        case DimensionId.SIZE:
+            return None
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def _municipal_votes(

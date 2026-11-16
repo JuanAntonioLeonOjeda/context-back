@@ -20,6 +20,7 @@ SIZE_LIMITS = (Decimal(1500), Decimal(8000), Decimal(40000))
 class DimensionId(StrEnum):
     INCOME = "income"
     SIZE = "size"
+    EDUCATION = "education"
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,5 +32,10 @@ class Dimension:
 
 INCOME = Dimension(DimensionId.INCOME, "eur_per_person", equal_census_grouping)
 SIZE = Dimension(DimensionId.SIZE, "electors", fixed_limits_grouping(SIZE_LIMITS))
+# The share of the population aged 15 or over with higher education, in percent. Bands of about
+# the same census like income: the share is read against the rest of the community, and the
+# distribution is skewed (national median 24.6 %, from 3 % to 64 %), so fixed limits would leave
+# bands empty in most communities (spec voters-dimensions, decision 3).
+EDUCATION = Dimension(DimensionId.EDUCATION, "percent", equal_census_grouping)
 
-DIMENSIONS: dict[DimensionId, Dimension] = {d.id: d for d in (INCOME, SIZE)}
+DIMENSIONS: dict[DimensionId, Dimension] = {d.id: d for d in (INCOME, SIZE, EDUCATION)}

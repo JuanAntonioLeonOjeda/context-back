@@ -7,8 +7,8 @@ from sqlalchemy import Connection, text
 from datos.voters.application.community_voters import (
     CandidatureCount,
     ElectionInfo,
-    IncomeDownloadInfo,
     MunicipalRow,
+    SourceInfo,
 )
 
 _ELECTIONS = text("SELECT id, held_on, source_file FROM elections ORDER BY held_on DESC, id")
@@ -75,6 +75,6 @@ class PgVotersReader:
             for code, m in first.items()
         ]
 
-    def income_download(self, year: int) -> IncomeDownloadInfo | None:
+    def income_download(self, year: int) -> SourceInfo | None:
         row = self._connection.execute(_INCOME_DOWNLOAD, {"year": year}).one_or_none()
-        return None if row is None else IncomeDownloadInfo(year, row.url, row.fetched_at)
+        return None if row is None else SourceInfo(year, row.url, row.fetched_at)
