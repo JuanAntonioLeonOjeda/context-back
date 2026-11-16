@@ -176,8 +176,13 @@ def _competence_problems(
 ) -> list[str]:
     body_ids = {b.id for b in bodies}
     problems: list[str] = []
+    seen: set[tuple[str, str]] = set()
     for competence in competences:
         what = f"competence of {competence.body_id} ({competence.summary[:40]!r})"
+        key = (competence.body_id, competence.summary)
+        if key in seen:
+            problems.append(f"{what}: it is listed twice")
+        seen.add(key)
         if competence.body_id not in body_ids:
             problems.append(f"{what}: the body does not exist")
         if not competence.sector_ids:

@@ -227,6 +227,18 @@ def test_a_competence_needs_a_body_and_at_least_one_known_sector_listed_once() -
         assert any(expected in p for p in _problems(competences=[bad])), expected
 
 
+def test_the_same_competence_of_a_body_listed_twice_is_reported_once_for_the_repeat() -> None:
+    first = Competence("es-cortes", "Passes laws", "Art. 1", ("health",), SOURCE)
+    same_text_other_body = replace(first, body_id="ccaa-13-tsj")
+    other_text = replace(first, summary="Controls the government")
+
+    assert _problems(competences=[first, same_text_other_body, other_text]) == []
+    problems = _problems(competences=[first, first])
+    assert [p for p in problems if "listed twice" in p] == [
+        "competence of es-cortes ('Passes laws'): it is listed twice"
+    ]
+
+
 def test_every_problem_of_every_file_is_reported_at_once() -> None:
     problems = _problems(
         bodies=_swap(SANIDAD, replace(SANIDAD, parent_id=None)),
