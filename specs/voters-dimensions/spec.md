@@ -25,7 +25,10 @@ people**, and the page says so.
 2. **Method**: as ADR-0024: five bands of about the same census, ordered by the dimension, a
    municipality never split, municipalities without a value counted apart, the election's year.
    `size` is the exception: fixed thresholds, because a big city would fill a whole band.
-   Thresholds: fewer than 2,000 inhabitants · 2,000 to 9,999 · 10,000 to 49,999 · 50,000 or more.
+   Thresholds: fewer than 1,500 electors · 1,500 to 7,999 · 8,000 to 39,999 · 40,000 or more
+   (*amended 2026-11-16, ADR-0026*: the size is the electors of the election's census, not
+   inhabitants, which need a source we do not have; the first proposal was 2,000 / 10,000 / 50,000
+   inhabitants).
 3. **Education measure**: share of people aged 15 or more with higher education (the INE's grouped
    level that holds university degrees), from the Censo anual tables 66620 (municipalities of 500
    or more) and 66623 (50 to 499). Municipalities under 50 inhabitants have no value.
@@ -34,7 +37,7 @@ people**, and the page says so.
    it is the census of the election's municipal rows.
 5. **API**: `GET /communities/{id}/voters?by=income|education|size` (income by default). The answer
    names the dimension (id, name, unit, source, year) and each band carries a generic
-   `value_min` / `value_max` (income in euros, education in percent, size in inhabitants).
+   `value_min` / `value_max` (income in euros, education in percent, size in electors).
 6. **Web**: a selector (tabs) inside the voter section, income first; the same carousel of band
    cards and vertical bars for each tab, with the unit of the dimension in each card.
 
