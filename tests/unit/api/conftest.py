@@ -232,6 +232,11 @@ INCOME = SourceInfo(
     "https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?date=20230101",
     datetime(2026, 11, 9, 8, 23, tzinfo=UTC),
 )
+EDUCATION = SourceInfo(
+    2023,
+    "https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176992",
+    datetime(2026, 11, 16, 15, 47, tzinfo=UTC),
+)
 # Two municipalities of Canarias with hand-picked counts: 000031 is CC (mapped), 000005
 # PP (mapped), 000099 a candidature that is not in the table.
 VOTER_ROWS = [
@@ -273,7 +278,7 @@ class FakeVoters:
         return INCOME if year == 2023 else None
 
     def education_source(self, year: int) -> SourceInfo | None:
-        return None
+        return EDUCATION if year == 2023 else None
 
 
 def term(

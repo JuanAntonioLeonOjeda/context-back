@@ -18,6 +18,7 @@ from datos.territories.territory import Level
 from datos.voters.application.community_voters import (
     CommunityVoters,
     PartyByCandidature,
+    SourceInfo,
     VotersReader,
     community_voters,
 )
@@ -45,7 +46,9 @@ DESCRIPTION = """How the municipalities of a community voted in a general electi
 bands of one dimension (`by`). `income` (the default): five bands of about the same census, ordered
 by the INE's mean net income per person of the election's year (each municipality whole, in the
 band where the midpoint of its census falls; a big city can leave a band almost empty). `size`:
-four bands cut at fixed numbers of electors. It describes areas, not people.
+four bands cut at fixed numbers of electors. `education`: five bands of about the same census,
+ordered by the percentage of people aged 15 or over with higher education (INE, Censo anual de
+población). It describes areas, not people.
 
 Without `election`, the latest loaded one. Groups: the parties with at least
 `shown_from_percent` % of the community's valid votes (and a candidature that is not in the party
@@ -180,12 +183,18 @@ def _out(territory_id: str, found: CommunityVoters, labels: dict[str, str]) -> V
     )
 
 
+def _source_page(dimension: DimensionId, download: SourceInfo) -> str:
+    """The page a reader can open to see the source: the income's is the INE's table, not the API
+    request it was downloaded with; the other dimensions' loads name their own page."""
+    return INE_INCOME_URL if dimension is DimensionId.INCOME else download.url
+
+
 def _dimension(found: CommunityVoters) -> DimensionOut:
     download = found.download
     return DimensionOut(
         id=found.dimension.id,
         unit=found.dimension.unit,
-        source_url=None if download is None else INE_INCOME_URL,
+        source_url=None if download is None else _source_page(found.dimension.id, download),
         year=None if download is None else download.year,
         fetched_at=None if download is None else download.fetched_at,
     )
