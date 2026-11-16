@@ -8,6 +8,7 @@ valid 200 (blank 10, PP 100, CC 60, LISTA X 30). In income order the census midp
 from collections.abc import Callable
 from decimal import Decimal
 
+import pytest
 from fastapi.testclient import TestClient
 
 from datos.voters.application.community_voters import CandidatureCount, MunicipalRow
@@ -245,3 +246,31 @@ def test_groups_follow_the_label_a_reader_sees_not_their_ids(make_client: Client
 
     groups = make_client(voter_rows=rows).get("/communities/ccaa-05/voters").json()["profile"]
     assert [g["label"] for g in groups["groups"]] == ["CC", "PP", "ZETA", None]
+
+
+@pytest.mark.parametrize("dimension", ["age", "born_abroad"])
+def test_age_and_place_of_birth_group_by_their_percentage_and_name_the_same_census(
+    make_client: Client, dimension: str
+) -> None:
+    rows = _education_rows("11.215", "17.381")
+
+    body = make_client(voter_rows=rows).get(f"/communities/ccaa-05/voters?by={dimension}").json()
+
+    assert (body["dimension"]["id"], body["dimension"]["unit"]) == (dimension, "percent")
+    assert body["dimension"]["source_url"].endswith("cid=1254736176992")
+    filled = [b for b in body["profile"]["bands"] if b["municipalities"]]
+    assert [(b["value_min"], b["value_max"]) for b in filled] == [
+        (11.215, 11.215),
+        (17.381, 17.381),
+    ]
+
+
+def test_the_description_names_every_dimension_and_the_coverage_of_age_and_origin(
+    make_client: Client,
+) -> None:
+    contract = make_client().get("/openapi.json").json()
+
+    description = contract["paths"]["/communities/{territory_id}/voters"]["get"]["description"]
+
+    for word in ("`income`", "`size`", "`education`", "`age`", "`born_abroad`", "500 inhabitants"):
+        assert word in description
