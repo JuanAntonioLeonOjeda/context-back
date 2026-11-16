@@ -7,9 +7,17 @@ row counts and which of its values are the whole and the part. A `TableLayout` s
 a new dimension is a new layout and not a new reader.
 """
 
+import csv
+import hashlib
 import re
-from collections.abc import Mapping
+from collections import defaultdict
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import BinaryIO
+
+from datos.voters.application.load_education import EducationSourceFile
+from datos.voters.domain.share import Component, ShareCount
 
 MUNICIPALITY = "municipality"  # the first column, whose title differs between the files
 PERIOD, COUNT = "Periodo", "Total"  # in every table; the count column is called "Total" too
@@ -88,3 +96,83 @@ def _count(cell: str) -> int:
     if not _THOUSANDS.match(cell):
         raise InvalidTableFileError(f"count {cell!r} is not a whole number")
     return int(cell.replace(".", ""))
+
+
+def read_table_file(
+    path: Path, year: int, layout: TableLayout, *, source_url: str
+) -> EducationSourceFile:
+    """Reads a table file of the INE in one pass and in constant memory (66620 is 266 MB): the
+    hash is computed over the bytes while the rows are read, so the file is not read twice."""
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as file:
+            rows = csv.reader(_decoded_lines(file, digest), delimiter=";")
+            columns = _columns(layout, next(rows, []))
+            found = _fold(
+                count
+                for row in rows
+                if row  # a blank line, as at the end of the file
+                if (count := category_count(layout, _named(columns, row), year)) is not None
+            )
+    except (OSError, UnicodeDecodeError, csv.Error) as error:
+        # A file that is missing, not UTF-8 (the header says ISO-8859-15, the bytes are UTF-8) or
+        # not CSV is a broken input like any other: said and refused, never a traceback.
+        raise InvalidTableFileError(f"{path.name}: {error}") from error
+    return EducationSourceFile(
+        source_url, path.name, digest.hexdigest(), _share_counts(layout, found)
+    )
+
+
+def _decoded_lines(file: BinaryIO, digest: "hashlib._Hash") -> Iterator[str]:
+    """The lines of the file as text, each one hashed as its bytes. Only the first carries the
+    BOM, which `utf-8-sig` drops."""
+    for number, line in enumerate(file):
+        digest.update(line)
+        yield line.decode("utf-8-sig" if number == 0 else "utf-8")
+
+
+def _columns(layout: TableLayout, header: list[str]) -> list[str]:
+    """The header with its first column named MUNICIPALITY, or an error when the table is not
+    the one the layout describes: a changed layout must stop the load, not shift the columns."""
+    names = header[1:]
+    required = {PERIOD, COUNT, layout.category, *layout.fixed} - layout.optional
+    allowed = required | layout.optional
+    if not required <= set(names) or not set(names) <= allowed:
+        raise InvalidTableFileError(f"unexpected columns: {header!r}")
+    return [MUNICIPALITY, *names]
+
+
+def _named(columns: list[str], row: list[str]) -> dict[str, str]:
+    if len(row) != len(columns):
+        raise InvalidTableFileError(f"row with {len(row)} cells, expected {len(columns)}")
+    return dict(zip(columns, row, strict=True))
+
+
+def _fold(counts: Iterator[CategoryCount]) -> dict[str, dict[str, int]]:
+    """The counts by municipality and value of the category. The same value twice for a
+    municipality is an error: summing it would count a duplicated row as if it were data."""
+    found: dict[str, dict[str, int]] = defaultdict(dict)
+    for count in counts:
+        if count.category in found[count.municipality_code]:
+            raise InvalidTableFileError(
+                f"municipality {count.municipality_code}: {count.category!r} is repeated"
+            )
+        found[count.municipality_code][count.category] = count.count
+    return found
+
+
+def _share_counts(layout: TableLayout, found: Mapping[str, Mapping[str, int]]) -> list[ShareCount]:
+    """The whole and the part of every municipality, the part being the sum of its values. A
+    municipality with some of the part's values but not all is refused: its sum would be short."""
+    counts: list[ShareCount] = []
+    for code in sorted(found):
+        values = found[code]
+        if layout.total in values:
+            counts.append(ShareCount(code, Component.TOTAL, values[layout.total]))
+        present = layout.part & values.keys()
+        if present and present != layout.part:
+            missing = sorted(layout.part - present)
+            raise InvalidTableFileError(f"municipality {code}: no count for {missing}")
+        if present:
+            counts.append(ShareCount(code, Component.PART, sum(values[v] for v in present)))
+    return counts

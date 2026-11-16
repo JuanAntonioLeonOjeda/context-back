@@ -1,10 +1,15 @@
+import hashlib
+from pathlib import Path
+
 import pytest
 
+from datos.voters.domain.share import Component, ShareCount
 from datos.voters.infrastructure.table_source import (
     CategoryCount,
     InvalidTableFileError,
     TableLayout,
     category_count,
+    read_table_file,
 )
 
 EDUCATION = TableLayout(
@@ -120,3 +125,152 @@ def test_a_layout_that_cannot_give_a_share_is_refused_when_it_is_written(
     }
     with pytest.raises(ValueError, match="layout"):
         TableLayout(**arguments)  # type: ignore[arg-type]  # the arguments are built from a dict
+
+
+# --- the file ---------------------------------------------------------------------------------
+
+HEADER = "Municipios;Sexo;Edad;Nivel de estudios;Periodo;Total\r\n"
+URL = "https://www.ine.es/jaxiT3/Tabla.htm?t=66620"
+AGES = ("15 y más años", "De 70 a 79 años", "De 80 a 89 años", "90 y más años")
+
+
+def _write(tmp_path: Path, text: str) -> Path:
+    path = tmp_path / "table.csv"
+    path.write_bytes(text.encode("utf-8"))
+    return path
+
+
+def _age_rows(code: str, counts: tuple[int, ...], ages: tuple[str, ...] = AGES) -> str:
+    return "".join(
+        f"{code} Sitio;Total;{age};Total;2023;{count}\r\n"
+        for age, count in zip(ages, counts, strict=True)
+    )
+
+
+def test_a_part_of_several_values_is_the_sum_of_them(tmp_path: Path) -> None:
+    text = HEADER + _age_rows("01001", (1000, 100, 40, 10))
+
+    file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+    assert file.counts == [
+        ShareCount("01001", Component.TOTAL, 1000),
+        ShareCount("01001", Component.PART, 150),
+    ]
+
+
+def test_the_counts_come_sorted_by_municipality(tmp_path: Path) -> None:
+    text = HEADER + _age_rows("28079", (9, 3, 2, 1)) + _age_rows("01001", (5, 2, 1, 1))
+
+    file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+    assert [c.municipality_code for c in file.counts] == ["01001", "01001", "28079", "28079"]
+
+
+def test_a_municipality_with_some_values_of_the_part_but_not_all_is_refused(tmp_path: Path) -> None:
+    text = HEADER + _age_rows(
+        "01001", (1000, 100, 10), ("15 y más años", "De 70 a 79 años", "90 y más años")
+    )
+
+    with pytest.raises(InvalidTableFileError, match=r"01001.*De 80 a 89 años"):
+        read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+
+def test_a_value_repeated_for_a_municipality_is_refused(tmp_path: Path) -> None:
+    text = HEADER + _age_rows("01001", (1000, 100, 40, 10)) + _age_rows("01001", (1, 1, 1, 1))
+
+    with pytest.raises(InvalidTableFileError, match=r"01001.*repeated"):
+        read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+
+def test_a_municipality_without_any_value_of_the_part_gives_only_its_total(tmp_path: Path) -> None:
+    text = HEADER + _age_rows("01001", (1000,), ("15 y más años",))
+
+    file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+    assert file.counts == [ShareCount("01001", Component.TOTAL, 1000)]
+
+
+def test_the_hash_and_the_name_are_those_of_the_file_as_it_is(tmp_path: Path) -> None:
+    path = _write(tmp_path, HEADER + _age_rows("01001", (1000, 100, 40, 10)))
+
+    file = read_table_file(path, 2023, AGE, source_url=URL)
+
+    assert file.sha256 == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert (file.source_file, file.source_url) == ("table.csv", URL)
+
+
+def test_a_file_with_the_bom_and_a_blank_line_at_the_end_is_read(tmp_path: Path) -> None:
+    text = "﻿" + HEADER + _age_rows("01001", (1000, 100, 40, 10)) + "\r\n"
+
+    file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+    assert len(file.counts) == 2
+
+
+def test_the_file_without_an_optional_column_is_read_with_the_same_layout(tmp_path: Path) -> None:
+    text = (
+        "Municipios;Sexo;Nivel de estudios;Periodo;Total\r\n"
+        "01006 Armiñón;Total;Total;2023;207\r\n"
+        "01006 Armiñón;Total;Educación superior;2023;84\r\n"
+    )
+
+    file = read_table_file(_write(tmp_path, text), 2023, EDUCATION, source_url=URL)
+
+    assert file.counts == [
+        ShareCount("01006", Component.TOTAL, 207),
+        ShareCount("01006", Component.PART, 84),
+    ]
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Municipios;Sexo;Nivel de estudios;Periodo\r\n",  # no count column
+        "Municipios;Sexo;Edad;Nivel de estudios;Periodo;Total;Otra\r\n",  # a column nobody expects
+        "Municipios;Edad;Nivel de estudios;Periodo;Total\r\n",  # a pinned column is missing
+        "Municipios;Sexo;Nivel de estudios;Periodo;Total\r\n",  # the category column is missing
+        "",
+    ],
+)
+def test_a_table_with_other_columns_than_the_layout_is_refused(tmp_path: Path, header: str) -> None:
+    with pytest.raises(InvalidTableFileError, match="unexpected columns"):
+        read_table_file(_write(tmp_path, header), 2023, AGE, source_url=URL)
+
+
+def test_a_row_with_a_missing_cell_is_refused(tmp_path: Path) -> None:
+    text = HEADER + "01001 Sitio;Total;15 y más años;Total;2023\r\n"
+
+    with pytest.raises(InvalidTableFileError, match="cells"):
+        read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+
+def test_a_file_that_is_not_utf_8_is_refused_with_its_name(tmp_path: Path) -> None:
+    path = tmp_path / "table.csv"
+    path.write_bytes(
+        HEADER.encode() + "01006 Armi\xf1\xf3n;Total;x;Total;2023;1\r\n".encode("latin-1")
+    )
+
+    with pytest.raises(InvalidTableFileError, match=r"table\.csv"):
+        read_table_file(path, 2023, AGE, source_url=URL)
+
+
+def test_a_file_that_does_not_exist_is_refused_with_its_name(tmp_path: Path) -> None:
+    with pytest.raises(InvalidTableFileError, match=r"missing\.csv"):
+        read_table_file(tmp_path / "missing.csv", 2023, AGE, source_url=URL)
+
+
+def test_a_field_too_long_to_be_csv_is_refused(tmp_path: Path) -> None:
+    text = HEADER + "01006 " + "x" * 200_000 + ";Total;x;Total;2023;1\r\n"
+
+    with pytest.raises(InvalidTableFileError, match=r"table\.csv"):
+        read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+
+def test_a_municipality_without_its_total_gives_only_its_part(tmp_path: Path) -> None:
+    text = HEADER + _age_rows(
+        "01001", (100, 40, 10), ("De 70 a 79 años", "De 80 a 89 años", "90 y más años")
+    )
+
+    file = read_table_file(_write(tmp_path, text), 2023, AGE, source_url=URL)
+
+    assert file.counts == [ShareCount("01001", Component.PART, 150)]
