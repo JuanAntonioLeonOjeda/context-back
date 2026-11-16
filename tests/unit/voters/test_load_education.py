@@ -83,8 +83,19 @@ def test_only_the_revised_value_is_stored_and_only_in_its_file() -> None:
 def test_files_without_counts_of_the_year_are_refused_instead_of_storing_nothing() -> None:
     empty = EducationSourceFile("https://ine.es/e", "e.csv", "e" * 64, [])
 
-    with pytest.raises(InvalidValuesError, match="no education count"):
+    with pytest.raises(InvalidValuesError, match=r"e\.csv: no education count"):
         load_education([empty], FakeValueRepository(), year=2023)
+
+
+def test_a_file_without_counts_is_refused_even_when_the_other_has_them() -> None:
+    wrong_year = EducationSourceFile("https://ine.es/w", "w.csv", "w" * 64, [])
+    repository = FakeValueRepository()
+
+    with pytest.raises(InvalidValuesError) as error:
+        load_education([BIG, wrong_year], repository, year=2023)
+
+    assert error.value.problems == ["w.csv: no education count of any municipality for 2023"]
+    assert repository.recorded == []
 
 
 def test_a_municipality_of_an_unknown_province_is_refused_and_nothing_is_recorded() -> None:

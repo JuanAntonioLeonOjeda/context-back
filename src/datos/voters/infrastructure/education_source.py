@@ -63,15 +63,20 @@ def read_education_file(path: Path, year: int, *, source_url: str) -> EducationS
     """Reads a table file of the INE in one pass and in constant memory (66620 is 266 MB): the
     hash is computed over the bytes while the rows are read, so the file is not read twice."""
     digest = hashlib.sha256()
-    with path.open("rb") as file:
-        rows = csv.reader(_decoded_lines(file, digest), delimiter=";")
-        columns = _columns(next(rows, []))
-        counts = tuple(
-            count
-            for row in rows
-            if row  # a blank line, as at the end of the file
-            if (count := education_count(_named(columns, row), year)) is not None
-        )
+    try:
+        with path.open("rb") as file:
+            rows = csv.reader(_decoded_lines(file, digest), delimiter=";")
+            columns = _columns(next(rows, []))
+            counts = tuple(
+                count
+                for row in rows
+                if row  # a blank line, as at the end of the file
+                if (count := education_count(_named(columns, row), year)) is not None
+            )
+    except (OSError, UnicodeDecodeError, csv.Error) as error:
+        # A file that is missing, not UTF-8 (the header says ISO-8859-15, the bytes are UTF-8) or
+        # not CSV is a broken input like any other: said and refused, never a traceback.
+        raise InvalidEducationFileError(f"{path.name}: {error}") from error
     return EducationSourceFile(source_url, path.name, digest.hexdigest(), counts)
 
 

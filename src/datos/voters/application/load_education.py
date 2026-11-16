@@ -62,12 +62,16 @@ def load_education(
     A municipality is in one file only (in two it is a problem), and its value is stored in that
     file's load. An unchanged value is not stored again, and a file with nothing new is not
     recorded."""
+    # A file with no count of the year is a wrong file or a wrong year, never "nothing new": with
+    # the other one alone, its municipalities would silently have no value.
+    empty = [
+        f"{file.source_file}: no education count of any municipality for {year}"
+        for file in files
+        if not file.counts
+    ]
+    if empty:
+        raise InvalidValuesError(empty)
     counts = [count for file in files for count in file.counts]
-    if not counts:
-        # A year the INE has not published (or a mistyped one) is not "nothing new".
-        raise InvalidValuesError(
-            [f"the files have no education count of any municipality for {year}"]
-        )
     values, problems = education_values(counts, year)
     problems += unknown_province_problems(values, repository.province_ids())
     if problems:

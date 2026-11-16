@@ -172,3 +172,25 @@ def test_a_file_is_traced_to_the_page_of_its_table_by_its_name(name: str, page: 
 def test_a_file_that_is_not_one_of_the_tables_is_refused(name: str) -> None:
     with pytest.raises(InvalidEducationFileError, match="not one of the education tables"):
         table_page(Path(name))
+
+
+def test_a_file_that_is_not_utf_8_is_refused_with_its_name(tmp_path: Path) -> None:
+    path = tmp_path / "table.csv"
+    path.write_bytes(
+        HEADER.encode() + "01006 Armi\xf1\xf3n;Total;Total;2023;207\r\n".encode("latin-1")
+    )
+
+    with pytest.raises(InvalidEducationFileError, match=r"table\.csv"):
+        read_education_file(path, 2023, source_url=URL)
+
+
+def test_a_file_that_does_not_exist_is_refused_with_its_name(tmp_path: Path) -> None:
+    with pytest.raises(InvalidEducationFileError, match=r"missing\.csv"):
+        read_education_file(tmp_path / "missing.csv", 2023, source_url=URL)
+
+
+def test_a_field_too_long_to_be_csv_is_refused(tmp_path: Path) -> None:
+    text = HEADER + "01006 " + "x" * 200_000 + ";Total;Total;2023;207\r\n"
+
+    with pytest.raises(InvalidEducationFileError, match=r"table\.csv"):
+        read_education_file(_write(tmp_path, text), 2023, source_url=URL)
