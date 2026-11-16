@@ -70,6 +70,11 @@ def _bodies() -> None:
                 (territory_id IS NULL AND id LIKE 'local-%')
                 OR (territory_id IS NOT NULL AND id LIKE territory_id || '-%')
             ),
+            -- The head of an executive and a department are bodies of the State or of a community:
+            -- the chart of a community counts the departments of its territory.
+            CONSTRAINT bodies_executive_and_department_are_not_local CHECK (
+                kind NOT IN ('executive_head', 'department') OR level <> 'local'
+            ),
             CONSTRAINT bodies_department_has_a_parent CHECK (
                 kind <> 'department' OR parent_id IS NOT NULL
             ),

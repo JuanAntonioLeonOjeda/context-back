@@ -106,6 +106,9 @@ def test_the_level_the_territory_and_the_id_must_fit_one_another() -> None:
         "a State body belongs to the State, except a court": _swap(
             CORTES, replace(CORTES, territory_id="ccaa-13", id="ccaa-13-cortes")
         ),
+        "a body with a holder is not a local body": _swap(
+            HEAD_13, replace(HEAD_13, level=BodyLevel.LOCAL)
+        ),
         "the id must start with ccaa-13-": _swap(SANIDAD, replace(SANIDAD, id="sanidad")),
         "the id must start with local-": _swap(
             AYUNTAMIENTO, replace(AYUNTAMIENTO, id="ayuntamiento")

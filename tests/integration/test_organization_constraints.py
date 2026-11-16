@@ -148,6 +148,28 @@ def test_a_body_of_a_community_belongs_to_a_community(
     _body_fails(seeded, "bodies_ccaa_belongs_to_a_community", id_, "parliament", "ccaa", territory)
 
 
+def test_the_head_of_an_executive_and_a_department_are_never_local_bodies(
+    seeded: Connection,
+) -> None:
+    _body_fails(
+        seeded,
+        "bodies_executive_and_department_are_not_local",
+        "ccaa-13-gobierno-local",
+        "executive_head",
+        "local",
+        "ccaa-13",
+    )
+    _body_fails(
+        seeded,
+        "bodies_executive_and_department_are_not_local",
+        "ccaa-13-consejeria-local",
+        "department",
+        "local",
+        "ccaa-13",
+        parent="ccaa-13-gobierno",
+    )
+
+
 def test_a_state_body_belongs_to_the_state_except_a_court(seeded: Connection) -> None:
     _body(seeded, "ccaa-13-tsj", kind="judiciary", level="state", territory="ccaa-13")
 
