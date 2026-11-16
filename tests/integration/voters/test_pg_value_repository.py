@@ -1,19 +1,12 @@
 """Municipal values stored with the load of their file; the latest load wins; nothing is
 overwritten, and a refused load leaves nothing behind."""
 
-import itertools
-from collections.abc import Iterator
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
-from alembic import command
-from alembic.config import Config
-from sqlalchemy import Engine, create_engine, make_url, text
+from sqlalchemy import Engine, text
 from sqlalchemy.exc import DBAPIError
 
-from datos.territories.csv_source import read_territories
-from datos.territories.repository import PgTerritoryRepository
 from datos.voters.application.load_education import (
     EDUCATION,
     EducationSourceFile,
@@ -25,27 +18,6 @@ from datos.voters.domain.municipal_value import MunicipalValue
 from datos.voters.infrastructure.pg_value_repository import PgValueRepository
 
 pytestmark = pytest.mark.integration
-
-_names = (f"values_it_{n}" for n in itertools.count())
-
-
-@pytest.fixture
-def engine(postgres_url: str) -> Iterator[Engine]:
-    """A fresh database per test: the repository commits, and values cannot be deleted."""
-    name = next(_names)
-    with create_engine(postgres_url, isolation_level="AUTOCOMMIT").connect() as admin:
-        admin.execute(text(f"CREATE DATABASE {name}"))
-    url = make_url(postgres_url).set(database=name).render_as_string(hide_password=False)
-    config = Config("alembic.ini")
-    config.set_main_option("sqlalchemy.url", url)
-    command.upgrade(config, "head")
-    engine = create_engine(url)
-    with engine.begin() as connection:
-        PgTerritoryRepository(connection).upsert_all(
-            read_territories(Path("data/territories/territories.csv"))
-        )
-    yield engine
-    engine.dispose()
 
 
 def _load(sha: str, *values: tuple[str, str], year: int = 2023) -> ValueLoad:

@@ -9,6 +9,7 @@ from datos.voters.infrastructure.education_source import (
     InvalidEducationFileError,
     education_count,
     read_education_file,
+    table_page,
 )
 
 
@@ -154,3 +155,20 @@ def test_a_row_with_a_missing_cell_is_refused(tmp_path: Path) -> None:
 def test_an_empty_file_is_refused(tmp_path: Path) -> None:
     with pytest.raises(InvalidEducationFileError, match="unexpected columns"):
         read_education_file(_write(tmp_path, ""), 2023, source_url=URL)
+
+
+@pytest.mark.parametrize(
+    ("name", "page"),
+    [
+        ("66620.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66620"),
+        ("66623.csv", "https://www.ine.es/jaxiT3/Tabla.htm?t=66623"),
+    ],
+)
+def test_a_file_is_traced_to_the_page_of_its_table_by_its_name(name: str, page: str) -> None:
+    assert table_page(Path("data/raw/ine") / name) == page
+
+
+@pytest.mark.parametrize("name", ["66621.csv", "66620.csv.bak", "table.csv", "66620"])
+def test_a_file_that_is_not_one_of_the_tables_is_refused(name: str) -> None:
+    with pytest.raises(InvalidEducationFileError, match="not one of the education tables"):
+        table_page(Path(name))

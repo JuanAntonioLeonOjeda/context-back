@@ -102,3 +102,20 @@ def _named(columns: list[str], row: list[str]) -> dict[str, str]:
     if len(row) != len(columns):
         raise InvalidEducationFileError(f"row with {len(row)} cells, expected {len(columns)}")
     return dict(zip(columns, row, strict=True))
+
+
+_TABLE_PAGES = {
+    "66620.csv": "https://www.ine.es/jaxiT3/Tabla.htm?t=66620",  # 500 people or more
+    "66623.csv": "https://www.ine.es/jaxiT3/Tabla.htm?t=66623",  # 50 to 499
+}
+
+
+def table_page(path: Path) -> str:
+    """The INE page of the table a file is, by the name the INE gives it when it is downloaded.
+    Another name is refused: a file we cannot trace to its table is not loaded."""
+    try:
+        return _TABLE_PAGES[path.name]
+    except KeyError:
+        raise InvalidEducationFileError(
+            f"{path.name!r} is not one of the education tables: {sorted(_TABLE_PAGES)}"
+        ) from None
