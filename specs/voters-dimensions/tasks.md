@@ -5,7 +5,7 @@ before the next.
 
 - [x] 1. The author confirms the decisions of `spec.md` (dimensions, thresholds, education measure, storage, API shape, tabs)
 - [ ] 2. Domain: generic `value` and range, `EqualCensusBands` and `FixedThresholdBands`, hand-computed tests `[core]`
-- [ ] 3. Verify the Censo anual tables 66620 and 66623 on the real answer (year, category of higher education, size, time) and record it in `docs/sources-audit.md`
+- [x] 3. Verify the Censo anual tables 66620 and 66623 on the real answer (year, category of higher education, size, time) and record it in `docs/sources-audit.md`
 - [ ] 4. Migration `0017_municipal_values` and its integration test `[core]`
 - [ ] 5. Education reader, loader and `load-education` `[core]`
 - [ ] 6. Reader and `community_voters` by dimension `[core]`
