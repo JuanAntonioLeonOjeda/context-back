@@ -2,7 +2,13 @@ from decimal import Decimal
 
 import pytest
 
-from datos.voters.domain.education import education_percentage
+from datos.voters.domain.education import (
+    EducationCount,
+    EducationLevel,
+    education_percentage,
+    education_values,
+)
+from datos.voters.domain.municipal_value import MunicipalValue
 
 
 @pytest.mark.parametrize(
@@ -31,3 +37,62 @@ def test_a_municipality_without_population_has_no_percentage() -> None:
 def test_counts_that_cannot_be_true_are_refused(higher: int, total: int) -> None:
     with pytest.raises(ValueError, match="higher education"):
         education_percentage(higher, total)
+
+
+def _counts(code: str, higher: int, total: int) -> list[EducationCount]:
+    return [
+        EducationCount(code, EducationLevel.TOTAL, total),
+        EducationCount(code, EducationLevel.HIGHER, higher),
+    ]
+
+
+def test_every_municipality_gets_its_percentage_in_order_of_code() -> None:
+    counts = _counts("28079", 1_354_780, 2_925_135) + _counts("01006", 84, 207)
+
+    values, problems = education_values(counts, 2023)
+
+    assert problems == []
+    assert values == [
+        MunicipalValue("01006", 2023, Decimal("40.580")),  # 84 / 207 = 0.405797…
+        MunicipalValue("28079", 2023, Decimal("46.315")),  # 1354780 / 2925135 = 0.463151…
+    ]
+
+
+def test_a_municipality_without_population_is_left_out_without_a_problem() -> None:
+    assert education_values(_counts("01006", 0, 0), 2023) == ([], [])
+
+
+def test_a_count_in_two_files_is_a_problem() -> None:
+    counts = [*_counts("01006", 84, 207), EducationCount("01006", EducationLevel.TOTAL, 207)]
+
+    values, problems = education_values(counts, 2023)
+
+    assert problems == ["municipality 01006: total is repeated"]
+    assert values != []  # the other municipalities are still checked, all problems come at once
+
+
+@pytest.mark.parametrize(
+    ("kept", "missing"), [(EducationLevel.TOTAL, "higher"), (EducationLevel.HIGHER, "total")]
+)
+def test_a_municipality_with_only_one_of_the_counts_is_a_problem(
+    kept: EducationLevel, missing: str
+) -> None:
+    values, problems = education_values([EducationCount("01006", kept, 50)], 2023)
+
+    assert values == []
+    assert problems == [f"municipality 01006: no {missing} count"]
+
+
+def test_more_people_with_higher_education_than_people_is_a_problem() -> None:
+    values, problems = education_values(_counts("01006", 208, 207), 2023)
+
+    assert values == []
+    assert problems == ["municipality 01006: 208 with higher education out of 207"]
+
+
+def test_all_the_problems_come_at_once() -> None:
+    counts = [*_counts("01006", 208, 207), EducationCount("01011", EducationLevel.TOTAL, 5)]
+
+    _, problems = education_values(counts, 2023)
+
+    assert len(problems) == 2
