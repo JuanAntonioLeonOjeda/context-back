@@ -8,6 +8,7 @@ valid 200 (blank 10, PP 100, CC 60, LISTA X 30). In income order the census midp
 from collections.abc import Callable
 from decimal import Decimal
 
+import pytest
 from fastapi.testclient import TestClient
 
 from datos.voters.application.community_voters import CandidatureCount, MunicipalRow
@@ -156,10 +157,13 @@ def test_education_counts_the_municipalities_without_a_value_apart(make_client: 
 
 
 def test_an_unknown_dimension_is_a_422_that_names_the_allowed_ones(make_client: Client) -> None:
-    response = make_client().get("/communities/ccaa-05/voters?by=age")
+    response = make_client().get("/communities/ccaa-05/voters?by=astrology")
 
     assert response.status_code == 422
-    assert "'income', 'size' or 'education'" in response.json()["detail"][0]["msg"]
+    assert (
+        "'income', 'size', 'education', 'age' or 'born_abroad'"
+        in response.json()["detail"][0]["msg"]
+    )
 
 
 def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: Client) -> None:
@@ -172,6 +176,8 @@ def test_the_contract_lists_the_dimensions_and_defaults_to_income(make_client: C
         "income",
         "size",
         "education",
+        "age",
+        "born_abroad",
     ]
 
 
@@ -240,3 +246,40 @@ def test_groups_follow_the_label_a_reader_sees_not_their_ids(make_client: Client
 
     groups = make_client(voter_rows=rows).get("/communities/ccaa-05/voters").json()["profile"]
     assert [g["label"] for g in groups["groups"]] == ["CC", "PP", "ZETA", None]
+
+
+@pytest.mark.parametrize("dimension", ["age", "born_abroad"])
+def test_age_and_place_of_birth_group_by_their_percentage_and_name_the_same_census(
+    make_client: Client, dimension: str
+) -> None:
+    rows = _education_rows("11.215", "17.381")
+
+    body = make_client(voter_rows=rows).get(f"/communities/ccaa-05/voters?by={dimension}").json()
+
+    assert (body["dimension"]["id"], body["dimension"]["unit"]) == (dimension, "percent")
+    assert body["dimension"]["source_url"].endswith("cid=1254736176992")
+    filled = [b for b in body["profile"]["bands"] if b["municipalities"]]
+    assert [(b["value_min"], b["value_max"]) for b in filled] == [
+        (11.215, 11.215),
+        (17.381, 17.381),
+    ]
+
+
+def test_the_description_names_every_dimension_and_the_coverage_of_age_and_origin(
+    make_client: Client,
+) -> None:
+    contract = make_client().get("/openapi.json").json()
+
+    description = contract["paths"]["/communities/{territory_id}/voters"]["get"]["description"]
+    description = " ".join(description.split())  # the text wraps lines
+
+    for word in (
+        "`income`",
+        "`size`",
+        "`education`",
+        "`age`",
+        "`born_abroad`",
+        "500 inhabitants",
+        "not nationality",
+    ):
+        assert word in description

@@ -7,15 +7,16 @@ import pytest
 from sqlalchemy import Engine, text
 from sqlalchemy.exc import DBAPIError
 
-from datos.voters.application.load_education import (
-    EDUCATION,
-    EducationSourceFile,
+from datos.voters.application.load_values import (
     ValueLoad,
-    load_education,
+    ValueSourceFile,
+    load_values,
 )
-from datos.voters.domain.education import EducationCount, EducationLevel
 from datos.voters.domain.municipal_value import MunicipalValue
+from datos.voters.domain.share import Component, ShareCount
 from datos.voters.infrastructure.pg_value_repository import PgValueRepository
+
+EDUCATION = "education"
 
 pytestmark = pytest.mark.integration
 
@@ -94,19 +95,19 @@ def test_the_provinces_are_the_ones_of_the_territories(engine: Engine) -> None:
     assert "ccaa-13" not in provinces
 
 
-def _file(sha: str, higher: int) -> EducationSourceFile:
+def _file(sha: str, higher: int) -> ValueSourceFile:
     counts = [
-        EducationCount("28079", EducationLevel.TOTAL, 1000),
-        EducationCount("28079", EducationLevel.HIGHER, higher),
+        ShareCount("28079", Component.TOTAL, 1000),
+        ShareCount("28079", Component.PART, higher),
     ]
-    return EducationSourceFile("https://www.ine.es/t", "66620.csv", sha * 64, counts)
+    return ValueSourceFile("https://www.ine.es/t", "66620.csv", sha * 64, counts)
 
 
 def test_loading_the_same_file_twice_stores_nothing_the_second_time(engine: Engine) -> None:
     repository = PgValueRepository(engine)
 
-    first = load_education([_file("a", 463)], repository, year=2023)
-    second = load_education([_file("a", 463)], repository, year=2023)
+    first = load_values(EDUCATION, [_file("a", 463)], repository, year=2023)
+    second = load_values(EDUCATION, [_file("a", 463)], repository, year=2023)
 
     assert (first, second) == (1, 0)
     assert len(_stored(engine)) == 1
@@ -114,7 +115,7 @@ def test_loading_the_same_file_twice_stores_nothing_the_second_time(engine: Engi
 
 def test_a_revised_file_adds_a_row_and_becomes_the_current_value(engine: Engine) -> None:
     repository = PgValueRepository(engine)
-    load_education([_file("a", 463)], repository, year=2023)
+    load_values(EDUCATION, [_file("a", 463)], repository, year=2023)
 
-    assert load_education([_file("b", 470)], repository, year=2023) == 1
+    assert load_values(EDUCATION, [_file("b", 470)], repository, year=2023) == 1
     assert repository.latest_values(EDUCATION, 2023) == {"28079": Decimal("47.000")}

@@ -1,4 +1,4 @@
-"""The rules migration 0017 promises for the municipal values of a dimension, on PostgreSQL."""
+"""The rules migrations 0017 and 0019 promise for the municipal values of a dimension."""
 
 from collections.abc import Callable
 
@@ -161,3 +161,24 @@ def test_nothing_stored_can_be_changed_or_removed(
     with pytest.raises(DBAPIError) as error, stored.begin_nested():
         stored.execute(text(statement.format(table=table, column=APPEND_ONLY[table])))
     assert f"{table} is append-only: {operation} is not allowed" in str(error.value)
+
+
+@pytest.mark.parametrize("dimension", ["education", "age", "born_abroad"])
+def test_every_dimension_of_the_percentages_can_be_loaded(
+    seeded: Connection, dimension: str
+) -> None:
+    _value(seeded, _load(seeded, dimension=dimension))
+
+    stored = seeded.execute(text("SELECT dimension FROM municipal_value_loads")).scalar_one()
+    assert stored == dimension
+
+
+@pytest.mark.parametrize("dimension", ["income", "size"])
+def test_the_dimensions_of_the_incomes_and_the_size_are_not_values_of_a_load(
+    seeded: Connection, dimension: str
+) -> None:
+    _refused(
+        seeded,
+        "municipal_value_loads_dimension_known",
+        lambda: _load(seeded, dimension=dimension),
+    )

@@ -11,6 +11,7 @@ from sqlalchemy import Connection, text
 from datos.territories.csv_source import read_territories
 from datos.territories.repository import PgTerritoryRepository
 from datos.voters.application.load_election import load_election
+from datos.voters.domain.dimensions import DimensionId
 from datos.voters.infrastructure.infoelectoral import read_election_zip
 from datos.voters.infrastructure.pg_election_repository import PgElectionRepository
 from datos.voters.infrastructure.pg_voters_reader import CENSO_ANUAL_URL, PgVotersReader
@@ -69,7 +70,7 @@ def test_lists_the_loaded_election(reader: PgVotersReader) -> None:
 def test_gives_each_municipality_of_the_community_with_its_latest_income(
     reader: PgVotersReader,
 ) -> None:
-    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)
+    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, DimensionId.EDUCATION)
 
     by_code = {r.code: r for r in rows}
     assert set(by_code) == {"35016", "38038"}
@@ -80,7 +81,7 @@ def test_gives_each_municipality_of_the_community_with_its_latest_income(
 def test_counts_come_by_candidature_and_match_the_municipal_total(
     reader: PgVotersReader, db: Connection
 ) -> None:
-    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)
+    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, DimensionId.EDUCATION)
 
     for row in rows:
         stored = db.execute(
@@ -106,7 +107,10 @@ def test_a_municipality_where_no_candidature_got_a_vote_still_comes(
         )
     )
 
-    by_code = {r.code: r for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)}
+    by_code = {
+        r.code: r
+        for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, DimensionId.EDUCATION)
+    }
 
     assert set(by_code) == {"35001", "35016", "38038"}
     empty = by_code["35001"]
@@ -115,7 +119,7 @@ def test_a_municipality_where_no_candidature_got_a_vote_still_comes(
 
 
 def test_another_community_has_no_rows(reader: PgVotersReader) -> None:
-    assert reader.municipal_rows("ccaa-13", "congreso-2023-07", 2023) == []
+    assert reader.municipal_rows("ccaa-13", "congreso-2023-07", 2023, DimensionId.EDUCATION) == []
 
 
 def test_names_the_latest_income_download_of_the_year(reader: PgVotersReader) -> None:
@@ -127,16 +131,21 @@ def test_names_the_latest_income_download_of_the_year(reader: PgVotersReader) ->
 
 
 def _education_load(
-    db: Connection, sha: str, year: int, values: dict[str, str], loaded_at: str = "2026-11-16"
+    db: Connection,
+    sha: str,
+    year: int,
+    values: dict[str, str],
+    loaded_at: str = "2026-11-16",
+    dimension: str = "education",
 ) -> None:
     load_id = db.execute(
         text(
             "INSERT INTO municipal_value_loads"
             " (dimension, source_url, source_file, source_sha256, loaded_at)"
-            " VALUES ('education', 'https://www.ine.es/t', '66620.csv', :sha, :loaded_at)"
+            " VALUES (:dimension, 'https://www.ine.es/t', '66620.csv', :sha, :loaded_at)"
             " RETURNING id"
         ),
-        {"sha": sha * 64, "loaded_at": loaded_at},
+        {"sha": sha * 64, "loaded_at": loaded_at, "dimension": dimension},
     ).scalar_one()
     for code, value in values.items():
         db.execute(
@@ -155,16 +164,19 @@ def test_gives_each_municipality_its_latest_education_of_the_year(
     _education_load(db, "b", 2023, {"35016": "33.052"})  # a revision: the newer load wins
     _education_load(db, "c", 2022, {"38038": "10.000"})  # another year: not this election's
 
-    by_code = {r.code: r for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)}
+    by_code = {
+        r.code: r
+        for r in reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, DimensionId.EDUCATION)
+    }
 
-    assert by_code["35016"].education == Decimal("33.052")
-    assert by_code["38038"].education == Decimal("36.000")
+    assert by_code["35016"].loaded_value == Decimal("33.052")
+    assert by_code["38038"].loaded_value == Decimal("36.000")
 
 
 def test_a_municipality_without_education_has_none(reader: PgVotersReader) -> None:
-    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023)
+    rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, DimensionId.EDUCATION)
 
-    assert all(r.education is None for r in rows)
+    assert all(r.loaded_value is None for r in rows)
 
 
 def test_names_the_census_page_and_the_latest_education_load_of_the_year(
@@ -173,12 +185,12 @@ def test_names_the_census_page_and_the_latest_education_load_of_the_year(
     _education_load(db, "a", 2023, {"35016": "33.000"})
     _education_load(db, "b", 2022, {"35016": "32.000"})
 
-    source = reader.education_source(2023)
+    source = reader.values_source(DimensionId.EDUCATION, 2023)
 
     assert source is not None
     assert source.url == CENSO_ANUAL_URL
     assert source.year == 2023
-    assert reader.education_source(2019) is None
+    assert reader.values_source(DimensionId.EDUCATION, 2019) is None
 
 
 def test_the_education_source_is_loaded_when_its_latest_load_of_the_year_was(
@@ -187,7 +199,28 @@ def test_the_education_source_is_loaded_when_its_latest_load_of_the_year_was(
     _education_load(db, "a", 2023, {"35016": "33.000"}, loaded_at="2026-11-16")
     _education_load(db, "b", 2023, {"38038": "36.000"}, loaded_at="2026-12-01")
 
-    source = reader.education_source(2023)
+    source = reader.values_source(DimensionId.EDUCATION, 2023)
 
     assert source is not None
     assert str(source.fetched_at.date()) == "2026-12-01"
+
+
+def test_each_dimension_gets_only_its_own_values_and_its_own_load(
+    reader: PgVotersReader, db: Connection
+) -> None:
+    _education_load(db, "a", 2023, {"35016": "33.000"}, "2026-11-16", "education")
+    _education_load(db, "b", 2023, {"35016": "11.215"}, "2026-12-01", "age")
+
+    def value(dimension: DimensionId) -> object:
+        rows = reader.municipal_rows("ccaa-05", "congreso-2023-07", 2023, dimension)
+        return {r.code: r.loaded_value for r in rows}["35016"]
+
+    assert value(DimensionId.EDUCATION) == Decimal("33.000")
+    assert value(DimensionId.AGE) == Decimal("11.215")
+    assert value(DimensionId.BORN_ABROAD) is None
+    assert value(DimensionId.INCOME) is None  # not a loaded dimension: no load has its name
+    education = reader.values_source(DimensionId.EDUCATION, 2023)
+    age = reader.values_source(DimensionId.AGE, 2023)
+    assert education is not None and age is not None
+    assert education.fetched_at < age.fetched_at  # each one has the date of its own load
+    assert reader.values_source(DimensionId.BORN_ABROAD, 2023) is None

@@ -25,6 +25,7 @@ from datos.voters.application.community_voters import (
     MunicipalRow,
     SourceInfo,
 )
+from datos.voters.domain.dimensions import DimensionId
 
 TODAY = date(2026, 10, 13)
 FETCHED = datetime(2026, 10, 13, 15, 48, tzinfo=UTC)
@@ -270,14 +271,14 @@ class FakeVoters:
         return [ELECTION]
 
     def municipal_rows(
-        self, territory_id: str, election_id: str, income_year: int
+        self, territory_id: str, election_id: str, income_year: int, dimension: DimensionId
     ) -> list[MunicipalRow]:
         return list(self._rows) if territory_id == "ccaa-05" else []
 
     def income_download(self, year: int) -> SourceInfo | None:
         return INCOME if year == 2023 else None
 
-    def education_source(self, year: int) -> SourceInfo | None:
+    def values_source(self, dimension: DimensionId, year: int) -> SourceInfo | None:
         return EDUCATION if year == 2023 else None
 
 
