@@ -271,6 +271,15 @@ def test_the_description_names_every_dimension_and_the_coverage_of_age_and_origi
     contract = make_client().get("/openapi.json").json()
 
     description = contract["paths"]["/communities/{territory_id}/voters"]["get"]["description"]
+    description = " ".join(description.split())  # the text wraps lines
 
-    for word in ("`income`", "`size`", "`education`", "`age`", "`born_abroad`", "500 inhabitants"):
+    for word in (
+        "`income`",
+        "`size`",
+        "`education`",
+        "`age`",
+        "`born_abroad`",
+        "500 inhabitants",
+        "not nationality",
+    ):
         assert word in description

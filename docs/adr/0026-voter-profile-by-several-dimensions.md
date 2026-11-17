@@ -1,8 +1,8 @@
-# ADR-0026: The voter profile by several dimensions: income, size and education
+# ADR-0026: The voter profile by several dimensions: income, size, education, age and origin
 
 - **Status:** Proposed
-- **Date:** 2026-11-16 (draft; the decisions are the author's)
-- **Phase:** voters-dimensions
+- **Date:** 2026-11-16 (draft; the decisions are the author's); amended 2026-11-17
+- **Phase:** voters-dimensions; amended by voters-age-origin
 - **Amends:** ADR-0024 (the profile was by income only; the method is the same, the parameter is
   now chosen by the reader)
 
@@ -21,9 +21,9 @@ Four things were not decided there. The sources were checked on 2026-11-16
 - **Education** comes from the INE's Censo anual de población, tables 66620 (municipalities of
   500 people or more) and 66623 (50 to 499). The API refuses their volume, so the table files
   are read. 7,563 municipalities have a value for 2023.
-- **Age** has no usable source yet: the INE's municipal tables 30700 and 30701 cover 153
+- **Age** had no usable source yet _(superseded by the amendment)_: the INE's municipal tables 30700 and 30701 cover 153
   municipalities, and the Padrón table 33859 is huge with its latest period unconfirmed.
-- **Born abroad** (table 34982) has not had its coverage checked.
+- **Born abroad** (table 34982) had not had its coverage checked _(superseded by the amendment)_.
 - **Size** needs no source if it is measured with the census of the election's own files.
 
 ## Options considered
@@ -76,7 +76,8 @@ assistant, accepted as they were):
 5. The API is `GET /communities/{id}/voters?by=income|size|education` (income by default); the
    answer names the dimension (id, unit, source, year) and each band carries `value_min` and
    `value_max`. An unknown `by` is a 422.
-6. Age and born abroad are not in this phase: their sources are not verified.
+6. Age and born abroad are not in this phase: their sources are not verified. _(Superseded by the
+   amendment below.)_
 
 _The reasons in the author's words: not written yet; the author adds them here. The question
 most worth answering: why electors and not inhabitants, knowing they are not the same?_
@@ -109,3 +110,40 @@ most worth answering: why electors and not inhabitants, knowing they are not the
   Canarias 88, none without a value).
 - The size limits are pinned by `tests/unit/voters/test_dimensions.py`; the migration rules by
   `tests/integration/test_municipal_value_constraints.py`.
+
+## Amendment 2026-11-17: age and born abroad (phase voters-age-origin)
+
+Point 6 left age and born abroad out because their sources were unverified. They were verified on
+the real files on 2026-11-16 (`docs/sources-audit.md`, section 13) and the author decided
+("500 o más, 70 o más, las dos"):
+
+7. **Age** is the percentage of people aged 15 or over who are 70 or older (70-79, 80-89 and 90
+   or more), from table 66620. **Born abroad** is the percentage of people aged 15 or over born
+   abroad ("Extranjero"), from table 66621. Both are of the election's year, with the same bands
+   as education: five of about the same census.
+8. **Coverage is the 4,144 municipalities of 500 inhabitants or more**; the 3,419 smaller ones
+   have no value and are counted apart, like any municipality without one. The INE publishes
+   neither table for them, and estimating would put a number in the profile that no source gives.
+9. **Born abroad is the place of birth, not the nationality**: a Spanish national born abroad
+   counts and a foreign national born in Spain does not. The web says so in the method note.
+10. The API is `?by=income|size|education|age|born_abroad`. The loaders share one reader that a
+    `TableLayout` describes (which column says what a row counts, which values are the whole and
+    the part) and one use case, `load_values(dimension, …)`; a new percentage from the Censo
+    anual is a layout and a line in the migration's closed list (0019), not a new reader.
+
+_The reasons in the author's words: not written yet; the author adds them here. Questions most
+worth answering: why 70 and not 65, and why 500 inhabitants if it leaves out 45 % of the
+municipalities (and in Navarra 152 of 272)?_
+
+Consequences added: a profile by age or by origin of a community of small municipalities rests
+on few of them (Navarra: 120 of 272 municipalities have a value, counted on the real answer of the API on
+2026-11-17), and the web says how many are left out; the table does
+not say who the people born abroad are (nationality, origin), only where they were born. The
+ecological fallacy applies to age and place of birth as to the rest: a band says nothing about
+the elderly or the foreign-born who live in it, nor about the voters of a party.
+
+Verification added: loaded into the local database on 2026-11-17, 4,144 values each for 2023 (age
+3.7 % to 47.1 %, median 18.7 %; born abroad 0.2 % to 73.8 %, median 10.7 %); a second run stores
+nothing; the sample of Canarias and Madrid computed by hand and pinned in
+`tests/integration/voters/test_table_commands.py`; the layouts are pinned by
+`tests/unit/voters/test_table_source.py`.
