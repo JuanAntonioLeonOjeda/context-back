@@ -1,7 +1,7 @@
 """Read side of voters: the voter profile of a community for an election (spec AC3)."""
 
 from collections import defaultdict
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
@@ -43,7 +43,9 @@ class MunicipalRow:
     blank_votes: int
     income: Decimal | None
     counts: Sequence[CandidatureCount]
-    education: Decimal | None = None  # % with higher education; None: no value for the year
+    # The value of the dimension a profile is asked by, when the INE's files give it (education,
+    # age, born abroad: a percentage); None: no value for the year, or another dimension.
+    loaded_value: Decimal | None = None
 
 
 class VotersReader(Protocol):
@@ -52,17 +54,18 @@ class VotersReader(Protocol):
         ...
 
     def municipal_rows(
-        self, territory_id: str, election_id: str, income_year: int
+        self, territory_id: str, election_id: str, income_year: int, dimension: DimensionId
     ) -> list[MunicipalRow]:
-        """The community's municipalities in that election, each with its latest income."""
+        """The community's municipalities in that election, each with its latest income and, when
+        the dimension's values are loaded from a file, its latest value of the year."""
         ...
 
     def income_download(self, year: int) -> SourceInfo | None:
         """The latest INE download of income for the year, to name the source."""
         ...
 
-    def education_source(self, year: int) -> SourceInfo | None:
-        """The latest load of education percentages for the year, to name the source."""
+    def values_source(self, dimension: DimensionId, year: int) -> SourceInfo | None:
+        """The latest load of the dimension's percentages for the year, to name the source."""
         ...
 
 
@@ -80,12 +83,18 @@ class CommunityVoters:
 # The curated table: election id → candidature code → party id (data/voters/).
 type PartyByCandidature = Mapping[str, Mapping[str, str]]
 
-# How each dimension reads the value of a municipality from its row (None: no value).
-_VALUE_OF: dict[DimensionId, Callable[[MunicipalRow], Decimal | None]] = {
-    DimensionId.INCOME: lambda row: row.income,
-    DimensionId.SIZE: lambda row: Decimal(row.census),
-    DimensionId.EDUCATION: lambda row: row.education,
-}
+
+def _value_of(dimension: DimensionId, row: MunicipalRow) -> Decimal | None:
+    """The value a municipality has for a dimension (None: no value)."""
+    match dimension:
+        case DimensionId.INCOME:
+            return row.income
+        case DimensionId.SIZE:
+            return Decimal(row.census)
+        case DimensionId.EDUCATION | DimensionId.AGE | DimensionId.BORN_ABROAD:
+            return row.loaded_value
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def community_voters(
@@ -105,10 +114,9 @@ def community_voters(
     # Spec decision 8: the income of the election's year describes the municipalities as they
     # were when they voted.
     year = election.held_on.year
-    rows = reader.municipal_rows(territory_id, election.id, year)
+    rows = reader.municipal_rows(territory_id, election.id, year, dimension.id)
     parties = party_by_candidature.get(election.id, {})
-    value_of = _VALUE_OF[dimension.id]
-    municipalities = [_municipal_votes(row, parties, value_of(row)) for row in rows]
+    municipalities = [_municipal_votes(row, parties, _value_of(dimension.id, row)) for row in rows]
     return CommunityVoters(
         election=election,
         dimension=dimension,
@@ -124,8 +132,8 @@ def _download(reader: VotersReader, dimension: Dimension, year: int) -> SourceIn
     match dimension.id:
         case DimensionId.INCOME:
             return reader.income_download(year)
-        case DimensionId.EDUCATION:
-            return reader.education_source(year)
+        case DimensionId.EDUCATION | DimensionId.AGE | DimensionId.BORN_ABROAD:
+            return reader.values_source(dimension.id, year)
         case DimensionId.SIZE:
             return None
         case _ as unreachable:

@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from sqlalchemy import Engine, text
 
-from datos.voters.application.load_education import ValueLoad
+from datos.voters.application.load_values import ValueLoad
 
 _PROVINCES = text("SELECT id FROM territories WHERE level = 'province'")
 # The latest load wins: a revision of the INE is a newer row (higher load id).

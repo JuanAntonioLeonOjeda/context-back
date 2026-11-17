@@ -253,3 +253,32 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
 - **Measure chosen for the profile**: higher education share of the population of 15 and more, 2023
   (the election's year); municipalities without a value are counted apart, as with income.
 
+
+## 13. Voter profiles by age and by place of birth: the same Censo anual (checked 2026-11-16, for phase `voters-age-origin`)
+
+- **Discarded.** INE table **34982** (proportion of people by place of birth, indicators): 775 series
+  for **153 municipalities**; the age tables 30700 and 30701 cover the same 153. The **Padrón**
+  tables 33855 to 33865 (by sex, municipality, age and place of birth) are served by the API and
+  cover every municipality, but their latest period is **1 January 2022** (seen in the answers of
+  33861 and 33863): a year behind the 2023 election.
+- **Age: table 66620**, the file already used for education. With `Nivel de estudios = Total`, `Sexo =
+  Total` it gives the population of 15 and more by `Edad`: `De 15 a 19`, `20 a 24`, `25 a 29`, `30 a
+  34`, `35 a 39` (five years) and `De 40 a 49`, `50 a 59`, `60 a 69`, `70 a 79`, `80 a 89`, `90 y más`
+  (ten years), plus `15 y más años` as the total. Hence the **65 and over cannot be computed; the 70 and
+  over can**: `De 70 a 79` + `De 80 a 89` + `90 y más`, over `15 y más años`. 2023, 4,144 municipalities,
+  every one with a total and the groups. Madrid 17.4 %, Las Palmas de Gran Canaria 15.9 %, Santa Cruz de
+  Tenerife 16.4 %, Alegría-Dulantzi 11.2 %; over the 4,144: minimum 3.7 %, median 18.7 %, maximum 47.1 %.
+- **Place of birth: table 66621** (population of 15 and more by sex, **country of birth** and level of
+  studies, municipalities of 500 inhabitants or more). Same layout as 66620 with `País de nacimiento` in
+  place of `Edad`: values `Total`, `España`, `Extranjero`; periods 2021 to 2024. File
+  `https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/66621.csv?nocab=1`: 170,466,401 bytes, SHA-256
+  `bb8e9fe4a1d7a33a…`, 1,641,025 lines (4,144 municipalities × 3 sexes × 3 places × 11 levels × 4
+  years). With sex and level `Total`: **born abroad / total**. 2023: 4,144 municipalities, every one with
+  both counts. Madrid 828,310 of 2,925,135 = 28.3 % (the total is the same as in the education table);
+  over the 4,144: minimum 0.2 %, median 10.7 %, maximum 73.8 %.
+- **Coverage**: municipalities from 50 to 499 inhabitants have **no** age and no place-of-birth table
+  (only 66623, education). The 4,144 municipalities of 500 or more hold **98.4 %** of the population of 15
+  and more (40,869,593 of 41,529,813 in 2023); the 3,419 small ones are counted apart as "without a
+  value".
+- **Not verified**: that the INE keeps the file names 66621 and 66620 stable; that `Extranjero` means
+  born outside Spain for every row (the table is "país de nacimiento (España/extranjero)").

@@ -10,6 +10,7 @@ from datos.voters.application.community_voters import (
     MunicipalRow,
     SourceInfo,
 )
+from datos.voters.domain.dimensions import DimensionId
 
 _ELECTIONS = text("SELECT id, held_on, source_file FROM elections ORDER BY held_on DESC, id")
 # One row per municipality and candidature, as the file names it and not added up to its national
@@ -21,7 +22,7 @@ _ELECTIONS = text("SELECT id, held_on, source_file FROM elections ORDER BY held_
 _ROWS = text(
     """
     SELECT r.municipality_code, r.census, r.blank_votes, i.euros_per_person AS income,
-           e.value AS education, c.code, c.acronym, v.votes
+           e.value AS loaded_value, c.code, c.acronym, v.votes
     FROM municipal_results r
     JOIN territories p ON p.id = r.province_id
     LEFT JOIN municipal_candidature_votes v
@@ -37,7 +38,7 @@ _ROWS = text(
         SELECT mv.value FROM municipal_values mv
         JOIN municipal_value_loads l ON l.id = mv.load_id
         WHERE mv.municipality_code = r.municipality_code AND mv.year = :year
-          AND l.dimension = 'education'
+          AND l.dimension = :dimension
         ORDER BY mv.load_id DESC LIMIT 1
     ) e ON true
     WHERE r.election_id = :election_id AND p.parent_id = :territory_id
@@ -50,16 +51,16 @@ _INCOME_DOWNLOAD = text(
     WHERE d.id = (SELECT max(download_id) FROM municipal_income WHERE year = :year)
     """
 )
-_EDUCATION_LOAD = text(
+_VALUES_LOAD = text(
     """
     SELECT max(l.loaded_at) AS loaded_at
     FROM municipal_value_loads l
-    WHERE l.dimension = 'education'
+    WHERE l.dimension = :dimension
       AND EXISTS (SELECT 1 FROM municipal_values v WHERE v.load_id = l.id AND v.year = :year)
     """
 )
-# The INE's operation the two table files (66620 and 66623) belong to: both pages link to it, and
-# the API names one source. Each load keeps the URL of its own table.
+# The INE's operation the table files (66620, 66621 and 66623) belong to: their pages link to it,
+# and the API names one source. Each load keeps the URL of its own table.
 CENSO_ANUAL_URL = (
     "https://www.ine.es/dyngs/INEbase/es/operacion.htm"
     "?c=Estadistica_C&cid=1254736176992&menu=resultados&idp=1254735572981"
@@ -75,10 +76,18 @@ class PgVotersReader:
         return [ElectionInfo(r.id, r.held_on, r.source_file) for r in rows]
 
     def municipal_rows(
-        self, territory_id: str, election_id: str, income_year: int
+        self, territory_id: str, election_id: str, income_year: int, dimension: DimensionId
     ) -> list[MunicipalRow]:
+        # The dimension's id is the name its loads are stored under; for income and size no load
+        # has that name, and the value comes out empty.
         rows = self._connection.execute(
-            _ROWS, {"territory_id": territory_id, "election_id": election_id, "year": income_year}
+            _ROWS,
+            {
+                "territory_id": territory_id,
+                "election_id": election_id,
+                "year": income_year,
+                "dimension": dimension.value,
+            },
         ).all()
         counts: dict[str, list[CandidatureCount]] = defaultdict(list)
         first: dict[str, MunicipalRow] = {}
@@ -90,12 +99,12 @@ class PgVotersReader:
             first.setdefault(
                 r.municipality_code,
                 MunicipalRow(
-                    r.municipality_code, r.census, r.blank_votes, r.income, (), r.education
+                    r.municipality_code, r.census, r.blank_votes, r.income, (), r.loaded_value
                 ),
             )
         return [
             MunicipalRow(
-                m.code, m.census, m.blank_votes, m.income, tuple(counts[code]), m.education
+                m.code, m.census, m.blank_votes, m.income, tuple(counts[code]), m.loaded_value
             )
             for code, m in first.items()
         ]
@@ -104,6 +113,8 @@ class PgVotersReader:
         row = self._connection.execute(_INCOME_DOWNLOAD, {"year": year}).one_or_none()
         return None if row is None else SourceInfo(year, row.url, row.fetched_at)
 
-    def education_source(self, year: int) -> SourceInfo | None:
-        loaded_at = self._connection.execute(_EDUCATION_LOAD, {"year": year}).scalar_one()
+    def values_source(self, dimension: DimensionId, year: int) -> SourceInfo | None:
+        loaded_at = self._connection.execute(
+            _VALUES_LOAD, {"year": year, "dimension": dimension.value}
+        ).scalar_one()
         return None if loaded_at is None else SourceInfo(year, CENSO_ANUAL_URL, loaded_at)
