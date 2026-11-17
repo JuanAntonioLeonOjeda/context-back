@@ -12,5 +12,5 @@ before the next.
 - [x] 7. `GET /communities/{id}/voters?by=` and the regenerated client
 - [x] 8. ADR-0026 (amends ADR-0024: several dimensions): drafted with the author; the reasons in their words are still to write
 - [x] 9. Front: tabs, texts, fixtures, tests (branch of its own)
-- [ ] 10. Reviews, `AGENTS.md`, PRs into `develop`
-- [ ] 11. Later: age (verify the INE source first) and born abroad
+- [x] 10. Reviews, `AGENTS.md`, PRs into `develop`
+- [x] 11. Later: age (verify the INE source first) and born abroad (done in phase `voters-age-origin`)
