@@ -62,6 +62,8 @@ event worker_started
 while true; do
   step classification python -m datos.classification classify-new --model "$model_dir"
   update_stories
+  # AFTER_CYCLE, when set, runs once the cycle's data is stored (the Space backs up there).
+  [ -n "${AFTER_CYCLE:-}" ] && step after_cycle sh -c "$AFTER_CYCLE"
   sleep $((interval_min * 60)) &
   wait $!
 done

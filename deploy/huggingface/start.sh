@@ -1,8 +1,8 @@
 #!/bin/bash
 # Starts the Space (ADR-0023): a fresh PostgreSQL with the latest backup restored into it, the own
 # model downloaded, the database brought up to date; then the API and nginx, and the jobs that keep
-# it current: the collector (every 3 h), the worker (own classifier and stories, every hour) and an
-# hourly backup to the private dataset, which is what survives a restart.
+# it current: the collector (every 3 h) and the worker (own classifier and stories, every hour),
+# each followed by a backup to the private dataset, which is what survives a restart.
 #
 # Needs the Space secret HF_TOKEN (read and write on DATA_REPO, read on MODEL_REPO). DUMP_FILE, if
 # set, is restored instead of the dataset's (local tests); with no backup the site starts with the
@@ -68,20 +68,23 @@ if [[ -n "${HF_TOKEN:-}" ]]; then
   hub -c "from huggingface_hub import snapshot_download as d
 d('$MODEL_REPO', allow_patterns='$MODEL_NAME/*', local_dir='$MODELS_DIR')" >/dev/null &&
     event model_downloaded || event model_not_downloaded
+  # The data changes only when the collector or the worker store something: each backs up after
+  # its cycle, so a restart loses at most a cycle in progress.
+  if [[ $backing_up == 1 ]]; then
+    export AFTER_CYCLE="HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py"
+  fi
   collector.sh &
   HF_HUB_OFFLINE=1 MODEL_DIR="$MODELS_DIR/$MODEL_NAME" worker.sh &
-  if [[ $backing_up == 1 ]]; then
-    HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py loop &
-  fi
 else
   event jobs_not_started_no_token
 fi
 
-# On stop, one last backup, so a restart loses as little as possible.
+# On stop, one more backup if Hugging Face gives the time (on 2026-11-17 it did not: the cycles'
+# backups are the ones that count).
 stop() {
   event space_stopping
   if [[ $backing_up == 1 ]]; then
-    HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py once || event backup_on_stop_failed
+    HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py || event backup_on_stop_failed
   fi
   kill $(jobs -p) 2>/dev/null || true
   exit 0
