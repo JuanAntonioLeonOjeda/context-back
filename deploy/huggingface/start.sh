@@ -1,14 +1,24 @@
-#!/bin/sh
-# Starts the Space (ADR-0023): a fresh PostgreSQL, the latest snapshot restored into it, the
-# database brought up to date, then the API and nginx.
+#!/bin/bash
+# Starts the Space (ADR-0023): a fresh PostgreSQL with the latest backup restored into it, the own
+# model downloaded, the database brought up to date; then the API and nginx, and the jobs that keep
+# it current: the collector (every 3 h), the worker (own classifier and stories, every hour) and an
+# hourly backup to the private dataset, which is what survives a restart.
 #
-# The snapshot comes from the private dataset DATA_REPO (default Juanan237/incontext-data), read
-# with the Space secret HF_TOKEN. SNAPSHOT_FILE, if set, is restored instead (local tests). With no
-# snapshot the site starts with the reference data only (territories, governments) and says so.
-set -eu
+# Needs the Space secret HF_TOKEN (read and write on DATA_REPO, read on MODEL_REPO). DUMP_FILE, if
+# set, is restored instead of the dataset's (local tests); with no backup the site starts with the
+# reference data only, and makes no backup unless FIRST_START=1.
+set -euo pipefail
 
 DATA_REPO=${DATA_REPO:-Juanan237/incontext-data}
-snapshot=${SNAPSHOT_FILE:-/tmp/datos.dump}
+DUMP_NAME=${DUMP_NAME:-live.dump}
+MODEL_REPO=${MODEL_REPO:-Juanan237/incontext-model}
+MODEL_NAME=${MODEL_NAME:-train-set-v5-paraphrase-multilingual-mpnet-base-v2-seed42}
+export DATA_REPO DUMP_NAME
+# The encoder baked into the image (HF_HOME=/opt/hf) is read-only; downloads and uploads use a
+# cache of their own.
+hub() { HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python "$@"; }
+
+event() { printf '{"event": "%s", "at": "%s"}\n' "$1" "$(date -u +%FT%TZ)"; }
 
 # The Space disk is not persistent: every start begins with an empty cluster.
 rm -rf "$PGDATA"
@@ -17,26 +27,66 @@ pg_ctl --wait --pgdata="$PGDATA" --log=/tmp/postgres.log \
   -o "-c listen_addresses=127.0.0.1 -c unix_socket_directories=/tmp" start
 createdb --host=127.0.0.1 --username=user datos
 
-if [ -z "${SNAPSHOT_FILE:-}" ]; then
-  if [ -n "${HF_TOKEN:-}" ] && curl -fsSL -H "Authorization: Bearer $HF_TOKEN" \
-    -o "$snapshot" "https://huggingface.co/datasets/$DATA_REPO/resolve/main/datos.dump"; then
-    echo '{"event": "snapshot_downloaded"}'
+dump=${DUMP_FILE:-}
+if [[ -z "$dump" && -n "${HF_TOKEN:-}" ]]; then
+  if dump=$(hub -c "from huggingface_hub import hf_hub_download as d
+print(d('$DATA_REPO', '$DUMP_NAME', repo_type='dataset', local_dir='/tmp/restore'))"); then
+    event backup_downloaded
   else
-    echo '{"event": "snapshot_not_downloaded", "reason": "no HF_TOKEN or the download failed"}'
-    snapshot=""
+    event backup_not_downloaded
+    dump=""
   fi
 fi
-if [ -n "$snapshot" ]; then
-  pg_restore --no-owner --exit-on-error --host=127.0.0.1 --username=user --dbname=datos "$snapshot"
-  echo '{"event": "snapshot_restored"}'
+restored=0
+if [[ -n "$dump" ]]; then
+  pg_restore --no-owner --exit-on-error --host=127.0.0.1 --username=user --dbname=datos "$dump"
+  event backup_restored
+  restored=1
+fi
+# A Space that did not restore its backup must never upload over it: an hour later the empty
+# database would replace the real one. FIRST_START=1 allows it, for a dataset with no backup yet.
+backing_up=0
+if [[ -n "${HF_TOKEN:-}" && ( $restored == 1 || "${FIRST_START:-0}" == 1 ) ]]; then
+  backing_up=1
+elif [[ -n "${HF_TOKEN:-}" ]]; then
+  event backups_off_nothing_restored
 fi
 
-# The same steps as docker/entrypoint.sh: migrations newer than the snapshot, then the CSV data
-# of this commit (so a deploy with new sectors or governments shows them before the next snapshot).
+# The same steps as docker/entrypoint.sh: migrations newer than the backup, then the CSV data of
+# this commit.
 alembic upgrade head
 python -m datos.territories load
 python -m datos.governments load
 python -m datos.organization load
 
 uvicorn datos.main:app --factory --host 127.0.0.1 --port 8000 &
-exec nginx -c /etc/nginx/space.conf -g 'daemon off;'
+nginx -c /etc/nginx/space.conf -g 'daemon off;' &
+serving=$!
+
+# The jobs need the token: without it the Space only serves what it restored.
+if [[ -n "${HF_TOKEN:-}" ]]; then
+  hub -c "from huggingface_hub import snapshot_download as d
+d('$MODEL_REPO', allow_patterns='$MODEL_NAME/*', local_dir='$MODELS_DIR')" >/dev/null &&
+    event model_downloaded || event model_not_downloaded
+  collector.sh &
+  HF_HUB_OFFLINE=1 MODEL_DIR="$MODELS_DIR/$MODEL_NAME" worker.sh &
+  if [[ $backing_up == 1 ]]; then
+    HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py loop &
+  fi
+else
+  event jobs_not_started_no_token
+fi
+
+# On stop, one last backup, so a restart loses as little as possible.
+stop() {
+  event space_stopping
+  if [[ $backing_up == 1 ]]; then
+    HF_HOME=/home/user/.hf HF_HUB_OFFLINE=0 python /app/backup.py once || event backup_on_stop_failed
+  fi
+  kill $(jobs -p) 2>/dev/null || true
+  exit 0
+}
+trap stop TERM INT
+
+# The Space lives while nginx does; if nginx stops, the container stops and is started again.
+wait "$serving"
