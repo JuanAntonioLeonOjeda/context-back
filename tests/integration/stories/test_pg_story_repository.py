@@ -82,6 +82,59 @@ def test_only_close_articles_of_different_outlets_inside_the_window_are_candidat
     assert pairs[0].days_apart == pytest.approx(1.0)
 
 
+def _article(engine: Engine, number: int, outlet: str, at: datetime) -> None:
+    """One more article with the same vector as articles 1-4."""
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                "INSERT INTO articles (id, outlet_id, url, published_at, headline)"
+                " OVERRIDING SYSTEM VALUE VALUES (:id, :outlet, :url, :at, 'Headline')"
+            ),
+            {"id": number, "outlet": outlet, "url": f"https://x.example/{number}", "at": at},
+        )
+    PgEmbeddingRepository(engine).add("encoder", "v1", [(number, vector(1.0))])
+
+
+def _pairs(engine: Engine) -> list[tuple[int, int]]:
+    pairs = PgStoryRepository(engine).candidate_pairs("v1", since=SINCE, settings=SETTINGS)
+    return [(p.article_a_id, p.article_b_id) for p in pairs]
+
+
+def test_the_window_includes_its_last_instant_and_not_one_second_more(engine: Engine) -> None:
+    # Article 4 (outlet b) is on 21 October at 00:00: 3 days before is in, a second more is out.
+    _article(engine, 10, "outlet-a", datetime(2026, 10, 18, tzinfo=UTC))
+    _article(engine, 11, "outlet-a", datetime(2026, 10, 17, 23, 59, 59, tzinfo=UTC))
+
+    assert (4, 10) in _pairs(engine)
+    assert (4, 11) not in _pairs(engine)
+
+
+def test_two_articles_of_the_same_instant_are_one_pair(engine: Engine) -> None:
+    _article(engine, 10, "outlet-a", datetime(2026, 10, 25, tzinfo=UTC))
+    _article(engine, 11, "outlet-b", datetime(2026, 10, 25, tzinfo=UTC))
+
+    assert _pairs(engine).count((10, 11)) == 1
+
+
+def test_an_earlier_article_with_a_later_id_keeps_the_smaller_id_and_its_outlet_first(
+    engine: Engine,
+) -> None:
+    # Article 10 is published before article 2 (outlet b, 11 October) but has the bigger id.
+    _article(engine, 10, "outlet-a", datetime(2026, 10, 10, 12, tzinfo=UTC))
+
+    pairs = PgStoryRepository(engine).candidate_pairs("v1", since=SINCE, settings=SETTINGS)
+    pair = next(p for p in pairs if (p.article_a_id, p.article_b_id) == (2, 10))
+    assert (pair.outlet_a_id, pair.outlet_b_id) == ("outlet-b", "outlet-a")
+    assert pair.days_apart == pytest.approx(0.5)
+
+
+def test_an_article_before_the_start_is_not_paired_with_one_after_it(engine: Engine) -> None:
+    _article(engine, 10, "outlet-b", datetime(2026, 9, 30, 23, tzinfo=UTC))
+    _article(engine, 11, "outlet-a", datetime(2026, 10, 1, 1, tzinfo=UTC))
+
+    assert (10, 11) not in _pairs(engine)
+
+
 def test_the_threshold_filters_dissimilar_vectors(engine: Engine) -> None:
     with engine.begin() as connection:
         connection.execute(
