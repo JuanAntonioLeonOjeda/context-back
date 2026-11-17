@@ -18,6 +18,7 @@ on:
       - src/**
       - data/**
       - deploy/huggingface/**
+      - docker/**
       - .github/workflows/deploy-space.yml
   workflow_dispatch:
 
