@@ -18,6 +18,6 @@ next to official statistics.
   https://github.com/JuanAntonioLeonOjeda/context-front (web app).
 - **News:** only the headline, the date and a link to the outlet are shown.
 - **Data:** collected, classified and grouped here, every few hours; the database is backed up
-  every hour to a private dataset, which a restart starts from.
+  after each collection and each classification to a private dataset, which a restart starts from.
 - Statistics from the INE and boundaries from the IGN (CC BY 4.0); each source is named next to
   its data in the web app.
