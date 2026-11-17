@@ -14,22 +14,32 @@ _LATEST_ENCODER_VERSION = text(
 )
 # The cosine similarity is computed here, by pgvector: `<=>` is the cosine distance. There is no
 # vector index on purpose: a join of two columns cannot use one, and the window keeps it bounded.
+# Each article is compared only with the articles published after it inside the window (`y` is
+# later than `x`, the id breaking a tie of the same instant), so the window is a range that the
+# index on `articles.published_at` can read, and each pair is met once. Written as
+# `abs(x - y) <= window`, the window could not use the index and every article was compared with
+# every later id of the last 60 days before the window was checked: 16 minutes on 38,399 articles
+# on 2026-11-17, 2 minutes this way. The pair is returned with the smaller id first, as before.
 _PAIRS = text(
     """
-    SELECT a.article_id AS article_a_id, b.article_id AS article_b_id,
-           x.outlet_id AS outlet_a_id, y.outlet_id AS outlet_b_id,
+    SELECT least(x.id, y.id) AS article_a_id, greatest(x.id, y.id) AS article_b_id,
+           CASE WHEN x.id < y.id THEN x.outlet_id ELSE y.outlet_id END AS outlet_a_id,
+           CASE WHEN x.id < y.id THEN y.outlet_id ELSE x.outlet_id END AS outlet_b_id,
            1 - (a.embedding <=> b.embedding) AS similarity,
-           abs(extract(epoch FROM x.published_at - y.published_at)) / 86400 AS days_apart
-    FROM article_embeddings a
-    JOIN articles x ON x.id = a.article_id
+           extract(epoch FROM y.published_at - x.published_at) / 86400 AS days_apart
+    FROM articles x
+    JOIN article_embeddings a
+      ON a.article_id = x.id AND a.encoder_version = :encoder_version
+    JOIN articles y
+      ON y.published_at >= x.published_at
+     AND y.published_at <= x.published_at + make_interval(secs => :window_seconds)
+     AND (y.published_at > x.published_at OR y.id > x.id)
+     AND y.outlet_id <> x.outlet_id
     JOIN article_embeddings b
-      ON b.article_id > a.article_id AND b.encoder_version = a.encoder_version
-    JOIN articles y ON y.id = b.article_id
-    WHERE a.encoder_version = :encoder_version
-      AND x.published_at >= :since AND y.published_at >= :since
-      AND x.outlet_id <> y.outlet_id
-      AND abs(extract(epoch FROM x.published_at - y.published_at)) <= :window_seconds
+      ON b.article_id = y.id AND b.encoder_version = :encoder_version
+    WHERE x.published_at >= :since
       AND 1 - (a.embedding <=> b.embedding) >= :threshold
+    ORDER BY article_a_id, article_b_id
     """
 )
 _INSERT_RUN = text(

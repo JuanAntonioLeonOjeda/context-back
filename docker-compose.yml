@@ -115,6 +115,28 @@ services:
       back-main:
         condition: service_healthy
 
+  worker:
+    # The jobs that need the `ml` group (ADR-0016), in an image of their own: every
+    # WORKER_INTERVAL_MIN minutes it classifies the new articles with the own model and brings the
+    # stories and their trees up to date (docker/worker.sh). The model is mounted read-only from
+    # ./models; MODEL_DIR names it. It waits for back-main, which migrates the database.
+    profiles: [app]
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    image: datos-worker:local
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-datos}:${POSTGRES_PASSWORD:-datos}@db:5432/${POSTGRES_DB:-datos}
+      LOG_JSON: "true"
+      WORKER_INTERVAL_MIN: ${WORKER_INTERVAL_MIN:-60}
+      MODEL_DIR: /models/${MODEL_NAME:-train-set-v5-paraphrase-multilingual-mpnet-base-v2-seed42}
+    volumes:
+      - ./models:/models:ro
+    depends_on:
+      back-main:
+        condition: service_healthy
+
   front:
     profiles: [app]
     build: ../front
