@@ -11,4 +11,4 @@ before the next.
 - [x] 6. Reader and `community_voters` for `age` and `born_abroad` `[core]`
 - [x] 7. `?by=age|born_abroad` and the regenerated client
 - [x] 8. Front: two tabs, wording approved by the author, fixtures, tests (branch of its own)
-- [ ] 9. ADR-0026 amendment (or ADR-0027), `AGENTS.md`, reviews, PRs into `develop`
+- [x] 9. ADR-0026 amendment (or ADR-0027), `AGENTS.md`, reviews, PRs into `develop`
