@@ -17,3 +17,5 @@ specs
 # Raw downloads are reproducible from their source; the versioned data (data/geo, CSVs) is needed.
 data/raw
 data/cache
+# The own model is mounted into the worker, never copied into an image (1.1 GB each).
+models
