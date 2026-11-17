@@ -23,8 +23,9 @@ link_threshold="${LINK_THRESHOLD:-0.75}"
 # of the encoder would also change every vector, so it is a decision, not a side effect of a run.
 export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}"
 # No step may run longer than this: a hang is stopped and said in the log instead of blocking the
-# next day's run. The longest run seen took about an hour (2026-11-14).
-step_limit_seconds="${STEP_LIMIT_SECONDS:-3600}"
+# next day's run. Three hours: the grouping query alone took 16 minutes on 2026-11-17 and grows with
+# the square of the articles of the last 60 days; a run of about 5 hours was logged on 2026-11-11.
+step_limit_seconds="${STEP_LIMIT_SECONDS:-10800}"
 
 fail() {
   printf '{"event": "stories_not_updated", "reason": "%s", "at": "%s"}\n' \
