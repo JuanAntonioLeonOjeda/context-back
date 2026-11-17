@@ -29,6 +29,8 @@ event collector_started
 while true; do
   step collection python -m datos.news collect
   step classification python -m datos.classification classify-new
+  # AFTER_CYCLE, when set, runs once the cycle's data is stored (the Space backs up there).
+  [ -n "${AFTER_CYCLE:-}" ] && step after_cycle sh -c "$AFTER_CYCLE"
   sleep $((interval_min * 60)) &
   wait $!
 done
