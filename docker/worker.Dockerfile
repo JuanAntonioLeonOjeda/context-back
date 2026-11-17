@@ -13,24 +13,10 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 WORKDIR /app
 
-# The lock resolves torch with its CUDA packages on Linux (several GB) for a machine with no GPU.
-# Everything else comes from the lock; torch is then installed, at the locked version, from the
-# CPU-only index of PyTorch.
+# The ml group with torch for CPU only (docker/uv-sync-ml.sh says why).
 COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --locked --no-default-groups --group ml --no-install-project \
-      --no-install-package torch --no-install-package triton \
-      --no-install-package cuda-bindings --no-install-package cuda-pathfinder \
-      --no-install-package cuda-toolkit \
-      --no-install-package nvidia-cublas --no-install-package nvidia-cuda-cupti \
-      --no-install-package nvidia-cuda-nvrtc --no-install-package nvidia-cuda-runtime \
-      --no-install-package nvidia-cudnn-cu13 --no-install-package nvidia-cufft \
-      --no-install-package nvidia-cufile --no-install-package nvidia-curand \
-      --no-install-package nvidia-cusolver --no-install-package nvidia-cusparse \
-      --no-install-package nvidia-cusparselt-cu13 --no-install-package nvidia-nccl-cu13 \
-      --no-install-package nvidia-nvjitlink --no-install-package nvidia-nvshmem-cu13 \
-      --no-install-package nvidia-nvtx \
- && version=$(sed -n '/^name = "torch"$/{n;s/version = "\(.*\)"/\1/p;}' uv.lock) \
- && uv pip install --no-deps "torch==${version}" --index-url https://download.pytorch.org/whl/cpu
+COPY --chmod=755 docker/uv-sync-ml.sh /usr/local/bin/uv-sync-ml.sh
+RUN uv-sync-ml.sh --no-install-project
 
 # The stories' encoder in the image, so a run never reaches the Hub (on 2026-11-16 that check hung
 # for a day) and every deploy has the same weights.
@@ -43,18 +29,7 @@ COPY migrations ./migrations
 COPY src ./src
 COPY data ./data
 COPY --chmod=755 docker/worker.sh /usr/local/bin/worker.sh
-RUN uv sync --locked --no-default-groups --group ml --inexact \
-      --no-install-package torch --no-install-package triton \
-      --no-install-package cuda-bindings --no-install-package cuda-pathfinder \
-      --no-install-package cuda-toolkit \
-      --no-install-package nvidia-cublas --no-install-package nvidia-cuda-cupti \
-      --no-install-package nvidia-cuda-nvrtc --no-install-package nvidia-cuda-runtime \
-      --no-install-package nvidia-cudnn-cu13 --no-install-package nvidia-cufft \
-      --no-install-package nvidia-cufile --no-install-package nvidia-curand \
-      --no-install-package nvidia-cusolver --no-install-package nvidia-cusparse \
-      --no-install-package nvidia-cusparselt-cu13 --no-install-package nvidia-nccl-cu13 \
-      --no-install-package nvidia-nvjitlink --no-install-package nvidia-nvshmem-cu13 \
-      --no-install-package nvidia-nvtx
+RUN uv-sync-ml.sh
 
 RUN useradd --system --no-create-home --uid 10001 app && chmod -R a+rX /opt/hf
 USER app
