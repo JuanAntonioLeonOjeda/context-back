@@ -3,12 +3,13 @@
 # into stories (ADR-0020) and links each story to the earlier one it continues (ADR-0021). Each
 # grouping and linking is a new immutable run, and the API reads the latest one.
 # Embedding needs the `ml` group, so it runs on this machine and not in Docker (as ADR-0022).
-# Meant for a scheduler (scripts/launchd/es.datos.update-stories.plist), before the daily snapshot
-# (scripts/publish-snapshot.sh); logs are JSON lines in var/log/update-stories.log.
+# Meant for a scheduler (scripts/launchd/es.datos.update-stories.plist, every hour); logs are JSON
+# lines in var/log/update-stories.log.
 #
 #   scripts/update-stories.sh
 #   GROUP_THRESHOLD=0.9 LINK_THRESHOLD=0.7 scripts/update-stories.sh    # other provisional values
 #   HF_HUB_OFFLINE=0 scripts/update-stories.sh      # first run on a machine: download the encoder
+#   ALWAYS_REGROUP=1 scripts/update-stories.sh      # group and link even with no new article
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -55,5 +56,19 @@ stories() {
 }
 
 stories embed || fail "embed failed or took more than ${step_limit_seconds} s"
+
+# Run every hour, but a new grouping only when an article was embedded after the latest one: the
+# collector brings articles every few hours, and each run is a new immutable copy of every story of
+# the last 60 days (about 300 kB). ALWAYS_REGROUP=1 groups anyway, e.g. to try other thresholds.
+newer=$(docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "
+  SELECT exists (SELECT 1 FROM article_embeddings
+                 WHERE created_at > coalesce((SELECT max(created_at) FROM story_runs), '"'"'-infinity'"'"'))"') \
+  || fail "could not compare the embeddings with the latest run"
+if [[ "$newer" != "t" && "${ALWAYS_REGROUP:-0}" != "1" ]]; then
+  printf '{"event": "stories_unchanged", "reason": "no article embedded since the latest run", "at": "%s"}\n' \
+    "$(date -u +%FT%TZ)" >>"$log"
+  exit 0
+fi
+
 stories group --threshold "$group_threshold" || fail "group failed or took more than ${step_limit_seconds} s"
 stories link --threshold "$link_threshold" || fail "link failed or took more than ${step_limit_seconds} s"
