@@ -12,7 +12,7 @@ set -euo pipefail
 DEST=${1:?usage: $0 DEST}
 BACK=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 FRONT=$(git -C "${FRONT_DIR:-$BACK/../front}" rev-parse --show-toplevel)
-BACK_CODE=(pyproject.toml uv.lock README.md alembic.ini migrations src data deploy/huggingface)
+BACK_CODE=(pyproject.toml uv.lock README.md alembic.ini migrations src data docker deploy/huggingface)
 
 for repo in "$BACK" "$FRONT"; do
   [[ -z $(git -C "$repo" status --porcelain --untracked-files=no) ]] \
