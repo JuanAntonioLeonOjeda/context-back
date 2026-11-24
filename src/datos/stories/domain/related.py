@@ -35,6 +35,9 @@ class NewsItem:
     outlet_id: str
     headline: str
     published_at: datetime
+    # What a reader is shown, beside the headline: never the lead (sources audit, section 7).
+    outlet_name: str = ""
+    url: str = ""
 
 
 @dataclass(frozen=True, slots=True)

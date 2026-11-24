@@ -75,8 +75,13 @@ def _article(engine: Engine, number: int, at: datetime, vector: list[float] | No
         PgEmbeddingRepository(engine).add("encoder", "v1", [(number, vector)])
 
 
+def _reader(engine: Engine) -> PgRelatedReader:
+    # The API builds the reader on a request's connection; a test gives it one of its own.
+    return PgRelatedReader(engine.connect())
+
+
 def _ids(engine: Engine, step: int = 2, origin: int = 1, **kwargs: int) -> list[int]:
-    candidates = PgRelatedReader(engine).candidates(step, origin, SETTINGS, **kwargs)
+    candidates = _reader(engine).candidates(step, origin, SETTINGS, **kwargs)
     return [c.item.article_id for c in candidates]
 
 
@@ -117,7 +122,7 @@ def test_each_candidate_carries_its_similarity_to_the_step_and_to_the_origin(
     _article(engine, 2, STEP_AT, _unit(1, 0))
     _article(engine, 3, STEP_AT - timedelta(days=1), _similar(0.8))
 
-    [candidate] = PgRelatedReader(engine).candidates(2, 1, SETTINGS)
+    [candidate] = _reader(engine).candidates(2, 1, SETTINGS)
 
     assert candidate.similarity == pytest.approx(0.8, abs=1e-5)
     # (0.8, 0.6) · (0.8, 0.6) = 1: this candidate points the same way as the origin.
@@ -145,8 +150,9 @@ def test_a_step_with_no_vector_yet_has_no_candidates(engine: Engine) -> None:
 def test_an_article_is_read_back_and_an_unknown_one_is_none(engine: Engine) -> None:
     _article(engine, 1, STEP_AT, None)
 
-    item = PgRelatedReader(engine).news_item(1)
+    item = _reader(engine).news_item(1)
 
     assert item is not None and (item.article_id, item.outlet_id, item.headline) == (1, "abc", "H1")
+    assert (item.outlet_name, item.url) == ("abc", "https://x.example/1")
     assert item.published_at == STEP_AT
-    assert PgRelatedReader(engine).news_item(999) is None
+    assert _reader(engine).news_item(999) is None
