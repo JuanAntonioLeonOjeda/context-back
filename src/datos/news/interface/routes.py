@@ -56,6 +56,8 @@ class ClassifierOut(BaseModel):
 
 
 class NewsItemOut(BaseModel):
+    # The article's id: its related news are at `/articles/{article_id}/related`.
+    article_id: int
     outlet_id: str
     outlet_name: str
     headline: str
@@ -159,6 +161,7 @@ def build_news_router(
 
 def _item(article: ClassifiedArticle) -> NewsItemOut:
     return NewsItemOut(
+        article_id=article.article_id,
         outlet_id=article.outlet_id,
         outlet_name=article.outlet_name,
         headline=article.headline,

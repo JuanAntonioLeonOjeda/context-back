@@ -40,6 +40,7 @@ def test_an_item_has_headline_link_date_classifier_and_never_a_party_or_the_lead
 
     [item] = body["items"]
     assert set(item) == {
+        "article_id",
         "outlet_id",
         "outlet_name",
         "headline",
@@ -50,6 +51,7 @@ def test_an_item_has_headline_link_date_classifier_and_never_a_party_or_the_lead
     }  # no party, no lead (ADR-0018, sources audit)
     assert item["classified_by"] == {"model_id": "rules", "model_version": "216d8cbc0b67"}
     assert (body["territory_id"], body["sector_id"]) == ("ccaa-05", "health")
+    assert item["article_id"] == article().article_id  # where its related news are asked for
 
 
 def test_without_dates_the_reader_is_asked_for_the_last_3_days_in_spain(
