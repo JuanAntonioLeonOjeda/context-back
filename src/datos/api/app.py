@@ -16,7 +16,9 @@ from datos.news.interface.routes import build_news_router
 from datos.organization.application.organization_chart import OrganizationReader
 from datos.organization.interface.routes import build_organization_router
 from datos.stories.application.community_stories import CommunityStoriesReader
+from datos.stories.application.related_news import RelatedReader
 from datos.stories.application.story_tree import StoryTreeReader
+from datos.stories.interface.related_routes import build_related_router
 from datos.stories.interface.routes import build_stories_router
 from datos.stories.interface.tree_routes import build_tree_router
 from datos.territories.routes import TerritoryReader, build_territories_router
@@ -33,6 +35,7 @@ def create_app(
     news: Provider[CommunityNewsReader],
     stories: Provider[CommunityStoriesReader],
     trees: Provider[StoryTreeReader],
+    related: Provider[RelatedReader],
     voters: Provider[VotersReader],
     organization: Provider[OrganizationReader],
     party_by_candidature: PartyByCandidature,
@@ -67,6 +70,7 @@ def create_app(
         )
     )
     app.include_router(build_tree_router(trees=trees))
+    app.include_router(build_related_router(related=related))
     app.include_router(build_voters_router(voters, governments, territories, party_by_candidature))
     app.include_router(build_organization_router(organization, territories, clock))
     return app

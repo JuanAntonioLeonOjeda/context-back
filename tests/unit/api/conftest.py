@@ -17,6 +17,7 @@ from datos.organization.domain.body import Body, BodyKind, BodyLevel, Holder
 from datos.organization.domain.boxes import Competence
 from datos.stories.application.community_stories import CommunityStory, StoryArticle, StoryRun
 from datos.stories.application.story_tree import TreeRun
+from datos.stories.domain.related import Candidate, NewsItem, RelatedSettings
 from datos.stories.domain.tree import StoryLink
 from datos.territories.territory import Level, Territory
 from datos.voters.application.community_voters import (
@@ -459,9 +460,42 @@ def trees_reader() -> FakeTrees:
     return FakeTrees()
 
 
+class FakeRelated:
+    """Article 10 on 16 November; its candidates, and those of each later step, set by a test."""
+
+    def __init__(self) -> None:
+        self.items = {
+            10: NewsItem(
+                10,
+                "abc",
+                "El juez ordena…",
+                datetime(2026, 11, 16, 11, tzinfo=UTC),
+                "ABC",
+                "https://abc.example/10",
+            )
+        }
+        self.found: dict[int, list[Candidate]] = {}
+
+    def news_item(self, article_id: int) -> NewsItem | None:
+        return self.items.get(article_id)
+
+    def candidates(
+        self, step_id: int, origin_id: int, settings: RelatedSettings, *, limit: int = 50
+    ) -> list[Candidate]:
+        return self.found.get(step_id, [])
+
+
+@pytest.fixture
+def related_reader() -> FakeRelated:
+    return FakeRelated()
+
+
 @pytest.fixture
 def make_client(
-    news_reader: FakeNews, stories_reader: FakeStories, trees_reader: FakeTrees
+    news_reader: FakeNews,
+    stories_reader: FakeStories,
+    trees_reader: FakeTrees,
+    related_reader: FakeRelated,
 ) -> Callable[..., TestClient]:
     def make(
         *,
@@ -489,6 +523,7 @@ def make_client(
                 news=lambda: news_reader,
                 stories=lambda: stories_reader,
                 trees=lambda: trees_reader,
+                related=lambda: related_reader,
                 voters=lambda: FakeVoters(voter_rows),
                 organization=lambda: organization or FakeOrganization(*ORGANIZATION),
                 party_by_candidature=PARTY_BY_CANDIDATURE,

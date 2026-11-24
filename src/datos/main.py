@@ -18,6 +18,7 @@ from datos.indicators.infrastructure.pg_reader import PgIndicatorReader
 from datos.log_setup import configure_logging
 from datos.news.infrastructure.pg_news_reader import PgCommunityNewsReader
 from datos.organization.infrastructure.pg_organization_reader import PgOrganizationReader
+from datos.stories.infrastructure.pg_related_reader import PgRelatedReader
 from datos.stories.infrastructure.pg_stories_reader import PgCommunityStoriesReader
 from datos.stories.infrastructure.pg_story_tree_reader import PgStoryTreeReader
 from datos.territories.reader import PgTerritoryReader
@@ -43,6 +44,7 @@ def app() -> FastAPI:
         news=built_on(connection, PgCommunityNewsReader),
         stories=built_on(connection, PgCommunityStoriesReader),
         trees=built_on(connection, PgStoryTreeReader),
+        related=built_on(connection, PgRelatedReader),
         voters=built_on(connection, PgVotersReader),
         organization=built_on(connection, PgOrganizationReader),
         party_by_candidature=read_candidature_parties(CANDIDATURE_PARTIES),
