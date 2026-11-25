@@ -51,6 +51,9 @@ class PgRelatedReader:
 
     def __init__(self, connection: Connection) -> None:
         self._connection = connection
+        # Read once per request: a chain asks for candidates up to a dozen times, and the version
+        # does not change within a request.
+        self._encoder_version: str | None = None
 
     def news_item(self, article_id: int) -> NewsItem | None:
         row = self._connection.execute(_ITEM, {"id": article_id}).one_or_none()
@@ -61,7 +64,9 @@ class PgRelatedReader:
     ) -> list[Candidate]:
         """The earlier candidates of a step, most similar first, at most `limit`. Fifty leaves room
         for the duplicates and the items far from the origin that the domain skips."""
-        encoder_version = self._connection.execute(_ENCODER_VERSION).scalar()
+        if self._encoder_version is None:
+            self._encoder_version = self._connection.execute(_ENCODER_VERSION).scalar()
+        encoder_version = self._encoder_version
         if encoder_version is None:
             return []
         rows = self._connection.execute(
