@@ -21,27 +21,51 @@ _ITEM = text(
     "SELECT a.id, a.outlet_id, o.name AS outlet_name, a.headline, a.url, a.published_at"
     " FROM articles a JOIN outlets o ON o.id = a.outlet_id WHERE a.id = :id"
 )
-# The earlier news items of a step, most similar first: published before the step and at most
-# `window` before it (a range the index on `published_at` reads), at least `step_threshold` to the
-# step, each with its similarity to the item the chain started from. No vector index: the window
-# keeps it to a few thousand distances (about 70 ms on 38,000 articles, 2026-11-24). A step with no
-# vector (an article the worker has not reached yet) has no candidates.
+# The step's own vector and instant. A step with no vector (an article the worker has not reached
+# yet) has no candidates. The vector comes back as text and goes into the next query as a value.
+_STEP = text(
+    "SELECT a.published_at, CAST(s.embedding AS text) AS embedding"
+    " FROM articles a JOIN article_embeddings s"
+    "   ON s.article_id = a.id AND s.encoder_version = :encoder_version"
+    " WHERE a.id = :step_id"
+)
+# The HNSW index (migration 0020) is approximate and the window filter comes after it: with
+# iterative scans it keeps reading the graph until `limit` items pass the filter, instead of
+# stopping at the first `ef_search` and returning fewer. `relaxed_order` may return them slightly
+# out of order, so the outer query orders them again. Both settings last until the request's
+# transaction ends and only change how an HNSW index is read.
+_HNSW_SETTINGS = text(
+    "SELECT set_config('hnsw.iterative_scan', 'relaxed_order', true),"
+    " set_config('hnsw.ef_search', '200', true)"
+)
+# The earlier news items of a step, most similar first: the `limit` nearest to the step's vector
+# published in the window before it (from `window_start` included to the step excluded), then
+# those at least `step_threshold` to the step, each with its similarity to the item the chain
+# started from. The index can only answer "nearest to a fixed vector": that is why the step's
+# vector is a parameter and not a join. Filtering the threshold after the limit keeps the same
+# answer: the items above it are the nearest ones. Measured on 38,000 articles (2026-11-25): 8 ms
+# median per step instead of 38, none of 188 candidates of 30 random articles missed.
 _CANDIDATES = text(
     """
+    WITH nearest AS MATERIALIZED (
+        SELECT eb.article_id, eb.embedding,
+               eb.embedding <=> CAST(:step_vector AS vector) AS distance
+        FROM article_embeddings eb
+        JOIN articles b ON b.id = eb.article_id
+        WHERE eb.encoder_version = :encoder_version
+          AND b.published_at < :step_at AND b.published_at >= :window_start
+        ORDER BY distance
+        LIMIT :limit
+    )
     SELECT b.id, b.outlet_id, ob.name AS outlet_name, b.headline, b.url, b.published_at,
-           1 - (s.embedding <=> eb.embedding) AS similarity,
-           1 - (o.embedding <=> eb.embedding) AS to_origin
-    FROM articles a
-    JOIN article_embeddings s ON s.article_id = a.id AND s.encoder_version = :encoder_version
-    JOIN article_embeddings o ON o.article_id = :origin_id AND o.encoder_version = :encoder_version
-    JOIN articles b
-      ON b.published_at < a.published_at AND b.published_at >= a.published_at - :window
-    JOIN article_embeddings eb ON eb.article_id = b.id AND eb.encoder_version = :encoder_version
+           1 - n.distance AS similarity,
+           1 - (o.embedding <=> n.embedding) AS to_origin
+    FROM nearest n
+    JOIN articles b ON b.id = n.article_id
     JOIN outlets ob ON ob.id = b.outlet_id
-    WHERE a.id = :step_id
-      AND 1 - (s.embedding <=> eb.embedding) >= :step_threshold
-    ORDER BY s.embedding <=> eb.embedding, b.id
-    LIMIT :limit
+    JOIN article_embeddings o ON o.article_id = :origin_id AND o.encoder_version = :encoder_version
+    WHERE 1 - n.distance >= :step_threshold
+    ORDER BY n.distance, b.id
     """
 )
 
@@ -69,13 +93,20 @@ class PgRelatedReader:
         encoder_version = self._encoder_version
         if encoder_version is None:
             return []
+        step = self._connection.execute(
+            _STEP, {"encoder_version": encoder_version, "step_id": step_id}
+        ).one_or_none()
+        if step is None:
+            return []
+        self._connection.execute(_HNSW_SETTINGS)
         rows = self._connection.execute(
             _CANDIDATES,
             {
                 "encoder_version": encoder_version,
-                "step_id": step_id,
+                "step_vector": step.embedding,
+                "step_at": step.published_at,
+                "window_start": step.published_at - timedelta(days=settings.window_days),
                 "origin_id": origin_id,
-                "window": timedelta(days=settings.window_days),
                 "step_threshold": settings.step_threshold,
                 "limit": limit,
             },
