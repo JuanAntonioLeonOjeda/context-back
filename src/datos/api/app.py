@@ -1,6 +1,7 @@
 """FastAPI application factory."""
 
 from collections.abc import Mapping
+from typing import Protocol
 
 from fastapi import FastAPI
 
@@ -13,6 +14,7 @@ from datos.indicators.application.read_indicators import IndicatorReader
 from datos.indicators.interface.routes import build_indicators_router
 from datos.news.application.community_news import CommunityNewsReader
 from datos.news.interface.routes import build_news_router
+from datos.organization.application.competent_news import CompetenceReader
 from datos.organization.application.organization_chart import OrganizationReader
 from datos.organization.interface.routes import build_organization_router
 from datos.stories.application.community_stories import CommunityStoriesReader
@@ -26,6 +28,10 @@ from datos.voters.application.community_voters import PartyByCandidature, Voters
 from datos.voters.interface.routes import build_voters_router
 
 
+class OrganizationAndCompetenceReader(OrganizationReader, CompetenceReader, Protocol):
+    """The organisation's reader serves the charts and the bodies with competence of the news."""
+
+
 def create_app(
     database_probe: DatabaseProbe,
     *,
@@ -37,7 +43,7 @@ def create_app(
     trees: Provider[StoryTreeReader],
     related: Provider[RelatedReader],
     voters: Provider[VotersReader],
-    organization: Provider[OrganizationReader],
+    organization: Provider[OrganizationAndCompetenceReader],
     party_by_candidature: PartyByCandidature,
     clock: Clock,
     geometry: Mapping[str, object],
@@ -57,6 +63,7 @@ def create_app(
         build_news_router(
             news=news,
             territories=territories,
+            competences=organization,
             clock=clock,
             classifier_id=classifier_id,
         )

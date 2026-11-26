@@ -4,13 +4,13 @@ trees. Headline, link and date only: never the lead (sources audit, section 7), 
 """
 
 from datetime import date, datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
 from datos.api.provider import Provider
-from datos.clock import Clock
+from datos.clock import SPAIN, Clock
 from datos.news.application.community_news import (
     DEFAULT_DAYS,
     MAX_RANGE_DAYS,
@@ -21,6 +21,7 @@ from datos.news.application.community_news import (
     community_news,
     community_trees,
 )
+from datos.organization.application.competent_news import CompetenceReader, CompetentBodies
 from datos.territories.routes import TerritoryReader
 from datos.territories.territory import Level
 
@@ -46,13 +47,27 @@ portal began collecting, answers an empty list, not an error.
 outlet's size, audience or line.
 
 No item names a party (ADR-0018): who governs the community is in
-`/communities/{{territory_id}}/governments`.
+`/communities/{{territory_id}}/governments`. Each item names instead the bodies with competence in
+its topic (ADR-0027), from its whole classification: `shared` is true when the item had no level of
+government and the competence table's levels were used.
 """
 
 
 class ClassifierOut(BaseModel):
     model_id: str
     model_version: str
+
+
+class CompetentBodyOut(BaseModel):
+    """A body with competence in the item's topic: a fact of the body, never of a person or a
+    party (ADR-0027)."""
+
+    body_id: str  # its chart: `/organization` or `/communities/{territory_id}/organization`
+    name: str
+    level: Literal["state", "ccaa", "local"]
+    territory_id: str | None  # null for a generic local body
+    sector_id: str  # the sector of the item that led to it
+    shared: bool  # the item had no level: the competence table's levels were used
 
 
 class NewsItemOut(BaseModel):
@@ -67,6 +82,8 @@ class NewsItemOut(BaseModel):
     # The story of the item when it has a tree of related stories; the tree is at
     # `/stories/{tree_story_id}/tree`.
     tree_story_id: int | None
+    # By sector, then State, community and local, then name; empty where no chart reaches.
+    competent_bodies: list[CompetentBodyOut]
 
 
 class CommunityTreesOut(BaseModel):
@@ -87,6 +104,7 @@ def build_news_router(
     *,
     news: Provider[CommunityNewsReader],
     territories: Provider[TerritoryReader],
+    competences: Provider[CompetenceReader],
     clock: Clock,
     classifier_id: str,
 ) -> APIRouter:
@@ -102,6 +120,7 @@ def build_news_router(
         sector: Annotated[str, Query(description="A sector id: education, health or housing")],
         news_reader: Annotated[CommunityNewsReader, Depends(news)],
         territory_reader: Annotated[TerritoryReader, Depends(territories)],
+        competence_reader: Annotated[CompetenceReader, Depends(competences)],
         date_from: Annotated[date | None, Query(description="First day, ISO date")] = None,
         date_to: Annotated[date | None, Query(description="Last day, ISO date")] = None,
     ) -> CommunityNewsOut:
@@ -126,7 +145,7 @@ def build_news_router(
             sector_id=result.sector_id,
             since=result.since,
             until=result.until,
-            items=[_item(item) for item in result.items],
+            items=_items(result.items, competence_reader),
         )
 
     @router.get(
@@ -139,6 +158,7 @@ def build_news_router(
         sector: Annotated[str, Query(description="A sector id: education, health or housing")],
         news_reader: Annotated[CommunityNewsReader, Depends(news)],
         territory_reader: Annotated[TerritoryReader, Depends(territories)],
+        competence_reader: Annotated[CompetenceReader, Depends(competences)],
     ) -> CommunityTreesOut:
         if territory_id not in {t.id for t in territory_reader.by_level(Level.CCAA)}:
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"unknown community {territory_id}")
@@ -153,13 +173,24 @@ def build_news_router(
         return CommunityTreesOut(
             territory_id=result.territory_id,
             sector_id=result.sector_id,
-            items=[_item(item) for item in result.items],
+            items=_items(result.items, competence_reader),
         )
 
     return router
 
 
-def _item(article: ClassifiedArticle) -> NewsItemOut:
+def _items(articles: tuple[ClassifiedArticle, ...], reader: CompetenceReader) -> list[NewsItemOut]:
+    bodies = CompetentBodies(reader)  # read once for the whole page
+    return [_item(article, bodies) for article in articles]
+
+
+def _item(article: ClassifiedArticle, bodies: CompetentBodies) -> NewsItemOut:
+    competent = bodies.of(
+        communities=article.communities,
+        sectors=article.sectors,
+        levels=article.levels,
+        published_on=article.published_at.astimezone(SPAIN).date(),
+    )
     return NewsItemOut(
         article_id=article.article_id,
         outlet_id=article.outlet_id,
@@ -169,4 +200,15 @@ def _item(article: ClassifiedArticle) -> NewsItemOut:
         published_at=article.published_at,
         classified_by=ClassifierOut(model_id=article.model_id, model_version=article.model_version),
         tree_story_id=article.tree_story_id,
+        competent_bodies=[
+            CompetentBodyOut(
+                body_id=c.body.id,
+                name=c.body.name,
+                level=c.body.level.value,
+                territory_id=c.body.territory_id,
+                sector_id=c.sector_id,
+                shared=c.shared,
+            )
+            for c in competent
+        ],
     )
