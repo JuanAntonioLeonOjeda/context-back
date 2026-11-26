@@ -202,6 +202,24 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
   offered as Akoma Ntoso, RDF and ELI; the open data portal has the normative published in the DOGC
   (daily) and the history of departments, **but no dataset of the current consellers**. The page of
   the Govern answered 403 to an automated client: not read, not forced.
+- **Andalucía** (checked 2026-11-26). Decreto del Presidente 9/2026 (consejerías and their competences,
+  arts. 3–15) and 10/2026 (consejeros), BOJA extraordinario 12 of 9 July 2026, read in HTML and in
+  the PDF of the bulletin. The President's Real Decreto 558/2026 in the BOE. `robots.txt` and the
+  legal notice of `juntadeandalucia.es` could not be read (the connection was reset twice): reuse
+  terms **unverified**.
+- **Castilla-La Mancha** (checked 2026-11-26). Decreto 68/2023 (the twelve units) and the
+  appointment decrees 79–90/2023 listed in the DOCM summary of 11 July 2023; the DOCM's document
+  pages answered HTTP 500 and its `robots.txt` disallows them and the PDFs. The competences come
+  from each body's page on `castillalamancha.es/gobierno` (no article cited there). The legal
+  notice of `castillalamancha.es` allows reuse under Ley 37/2007, citing the source and the date of
+  the last publication. The President's Real Decreto 602/2023 in the BOE.
+- **Comunitat Valenciana** (checked 2026-11-26, **not loaded**). Decreto 16/2025 (consellerias and
+  competences) and 17/2025 (consellers) read in the DOGV PDFs; the DOGV's `robots.txt` disallows
+  `/datos/` (the PDFs) and its legal notice states no reuse terms. Decreto 17/2026 of 29 October
+  2026 changed the consellerias (the government's page shows "Conselleria de Servicios Sociales y
+  Justicia") and its text, like that of the appointments of October 2026, could not be read: the
+  DOGV pages are an empty shell to an automated client. The President's Real Decreto 1080/2025 in
+  the BOE.
 - **Consequence** (decided by the author, 2026-11-13): the posts and holders are **curated by hand
   in CSV files, one source URL per row**, as `data/governments/`; no reader of regional gazettes. The
   State's ministers come from the BOE. DIR3 is a cross-check and a source of the body's code, not a
