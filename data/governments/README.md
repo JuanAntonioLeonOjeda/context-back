@@ -21,6 +21,9 @@ it assigns topics to laws, and the topics of each law will be curated here (D17)
 
 - `is_active = true`: education, health and housing (the three of launch) and, since 2026-11-02, justice and work (taxes is deferred, with its competences loaded). Only active sectors are
   read by the rules, the training sample, the own model and the news API (migration 0007).
+- `culture` (Cultura y deporte) is ours, not one of those 12: added on 2026-11-26 for the
+  organisation charts, so culture and sport stop reaching the education news (ADR-0027). It is not
+  a topic of the news or of the laws, and stays `false`.
 - `is_active = false`: planned. A sector is activated in its own batch, with its competences
   (sourced, BOE), its rules and enrichment terms and its labels; then its row turns `true` and the
   data is reloaded. Activating one changes the model's labels, so it needs a new training.

@@ -117,7 +117,7 @@ def test_loads_sectors_and_competences_twice_with_the_same_result(db: Connection
 
     _load(db)
 
-    assert (_count(db, "sectors"), _count(db, "competences")) == first == (12, 45)
+    assert (_count(db, "sectors"), _count(db, "competences")) == first == (13, 45)
     active = db.execute(text("SELECT id FROM sectors WHERE is_active ORDER BY id")).scalars()
     assert list(active) == ["education", "health", "housing", "justice", "work"]
 

@@ -1,4 +1,5 @@
 id,name,is_active,indicator_id
+culture,Cultura y deporte,false,
 economy,Economía,false,
 education,Educación,true,higher_education_share_16plus
 environment,Medio ambiente,false,

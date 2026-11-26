@@ -48,6 +48,7 @@ def test_an_item_has_headline_link_date_classifier_and_never_a_party_or_the_lead
         "published_at",
         "classified_by",
         "tree_story_id",
+        "competent_bodies",
     }  # no party, no lead (ADR-0018, sources audit)
     assert item["classified_by"] == {"model_id": "rules", "model_version": "216d8cbc0b67"}
     assert (body["territory_id"], body["sector_id"]) == ("ccaa-05", "health")
@@ -184,3 +185,32 @@ def test_trees_of_an_unknown_community_or_sector_are_refused(make_client: Client
 
     assert client.get("/communities/ccaa-99/trees?sector=health").status_code == 404
     assert client.get("/communities/ccaa-05/trees?sector=nope").status_code == 422
+
+
+def test_an_item_names_the_bodies_with_competence_in_its_topic_from_its_whole_classification(
+    make_client: Client,
+) -> None:
+    item = replace(article(), communities=("ccaa-13",), sectors=("health",), levels=())
+
+    body = make_client(articles=[item]).get("/communities/ccaa-13/news?sector=health").json()
+
+    # No level: the competence table's (State and community) are used and said shared. The State
+    # has no health body in the fixture; the ayuntamiento has health, but not at those levels.
+    assert body["items"][0]["competent_bodies"] == [
+        {
+            "body_id": "ccaa-13-sanidad",
+            "name": "Consejería de Sanidad",
+            "level": "ccaa",
+            "territory_id": "ccaa-13",
+            "sector_id": "health",
+            "shared": True,
+        }
+    ]
+
+
+def test_an_item_of_a_community_with_no_chart_names_no_body(make_client: Client) -> None:
+    item = replace(article(), communities=("ccaa-05",), sectors=("health",), levels=("ccaa",))
+
+    body = make_client(articles=[item]).get("/communities/ccaa-05/news?sector=health").json()
+
+    assert body["items"][0]["competent_bodies"] == []

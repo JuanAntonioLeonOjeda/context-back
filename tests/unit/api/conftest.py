@@ -77,6 +77,9 @@ class FakeOrganization:
     def sector_names(self) -> dict[str, str]:
         return {"health": "Sanidad", "taxes": "Impuestos"}
 
+    def table_levels(self) -> dict[str, frozenset[BodyLevel]]:
+        return {"health": frozenset({BodyLevel.STATE, BodyLevel.CCAA})}
+
 
 class FakeIndicators:
     def __init__(self, indicators: list[IndicatorInfo], values: list[StoredValue]) -> None:

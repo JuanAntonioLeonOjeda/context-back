@@ -83,14 +83,22 @@ item says (ADR-0025).
 
 | Matter | Sector |
 |---|---|
-| Education, universities, research, innovation, culture, sport | `education` |
+| Education, from infant school to university, and vocational training | `education` |
+| Culture, heritage, sport | `culture` |
 | Health | `health` |
-| Housing, urban planning, land | `housing` |
+| Housing, land for housing | `housing` |
+| Urban and territorial planning | `environment` (with `housing` only when the same row also covers housing) |
 | Environment, water, energy, climate | `environment` |
-| Economy, industry, trade, consumers, gambling, tourism, agriculture, transport and public works | `economy` |
+| Economy, industry, trade, consumers, gambling, tourism, agriculture, transport and public works, research and innovation | `economy` |
 | Taxes, budgets, public debt | `taxes` (with `economy` when the row also covers economic policy) |
 | Employment, labour relations | `work` |
 | Social services, equality, youth, children, democratic memory, human rights | `rights` |
 | Migration, asylum, citizenship | `migration` |
 | Justice, courts, penitentiary services | `justice` |
 | Public administration, civil service, security, civil protection, elections, institutions | `institutional` |
+
+A news item reaches a body through these sectors (ADR-0027), so a sector names only the matters a
+news item of that sector is about: the labelling guide's definitions (`docs/labelling-guide.md`).
+That is why culture and sport have a sector of their own and research goes with the economy
+(retagged on 2026-11-26). The training of the State's education ministry for employment stays in
+`education`: labour news reach the labour ministry.
