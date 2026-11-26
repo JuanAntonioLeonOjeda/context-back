@@ -39,7 +39,9 @@ print(d('$DATA_REPO', '$DUMP_NAME', repo_type='dataset', local_dir='/tmp/restore
 fi
 restored=0
 if [[ -n "$dump" ]]; then
-  pg_restore --no-owner --exit-on-error --host=127.0.0.1 --username=user --dbname=datos "$dump"
+  # The restore builds the HNSW index of the related news (migration 0020) again; its graph does
+  # not fit in the default 64 MB and the build slows down. Only for the restore: the Space has 16 GB.
+  PGOPTIONS="-c maintenance_work_mem=512MB" pg_restore --no-owner --exit-on-error --host=127.0.0.1 --username=user --dbname=datos "$dump"
   event backup_restored
   restored=1
 fi
