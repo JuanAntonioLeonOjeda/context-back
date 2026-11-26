@@ -9,7 +9,7 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [x] 2. `config.py` (Pydantic settings), structlog setup, `.env.example`
 - [x] 3. Query layer confirmed by the author: SQLAlchemy Core 2.0 + psycopg 3, no ORM (2026-10-13); no ADR needed
 - [x] 4. `docker-compose.yml`: PostgreSQL + pgvector and Label Studio, pinned and with healthchecks
-- [ ] 5. Alembic setup; ADR-0010 reviewed by the author
+- [x] 5. Alembic setup; ADR-0010 reviewed by the author
 - [x] 6. FastAPI app with `/health` (database check) and its tests
 - [x] 7. CI: ruff, mypy, unit and integration tests — green on GitHub (PR #1, 2026-10-13)
 
@@ -34,9 +34,9 @@ Each task is one or a few commits. `[core]` tasks follow the collaborative mode 
 - [x] 18. Minimal RSS collector into `outlets` / `articles` (idempotent), with real-sample tests (`uv run python -m datos.news collect`)
 - [x] 19. `docs/labelling-guide.md`, reviewed by the author
 - [x] 20a. Collect news sitemaps (RTVC, Telemadrid) and section pages (RTVE, 3Cat): article pages read once, only for new URLs, at most 30 per feed and run, one per second
-- [ ] 20b. Scheduled collection every 3 hours for ~3 weeks, from 2026-10-13 (launchd until 2026-10-14, then the `collector` service in Docker, phase `news-live` task 13)
-- [ ] 20. Stratified sample of 200 (equal per outlet, half random and half enriched, stratum recorded) and Label Studio project (no proposals loaded)
-- [ ] 21. Author labels; export to `data/eval/test-set-v1.jsonl`
+- [x] 20b. Scheduled collection every 3 hours for ~3 weeks, from 2026-10-13 (launchd until 2026-10-14, then the `collector` service in Docker, phase `news-live` task 13)
+- [x] 20. Stratified sample of 200 (equal per outlet, half random and half enriched, stratum recorded) and Label Studio project (no proposals loaded)
+- [x] 21. Author labels; export to `data/eval/test-set-v1.jsonl`
 
 > Tasks 20 and 21 wait for ~3 weeks of collection (until early November). The phase was merged
 > without them, by the author's decision on 2026-10-13; they continue on their own branch
