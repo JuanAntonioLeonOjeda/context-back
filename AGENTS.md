@@ -42,7 +42,7 @@ Update the status column when a phase creates or finishes a path.
 | `.github/workflows/` | `ci.yml`: ruff, mypy, unit + integration tests (green on GitHub); `deploy-space.yml` and `keep-space-awake.yml`: the Space (ADR-0023) | ✅ |
 | `docs/sources-audit.md` | dated audit of feeds, robots.txt, mining reservations, GDELT, INE, elections, IP law | ✅ |
 | `data/news/` | approved outlets and how each is collected | ✅ |
-| `data/organization/` | `bodies.csv`, `holders.csv`, `competences.csv`: the organisation charts, curated by hand with one source URL per row (the State from the BOE; Madrid, Canarias and Cataluña as the pilot; Andalucía and Castilla-La Mancha since 2026-11-26), with the conventions in `README.md` | 🚧 |
+| `data/organization/` | `bodies.csv`, `holders.csv`, `competences.csv`: the organisation charts, curated by hand with one source URL per row (the State from the BOE; Madrid, Canarias and Cataluña as the pilot; Andalucía, Castilla-La Mancha and the Comunitat Valenciana since 2026-11-26), with the conventions in `README.md` | 🚧 |
 | `data/voters/` | `candidature-parties.csv`: which party a candidature of an election counts as (by candidature; a coalition has no row), with its rule in `README.md` | ✅ |
 | `docs/project-brief.md` | scope, architecture, data model, phases, sources to verify | ✅ |
 | `docs/indicators.md` | the five indicators: INE table, unit, frequency, how a value is chosen and stored, what was verified | ✅ |
