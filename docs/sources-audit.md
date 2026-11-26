@@ -218,9 +218,8 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
   social services and justice into the "Conselleria de Servicios Sociales y Justicia", read from the
   PDF the author downloaded by hand (DOGV 10482). The DOGV's `robots.txt` disallows `/datos/` (the
   PDFs), its legal notice states no reuse terms, and its HTML pages are an empty shell to an
-  automated client. The appointment of the new conselleria's holder in October 2026 was **not
-  read**: its row cites the government's page (`presidencia.gva.es/es/xi-legislatura`) until the
-  decree is. The President's Real Decreto 1080/2025 in the BOE.
+  automated client. The appointment of its holder, Decreto 18/2026 of 29 October 2026 (DOGV 10482),
+  was read from a PDF the author downloaded too. The President's Real Decreto 1080/2025 in the BOE.
 - **Consequence** (decided by the author, 2026-11-13): the posts and holders are **curated by hand
   in CSV files, one source URL per row**, as `data/governments/`; no reader of regional gazettes. The
   State's ministers come from the BOE. DIR3 is a cross-check and a source of the body's code, not a
