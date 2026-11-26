@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import Engine, create_engine, text
+from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.engine import make_url
 
 from datos.stories.domain.related import RelatedSettings
@@ -156,3 +156,18 @@ def test_an_article_is_read_back_and_an_unknown_one_is_none(engine: Engine) -> N
     assert (item.outlet_name, item.url) == ("abc", "https://x.example/1")
     assert item.published_at == STEP_AT
     assert _reader(engine).news_item(999) is None
+
+
+def test_the_encoder_version_is_read_once_per_reader(engine: Engine) -> None:
+    _article(engine, 1, STEP_AT, _unit(*ORIGIN))
+    _article(engine, 2, STEP_AT, _unit(1, 0))
+    _article(engine, 3, STEP_AT - timedelta(days=1), _similar(0.9))
+    connection = engine.connect()
+    statements: list[str] = []
+    event.listen(connection, "before_cursor_execute", lambda *args: statements.append(args[2]))
+    reader = PgRelatedReader(connection)
+
+    reader.candidates(2, 1, SETTINGS)
+    reader.candidates(3, 1, SETTINGS)
+
+    assert sum("GROUP BY encoder_version" in s for s in statements) == 1
