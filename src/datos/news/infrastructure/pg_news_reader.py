@@ -28,7 +28,7 @@ _RECENT = text(
     ),
     latest AS (
         SELECT DISTINCT ON (c.article_id)
-               c.article_id, c.communities, c.sectors, c.model_id, c.model_version
+               c.article_id, c.communities, c.sectors, c.levels, c.model_id, c.model_version
         FROM classifications c
         JOIN in_window w ON w.id = c.article_id
         WHERE c.model_id = :model_id
@@ -36,7 +36,7 @@ _RECENT = text(
     ),
     matching AS (
         SELECT w.id, w.outlet_id, o.name AS outlet_name, w.headline, w.url, w.published_at,
-               l.model_id, l.model_version,
+               l.model_id, l.model_version, l.communities, l.sectors, l.levels,
                row_number() OVER (
                    PARTITION BY w.outlet_id, (w.published_at AT TIME ZONE 'Europe/Madrid')::date
                    ORDER BY w.published_at DESC, w.id DESC
@@ -95,7 +95,7 @@ _LATEST_PER_TREE = text(
     ),
     latest AS (
         SELECT DISTINCT ON (c.article_id)
-               c.article_id, c.communities, c.sectors, c.model_id, c.model_version
+               c.article_id, c.communities, c.sectors, c.levels, c.model_id, c.model_version
         FROM classifications c
         JOIN in_trees i ON i.article_id = c.article_id
         WHERE c.model_id = :model_id
@@ -103,7 +103,7 @@ _LATEST_PER_TREE = text(
     ),
     candidates AS (
         SELECT a.id, a.outlet_id, o.name AS outlet_name, a.headline, a.url, a.published_at,
-               l.model_id, l.model_version, i.story_id,
+               l.model_id, l.model_version, l.communities, l.sectors, l.levels, i.story_id,
                row_number() OVER (
                    PARTITION BY i.root_id ORDER BY a.published_at DESC, a.outlet_id, a.id DESC
                ) AS newest
@@ -147,6 +147,9 @@ class PgCommunityNewsReader:
                 model_id=row.model_id,
                 model_version=row.model_version,
                 tree_story_id=row.story_id,
+                communities=tuple(row.communities),
+                sectors=tuple(row.sectors),
+                levels=tuple(row.levels),
             )
             for row in rows
         ]
@@ -183,6 +186,9 @@ class PgCommunityNewsReader:
                 model_id=row.model_id,
                 model_version=row.model_version,
                 tree_story_id=row.tree_story_id,
+                communities=tuple(row.communities),
+                sectors=tuple(row.sectors),
+                levels=tuple(row.levels),
             )
             for row in rows
         ]

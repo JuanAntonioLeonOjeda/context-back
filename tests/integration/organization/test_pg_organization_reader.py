@@ -96,6 +96,31 @@ def test_the_sector_names_are_those_of_the_whole_taxonomy(
     assert reader.sector_names() == {"health": "Sanidad", "housing": "Vivienda"}
 
 
+def test_the_competence_table_gives_each_sector_the_levels_of_any_of_its_rows(
+    reader: PgOrganizationReader, db: Connection
+) -> None:
+    rows = [
+        ("health", "bases", "state", None),
+        ("health", "management", "ccaa", None),
+        ("health", "management", "ccaa", "ccaa-13"),  # a community's own row: same level, once
+        ("housing", "planning", "local", None),
+    ]
+    for sector, activity, level, territory in rows:
+        db.execute(
+            text(
+                "INSERT INTO competences (sector_id, activity, description, level, function,"
+                " territory_id, legal_basis, source_url) VALUES (:sector, :activity, 'd', :level,"
+                " 'execution', :territory, 'CE art. 149', 'https://example.org')"
+            ),
+            {"sector": sector, "activity": activity, "level": level, "territory": territory},
+        )
+
+    assert reader.table_levels() == {
+        "health": frozenset({BodyLevel.STATE, BodyLevel.CCAA}),
+        "housing": frozenset({BodyLevel.LOCAL}),
+    }
+
+
 def test_an_empty_organisation_reads_as_nothing(reader: PgOrganizationReader) -> None:
     assert (reader.bodies(), reader.holders(), reader.competences()) == ([], [], [])
 

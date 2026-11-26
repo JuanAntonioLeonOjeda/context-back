@@ -175,6 +175,35 @@ def test_maps_the_row_with_outlet_name_and_classifier(connection: Connection) ->
     assert "Never shown" not in repr(article)
 
 
+def test_an_item_carries_its_whole_classification_for_the_bodies_with_competence(
+    connection: Connection,
+) -> None:
+    article_id = add_article(connection, "outlet-a", DAY)
+    classify(
+        connection,
+        article_id,
+        communities=[CANARIAS, "ccaa-13"],
+        sectors=["health", "housing"],
+        levels=["ccaa"],
+    )
+
+    [article] = PgCommunityNewsReader(connection).recent(
+        territory_id=CANARIAS,
+        sector_id="health",
+        since=SINCE,
+        until=UNTIL,
+        model_id="rules",
+        per_outlet_per_day=5,
+    )
+
+    # Every community and sector of the item, not only the ones asked for (ADR-0027).
+    assert (article.communities, article.sectors, article.levels) == (
+        (CANARIAS, "ccaa-13"),
+        ("health", "housing"),
+        ("ccaa",),
+    )
+
+
 def test_lists_the_active_sectors_of_the_database(connection: Connection) -> None:
     connection.execute(
         text("INSERT INTO sectors (id, name, is_active) VALUES ('work', 'Work', false)")
