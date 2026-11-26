@@ -213,13 +213,13 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
   from each body's page on `castillalamancha.es/gobierno` (no article cited there). The legal
   notice of `castillalamancha.es` allows reuse under Ley 37/2007, citing the source and the date of
   the last publication. The President's Real Decreto 602/2023 in the BOE.
-- **Comunitat Valenciana** (checked 2026-11-26, **not loaded**). Decreto 16/2025 (consellerias and
-  competences) and 17/2025 (consellers) read in the DOGV PDFs; the DOGV's `robots.txt` disallows
-  `/datos/` (the PDFs) and its legal notice states no reuse terms. Decreto 17/2026 of 29 October
-  2026 changed the consellerias (the government's page shows "Conselleria de Servicios Sociales y
-  Justicia") and its text, like that of the appointments of October 2026, could not be read: the
-  DOGV pages are an empty shell to an automated client. The President's Real Decreto 1080/2025 in
-  the BOE.
+- **Comunitat Valenciana** (checked 2026-11-26). Decreto 16/2025 (consellerias and competences) and
+  17/2025 (consellers) read in the DOGV PDFs; Decreto 17/2026 of 29 October 2026, which merges the
+  social services and justice into the "Conselleria de Servicios Sociales y Justicia", read from the
+  PDF the author downloaded by hand (DOGV 10482). The DOGV's `robots.txt` disallows `/datos/` (the
+  PDFs), its legal notice states no reuse terms, and its HTML pages are an empty shell to an
+  automated client. The appointment of its holder, Decreto 18/2026 of 29 October 2026 (DOGV 10482),
+  was read from a PDF the author downloaded too. The President's Real Decreto 1080/2025 in the BOE.
 - **Consequence** (decided by the author, 2026-11-13): the posts and holders are **curated by hand
   in CSV files, one source URL per row**, as `data/governments/`; no reader of regional gazettes. The
   State's ministers come from the BOE. DIR3 is a cross-check and a source of the body's code, not a
