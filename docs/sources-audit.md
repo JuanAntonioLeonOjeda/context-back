@@ -220,6 +220,13 @@ scraped. The XLSX files of DIR3 were downloaded once by hand to a scratch folder
   PDFs), its legal notice states no reuse terms, and its HTML pages are an empty shell to an
   automated client. The appointment of its holder, Decreto 18/2026 of 29 October 2026 (DOGV 10482),
   was read from a PDF the author downloaded too. The President's Real Decreto 1080/2025 in the BOE.
+- **Castilla y León** (checked 2026-11-26). The BOCYL's `robots.txt` disallows `/boletines/` and
+  `/html/`, where every document is; Decreto 2/2026 (the restructuring) and Acuerdo 8/2026 were
+  read from files an automated read fetched before that was seen, and Acuerdos 9, 10 and 16/2026
+  (the appointments) from PDFs the author downloaded by hand. Decreto 2/2026 only moves matters
+  between consejerías, so the competences come from the "Competencias" page of each body on
+  `gobierno.jcyl.es`, whose `robots.txt` allows them. The BOCYL's legal notice states no reuse terms.
+  The President's Real Decreto 476/2026 in the BOE.
 - **Consequence** (decided by the author, 2026-11-13): the posts and holders are **curated by hand
   in CSV files, one source URL per row**, as `data/governments/`; no reader of regional gazettes. The
   State's ministers come from the BOE. DIR3 is a cross-check and a source of the body's code, not a
