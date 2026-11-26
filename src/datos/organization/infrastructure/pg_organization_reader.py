@@ -29,6 +29,17 @@ _COMPETENCES = text(
     """
 )
 _SECTORS = text("SELECT id, name FROM sectors")
+# The levels the competence table (ADR-0011, from the BOE) gives each sector: the levels a news item
+# with no level of its own is shown at, as a shared competence (ADR-0027). The table has one row
+# per activity and level, and per territory where a community differs: a sector has a level when
+# any of its rows does.
+_TABLE_LEVELS = text(
+    """
+    SELECT sector_id, array_agg(DISTINCT level ORDER BY level) AS levels
+    FROM competences
+    GROUP BY sector_id
+    """
+)
 
 
 class PgOrganizationReader:
@@ -51,6 +62,13 @@ class PgOrganizationReader:
             )
             for r in self._connection.execute(_BODIES)
         ]
+
+    def table_levels(self) -> dict[str, frozenset[BodyLevel]]:
+        """The levels of government the competence table gives each sector it has rows for."""
+        return {
+            r.sector_id: frozenset(BodyLevel(level) for level in r.levels)
+            for r in self._connection.execute(_TABLE_LEVELS)
+        }
 
     def holders(self) -> list[Holder]:
         return [

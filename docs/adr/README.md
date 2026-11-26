@@ -37,6 +37,7 @@ web and API were merged.
 | [0024](0024-voter-profile-by-income-band.md) | The voter profile of a community, by income band (amends 0006) | Accepted |
 | [0025](0025-organisation-charts.md) | Organisation charts: bodies, posts and competences as facts of a body | Proposed |
 | [0026](0026-voter-profile-by-several-dimensions.md) | The voter profile by several dimensions: income, size, education, age and origin (amends 0024) | Proposed |
+| [0027](0027-news-linked-to-competent-bodies.md) | Each news item names the bodies with competence in its topic (complements 0018) | Accepted |
 
 Pending decision with no ADR yet: how the common summary of a story is produced
 (extractive first vs. LLM with mandatory citations). Needed before `story-contrast`.

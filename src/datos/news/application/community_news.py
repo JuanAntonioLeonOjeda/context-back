@@ -29,6 +29,11 @@ class ClassifiedArticle:
     model_version: str
     # The story of the article when it has a tree of related stories (phase history-trace).
     tree_story_id: int | None = None
+    # The whole classification, not only the community and sector asked for: the bodies with
+    # competence are found from it (ADR-0027). Levels are ids of `CompetenceLevel`.
+    communities: tuple[str, ...] = ()
+    sectors: tuple[str, ...] = ()
+    levels: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
