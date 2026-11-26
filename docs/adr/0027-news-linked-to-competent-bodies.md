@@ -61,10 +61,14 @@ holder's name next to the news item, never a party, and never "responsable".
 
 The rule, for each sector of a news item:
 
-1. The levels are the news item's own; when it has none, the levels the competence table gives for
-   that sector, and the answer says the competence is shared.
+1. The levels are the news item's own; when it has none, the State's and the community's of those the
+   competence table gives for that sector, and the answer says the competence is shared. The local
+   level only when the news item says so: the table gives it to most sectors, and the ayuntamiento
+   would be named on almost every news item (measured on the local database, 2026-11-26).
 2. State level: the State's bodies with a competence in that sector. Community level: the bodies of
-   each community of the news item that has a chart. Local level: the generic local bodies.
+   each community of the news item that has a chart, every one of them even when the page shows
+   one community (the news item is classified so). Local level: the generic local bodies, and the
+   local bodies of the news item's communities (a Canarian cabildo).
 3. Only bodies in force on the news item's publication date.
 4. A community with no chart yet, or a news item with no sector, shows no body.
 

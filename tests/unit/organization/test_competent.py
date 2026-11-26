@@ -30,6 +30,7 @@ BODIES = [
     _body("ccaa-13-sanidad", BodyLevel.CCAA, "ccaa-13"),
     _body("ccaa-05-obras-publicas", BodyLevel.CCAA, "ccaa-05"),
     _body("local-ayuntamiento", BodyLevel.LOCAL, None, BodyKind.LOCAL),
+    _body("ccaa-05-cabildo", BodyLevel.LOCAL, "ccaa-05", BodyKind.LOCAL),
     _body("ccaa-05-parlamento", BodyLevel.CCAA, "ccaa-05", BodyKind.PARLIAMENT),
 ]
 COMPETENCES = [
@@ -41,7 +42,8 @@ COMPETENCES = [
         (BODIES[3], "health"),
         (BODIES[4], "housing"),
         (BODIES[5], "housing"),
-        (BODIES[6], "health"),  # a parliament legislates on health, but does not manage it
+        (BODIES[6], "housing"),  # the cabildo, a local body only Canarias has
+        (BODIES[7], "health"),  # a parliament legislates on health, but does not manage it
     ]
 ]
 
@@ -85,14 +87,24 @@ def test_a_news_item_of_two_communities_names_both_bodies() -> None:
     assert ids == [("ccaa-05-sanidad", "health", False), ("ccaa-13-sanidad", "health", False)]
 
 
-def test_the_generic_local_body_is_named_at_the_local_level() -> None:
-    ids = _ids(_topic({"housing"}, {"ccaa-05"}))
-
-    assert ids == [
+def test_the_local_bodies_are_named_only_when_the_news_item_says_the_local_level() -> None:
+    # The table gives housing a local level too, but a news item with no level of its own is not
+    # sent to the ayuntamiento: it would be on almost every news item.
+    assert _ids(_topic({"housing"}, {"ccaa-05"})) == [
         ("es-vivienda", "housing", True),
         ("ccaa-05-obras-publicas", "housing", True),
-        ("local-ayuntamiento", "housing", True),
     ]
+    assert _ids(_topic({"housing"}, {"ccaa-05"}, {BodyLevel.LOCAL})) == [
+        ("ccaa-05-cabildo", "housing", False),
+        ("local-ayuntamiento", "housing", False),
+    ]
+
+
+def test_a_local_body_of_one_community_is_named_only_for_that_community() -> None:
+    ids = _ids(_topic({"housing"}, {"ccaa-13"}, {BodyLevel.LOCAL}))
+
+    # The generic ayuntamiento reaches Madrid; the Canarian cabildo does not.
+    assert ids == [("local-ayuntamiento", "housing", False)]
 
 
 def test_only_a_department_or_a_local_body_is_named_never_a_parliament() -> None:

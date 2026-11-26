@@ -14,6 +14,7 @@ from datetime import date
 from datos.organization.domain.body import Body, BodyKind, BodyLevel
 from datos.organization.domain.boxes import Competence
 
+STATE_TERRITORY = "es"
 # Only a department (a consejería, a ministry) or a local body manages a matter: the head of an
 # executive, a parliament or a court hold competences of another kind, and are never shown here.
 MANAGING_KINDS = frozenset({BodyKind.DEPARTMENT, BodyKind.LOCAL})
@@ -66,17 +67,21 @@ def competent_bodies(
 def levels_for(
     sector_id: str, topic: NewsTopic, table_levels: Mapping[str, frozenset[BodyLevel]]
 ) -> tuple[frozenset[BodyLevel], bool]:
-    """The news item's own levels; when it has none, the levels the competence table gives the
-    sector, said to be shared (True). A sector the table does not know gives no level."""
+    """The news item's own levels; when it has none, the State's and the community's of those the
+    competence table gives the sector, said to be shared (True). The local level only when the
+    news item says so: the table gives it to most sectors (health, schooling, planning), and the
+    ayuntamiento would be named on almost every news item. A sector the table does not know gives
+    no level."""
     if topic.levels:
         return topic.levels, False
-    return table_levels.get(sector_id, frozenset()), True
+    return table_levels.get(sector_id, frozenset()) - {BodyLevel.LOCAL}, True
 
 
 def _reaches(body: Body, topic: NewsTopic) -> bool:
-    """A community's body reaches only a news item of that community; the State's bodies and the
-    generic local ones (the files give them the State's territory and none) reach any news item."""
-    return body.level is not BodyLevel.CCAA or body.territory_id in topic.communities
+    """By the body's territory, not its level: the State's bodies and the generic local ones (no
+    territory) reach any news item; a body of one community (a consejería, or a local body that
+    only exists there, like a Canarian cabildo) only a news item of that community."""
+    return body.territory_id in (None, STATE_TERRITORY) or body.territory_id in topic.communities
 
 
 def _sectors_by_body(competences: Iterable[Competence]) -> dict[str, frozenset[str]]:
